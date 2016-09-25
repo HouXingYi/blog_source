@@ -1,0 +1,57 @@
+
+
+.stage{
+	width: 900px;
+	min-height: 100px;
+	height: 500px;
+	margin: 100px auto;
+	background: #F0F0F0;
+	box-shadow:inset 0 0 3px ;
+	perspective: 800px;
+	perspective-origin: 50% 25%;
+	position: relative;
+}
+
+.container{
+	width: 160px;
+	height: 90px;
+	position: absolute;
+	left: 365px;
+	top:200px;
+	transform-style: preserve-3d;
+	transition: transform 1s;
+}
+
+.stage .container img{
+	height: 90px;
+	width: 160px;
+	position: absolute;
+	box-shadow: 0 0 5px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
