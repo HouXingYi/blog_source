@@ -6,13 +6,17 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 30 Jul 2017 20:10:18 +0800</pubDate>
-    <lastBuildDate>Sun, 30 Jul 2017 20:10:18 +0800</lastBuildDate>
+    <pubDate>Sun, 30 Jul 2017 20:55:29 +0800</pubDate>
+    <lastBuildDate>Sun, 30 Jul 2017 20:55:29 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
     
       <item>
         <title>[译]在10分钟内解释JavaScript Async/Await</title>
-        <description>&lt;p&gt;在很长的一段时间里，JavaScript开发者不得不依靠回调函数去处理异步代码。结果，我们大部分都经历过回调地狱和遇到&lt;a href=&quot;https://tutorialzine.com/media/2017/07/callback-hell.jpg&quot;&gt;这样&lt;/a&gt;功能的恐怖。&lt;/p&gt;
+        <description>&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;原文:https://tutorialzine.com/2017/07/javascript-async-await-explained
+作者:Danny Markov
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;在很长的一段时间里，JavaScript开发者不得不依靠回调函数去处理异步代码。结果，我们大部分都经历过回调地狱和遇到&lt;a href=&quot;https://tutorialzine.com/media/2017/07/callback-hell.jpg&quot;&gt;这样&lt;/a&gt;功能的恐怖。&lt;/p&gt;
 
 &lt;p&gt;幸运的是，接下来（或者我们应该说 .then()）我们迎来了Promises. 他们提供了一个更组织化的回调方式，大多数社区迅速的转而使用它。&lt;/p&gt;
 
@@ -163,9 +167,9 @@ doSomethingAsync().
 
 &lt;p&gt;随着Async/Await ，JavaScript语言在代码可读性和易用性上向前迈进了一大步。能够编写类似于常规同步功能的异步代码将会受到JavaScript初学者和经验丰富的编程人员的赞赏。&lt;/p&gt;
 </description>
-        <pubDate>Mon, 24 Jul 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/js/2017/07/24/AsyncAwaitTran.html</link>
-        <guid isPermaLink="true">http://localhost:4000/js/2017/07/24/AsyncAwaitTran.html</guid>
+        <pubDate>Sat, 15 Jul 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/js/2017/07/15/AsyncAwaitTran.html</link>
+        <guid isPermaLink="true">http://localhost:4000/js/2017/07/15/AsyncAwaitTran.html</guid>
         
         <category>Async</category>
         

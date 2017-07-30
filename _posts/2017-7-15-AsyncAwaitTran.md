@@ -2,14 +2,17 @@
 layout: post
 title: "[译]在10分钟内解释JavaScript Async/Await"
 subtitle: ""
-date: 2017-07-24
+date: 2017-07-15
 author: HouXingYi
 category: JS
 tags: Async Await ES6
 finished: true
 ---
 
-
+```
+原文:https://tutorialzine.com/2017/07/javascript-async-await-explained
+作者:Danny Markov
+```
 在很长的一段时间里，JavaScript开发者不得不依靠回调函数去处理异步代码。结果，我们大部分都经历过回调地狱和遇到[这样](https://tutorialzine.com/media/2017/07/callback-hell.jpg)功能的恐怖。
 
 幸运的是，接下来（或者我们应该说 .then()）我们迎来了Promises. 他们提供了一个更组织化的回调方式，大多数社区迅速的转而使用它。

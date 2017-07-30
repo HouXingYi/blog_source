@@ -10,7 +10,7 @@
 <!-- CSS -->
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/js/2017/07/24/AsyncAwaitTran.html">
+  <link rel="canonical" href="http://localhost:4000/js/2017/07/15/AsyncAwaitTran.html">
   <link rel="alternate" type="application/rss+xml" title="侯星伊的个人博客" href="http://localhost:4000/feed.xml">
 
 <!-- Google font -->
@@ -38,7 +38,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>[译]在10分钟内解释JavaScript Async/Await</title>
-  <meta name="description" content="在很长的一段时间里，JavaScript开发者不得不依靠回调函数去处理异步代码。结果，我们大部分都经历过回调地狱和遇到这样功能的恐怖。">
+  <meta name="description" content="原文:https://tutorialzine.com/2017/07/javascript-async-await-explained作者:Danny Markov在很长的一段时间里，JavaScript开发者不得不依靠回调函数去处理异步代码。结果，我们大部分都经历过回调地狱和遇到这样功能的恐怖。">
 </head>
 
 
@@ -47,7 +47,7 @@
 
     <center><div class="post-title" itemprop="name headline">[译]在10分钟内解释JavaScript Async/Await</div>
 
-		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="24 Jul 2017" itemprop="datePublished">Jul 24 2017</time>
+		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="15 Jul 2017" itemprop="datePublished">Jul 15 2017</time>
 
 		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">HouXingYi</span>
         
@@ -82,7 +82,11 @@
 <div id="category"></div>
 
 <div class="post-content" itemprop="articleBody">
-    <p>在很长的一段时间里，JavaScript开发者不得不依靠回调函数去处理异步代码。结果，我们大部分都经历过回调地狱和遇到<a href="https://tutorialzine.com/media/2017/07/callback-hell.jpg">这样</a>功能的恐怖。</p>
+    <div class="highlighter-rouge"><pre class="highlight"><code>原文:https://tutorialzine.com/2017/07/javascript-async-await-explained
+作者:Danny Markov
+</code></pre>
+</div>
+<p>在很长的一段时间里，JavaScript开发者不得不依靠回调函数去处理异步代码。结果，我们大部分都经历过回调地狱和遇到<a href="https://tutorialzine.com/media/2017/07/callback-hell.jpg">这样</a>功能的恐怖。</p>
 
 <p>幸运的是，接下来（或者我们应该说 .then()）我们迎来了Promises. 他们提供了一个更组织化的回调方式，大多数社区迅速的转而使用它。</p>
 
@@ -244,21 +248,21 @@ doSomethingAsync().
 <!--先不分享-->
 <!--<div class="share">
     <p>Share this post with: </p>
-	<a href="https://twitter.com/intent/tweet?text=[译]在10分钟内解释JavaScript Async/Await@&amp;url=http://localhost:4000/js/2017/07/24/AsyncAwaitTran.html" class="twitter-share">
+	<a href="https://twitter.com/intent/tweet?text=[译]在10分钟内解释JavaScript Async/Await@&amp;url=http://localhost:4000/js/2017/07/15/AsyncAwaitTran.html" class="twitter-share">
 		<span class="fa-stack fa-lg">
 			<i class="fa fa-circle fa-stack-2x"></i>
 			<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
 		</span>
 	</a>
     
-	<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/js/2017/07/24/AsyncAwaitTran.html" class="facebook-share">
+	<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/js/2017/07/15/AsyncAwaitTran.html" class="facebook-share">
 		<span class="fa-stack fa-lg">
 			<i class="fa fa-circle fa-stack-2x"></i>
 			<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
 		</span>
 	</a>
     
-	<a href="https://plus.google.com/share?url=http://localhost:4000/js/2017/07/24/AsyncAwaitTran.html" class="googleplus-share">
+	<a href="https://plus.google.com/share?url=http://localhost:4000/js/2017/07/15/AsyncAwaitTran.html" class="googleplus-share">
 		<span class="fa-stack fa-lg">
 			<i class="fa fa-circle fa-stack-2x"></i>
 			<i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
