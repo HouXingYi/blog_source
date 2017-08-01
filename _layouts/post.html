@@ -49,8 +49,24 @@ layout: default
 </div>
 
 <!--先不分享-->
-<!--{% include share.html %}-->
+<!-- {% include share.html %} -->
 
-{% include disqus.html %}
+<!-- {% include disqus.html %}  -->
+
+<div id="container"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+//   id: '页面 ID', // 可选。默认为 location.href
+  owner: '16967112',
+  repo: 'blog-c',
+  oauth: {
+    client_id: 'd8225497d80663e0c270',
+    client_secret: '748c7dd30b4c86dd92fe7176d4a60e5d44ee405e',
+  },
+})
+gitment.render('container')
+</script>
 
 </article>

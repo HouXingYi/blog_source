@@ -225,7 +225,7 @@ ES5中提供了内置的bind方法</p>
 </div>
 
 <!--先不分享-->
-<!--<div class="share">
+<!-- <div class="share">
     <p>Share this post with: </p>
 	<a href="https://twitter.com/intent/tweet?text=理解JS的this关键字@&amp;url=http://localhost:4000/%E5%89%8D%E7%AB%AF/2017/06/10/know_everything_about_this.html" class="twitter-share">
 		<span class="fa-stack fa-lg">
@@ -248,14 +248,30 @@ ES5中提供了内置的bind方法</p>
 		</span>
 	</a>
 </div>
--->
+ -->
 
-<div id="disqus_thread"></div>
+<!-- <div id="disqus_thread"></div>
 
 
  
 </div>
+  -->
 
+<div id="container"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+//   id: '页面 ID', // 可选。默认为 location.href
+  owner: '16967112',
+  repo: 'blog-c',
+  oauth: {
+    client_id: 'd8225497d80663e0c270',
+    client_secret: '748c7dd30b4c86dd92fe7176d4a60e5d44ee405e',
+  },
+})
+gitment.render('container')
+</script>
 
 </article>
 
