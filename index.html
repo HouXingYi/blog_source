@@ -18,7 +18,7 @@ layout: default
 		我叫侯星伊，这是我的个人博客，用于记录一些平时的想法与技术总结等，大家如果喜欢的话可以
 		到<a href="https://github.com/HouXingYi/HouXingYi.github.io">这里</a>点个star关注我。
 		博客的内容除了按<a href="./archive">时间</a>排布，还有按<a href="./category">分类</a>与<a href="">标签</a>排列，便于整理。
-		本人热爱技术，现在正在寻找一份前端工程师的工作，欢迎大家与我交流。想更多的了解我请点击<a href="./about/">这里</a>。
+		本人热爱技术，现在正在寻找一份前端工程师的工作，欢迎大家与我交流，也可以在下方评论。想更多的了解我请点击<a href="./about/">这里</a>。
 		<br><span class="line">Thanks for watching and have a nice day.</span>
 	</p>
 </div>
@@ -58,3 +58,20 @@ layout: default
 	<!-- <a href="./test.doc">点击我得简历</a>  -->
 
 	<!-- 跟帖系统,有云跟帖，gitment等 -->
+
+	<!-- gitment -->
+	<div id="container"></div>
+	<link rel="stylesheet" href="{{ site.url }}{{ site.baseurl }}/gitment/default.css">
+	<script src="{{ site.url }}{{ site.baseurl }}/gitment/gitment.browser.js"></script>
+	<script>
+	var gitment = new Gitment({
+	id:window.location.pathname,
+	owner: 'HouXingYi',
+	repo: 'HouXingYi.github.io',
+	oauth: {
+		client_id: 'd8225497d80663e0c270',
+		client_secret: '748c7dd30b4c86dd92fe7176d4a60e5d44ee405e',
+	},
+	})
+	gitment.render('container')
+	</script>
