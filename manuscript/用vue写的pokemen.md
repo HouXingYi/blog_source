@@ -21,6 +21,29 @@ https://medium.com/coding-artist/vue-js-pokemon-battle-tutorial-380cd72eb681
 
 虽然有可能这不合你的胃口，但是我认为制作有趣的，小型的web apps是一个学习新框架的好方法。在尝试了React和Vue.js之后，我疯狂的爱上了Vue提供的可读性和易用性，特别是对于像我这样的人来说（翻译的不准确）。
 
+然而，无论是React还是Vue.js，都有非常多的制作我喜欢的那种有趣的小巧的web应用教程。所以，我认为写一篇超级详细的用vue.js制作神奇宝贝战斗是一件非常酷的事情。
+
+如果你还没有读过我上一篇博客，我不喜欢做假设并且我确实很喜欢把事情分解。无论这是你的Vue.js的第一篇介绍还是你只是想找些与众不同的，我希望你能享受这篇博文。
+
+# 分解开来
+
+在我开始之前，先把我们要做什么分解下。
+
+首先，我们由一个[template](https://codepen.io/mikemang/pen/rjKaGW)开始，这个template就是我们神奇宝贝战斗app的container。快去fork。
+
+我不会详细说明我如何码出这个的。如果你不熟悉纯css图像并好奇我如何做到的，我建议你读我的另一篇博文[Beginner’s Guide to Pure CSS Images.](https://medium.com/coding-artist/a-beginners-guide-to-pure-css-images-ef9a5d069dd2)
+
+有了这个template之后，我们需要添加以下东西：
+
+1. 两个神奇宝贝的图片
+2. 名字，等级和每个神奇宝贝的HP
+3. 战斗中的选项将会放在右下角的白盒子中
+4. 战斗中的文字更新将会放在战斗选项的左边
+
+就功能性来说，我们需要做以下几点：
+
+
+
 
 
 
