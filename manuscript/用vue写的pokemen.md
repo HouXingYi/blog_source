@@ -1,5 +1,5 @@
-Vue.js Pokemon Battle Tutorial
-vue.js神奇宝贝战斗教程
+# Vue.js Pokemon Battle Tutorial
+## vue.js神奇宝贝战斗教程
 
 
 https://medium.com/coding-artist/vue-js-pokemon-battle-tutorial-380cd72eb681
@@ -13,7 +13,7 @@ https://medium.com/coding-artist/vue-js-pokemon-battle-tutorial-380cd72eb681
 
 
 
-# Introduction
+## Introduction
 
 从学习毕业之后，我决定我要致力于web开发。我很快意识到，我需要更加具体的关注我想要集中的web开发技能。
 
@@ -25,7 +25,7 @@ https://medium.com/coding-artist/vue-js-pokemon-battle-tutorial-380cd72eb681
 
 如果你还没有读过我上一篇博客，我不喜欢做假设并且我确实很喜欢把事情分解。无论这是你的Vue.js的第一篇介绍还是你只是想找些与众不同的，我希望你能享受这篇博文。
 
-# 分解开来
+## 分解开来
 
 在我开始之前，先把我们要做什么分解下。
 
@@ -41,6 +41,22 @@ https://medium.com/coding-artist/vue-js-pokemon-battle-tutorial-380cd72eb681
 4. 战斗中的文字更新将会放在战斗选项的左边
 
 就功能性来说，我们需要做以下几点：
+
+1. 允许使用者用他们的神奇宝贝攻击对方的神奇宝贝并造成伤害
+2. 使用者的神奇宝贝攻击完了之后，对方的也可以攻击使用者的并造成伤害
+3. 如果没有神奇宝贝昏厥的话继续战斗，如果有的话则停止战斗
+4. 在战斗的过程中更新战斗信息
+5. 一场战斗结束后允许启动一场新的战斗
+
+## 将模板填满
+
+首先，我们看看我们有什么。
+
+
+
+
+
+
 
 
 
