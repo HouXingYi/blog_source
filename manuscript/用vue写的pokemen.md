@@ -52,6 +52,206 @@ https://medium.com/coding-artist/vue-js-pokemon-battle-tutorial-380cd72eb681
 
 首先，我们看看我们有什么。
 
+在我们的html中，有一个先前提过的纯CSS图片和一个标题。所有的这些都都被包围在下面的代码里面:
+
+```
+<div id="app">
+//rest of code
+</div>
+```
+这个包围其实是一个Vue.js实例。我们来看一下。
+```
+var app = new Vue({
+    el: '#app',
+        data: {
+    },
+    methods:{
+
+    }
+})
+```
+
+这是一个基本的Vue.js实例的壳。el通过html中的`<div id=”app”></div>`和这个实例联系。因为有这个联系，我们可以在*data:{}*中有一些可以使用在html中的数据。
+
+我们可以操作这些数据，所以这些数据可以通过*methods: {}*内的函数变为动态的。这些方法可以被各种的事件处理函数调用。
+
+那么我们开始，让我们来回顾下我们需要加到模板中的东西，并且把它添加到那个我们称之为app的Vue.js实例的data中去.
+
+在模板中，我们需要添加以下的东西：
+
+1. 两个神奇宝贝的图片
+2. 每个神奇宝贝的名字，等级，血量
+3. 右下角角落的白盒中的战斗选项
+4. 战斗选项白盒左边的战斗信息
+
+我们想要和以下图片相似的东西。
+
+![memory](../img/pokemon-battle.png)
+
+## 将数据添加到实例中
+
+那么。。我们可以像下面这样添加一些数据到我们的Vue.js实例中去:
+```
+var app = new Vue({
+    el: '#app',
+    data: {
+        userPokemonSrc: "http://guidesmedia.ign.com/guides/059687/images/blackwhite/pokemans_006.gif",
+        opponentPokemonSrc: "http://pre01.deviantart.net/959a/th/pre/f/2016/075/4/6/095_onix_by_rayo123000-d9vbjj3.png",
+        userPokemon: "Charizard",
+        opponentPokemon: "Onyx",
+        userHP: 100,
+        opponentHP: 100,
+        userLevel: 50,
+        opponentLevel: 50,
+        battleText: "What will Charizard do?",
+        battleOptions: ["Fight", "Pokemon", "Item", "Run"]
+    },
+    methods:{
+
+    }
+})
+```
+这里我们为两个神奇宝贝指定路径
+```
+data: {
+     userPokemonSrc: "http://guidesmedia.ign.com/guides/059687/images/blackwhite/pokemans_006.gif",
+     opponentPokemonSrc: "http://pre01.deviantart.net/959a/th/pre/f/2016/075/4/6/095_onix_by_rayo123000-d9vbjj3.png",
+     //other stuff
+}
+```
+我们也为两个神奇宝贝起个名字
+```
+data: {
+     userPokemonSrc: "http://guidesmedia.ign.com/guides/059687/images/blackwhite/pokemans_006.gif",
+     opponentPokemonSrc: "http://pre01.deviantart.net/959a/th/pre/f/2016/075/4/6/095_onix_by_rayo123000-d9vbjj3.png",
+     userPokemon: "Charizard",
+     opponentPokemon: "Onyx",
+     //other stuff
+}
+```
+接下来，我们也像这样添加添加了血量和等级
+```
+data: {
+     userPokemonSrc: "http://guidesmedia.ign.com/guides/059687/images/blackwhite/pokemans_006.gif",
+     opponentPokemonSrc: "http://pre01.deviantart.net/959a/th/pre/f/2016/075/4/6/095_onix_by_rayo123000-d9vbjj3.png",
+     userPokemon: "Charizard",
+     opponentPokemon: "Onyx",
+     userHP: 100,
+     opponentHP: 100,
+     userLevel: 50,
+     opponentLevel: 50,
+     //other stuff
+}
+```
+最后，我们添加了一个默认的战斗信息的字符串和一个我们战斗选项的数组:
+```
+var app = new Vue({
+    el: '#app',
+    data: {
+        userPokemonSrc: "http://guidesmedia.ign.com/guides/059687/images/blackwhite/pokemans_006.gif",
+        opponentPokemonSrc: "http://pre01.deviantart.net/959a/th/pre/f/2016/075/4/6/095_onix_by_rayo123000-d9vbjj3.png",
+        userPokemon: "Charizard",
+        opponentPokemon: "Onyx",
+        userHP: 100,
+        opponentHP: 100,
+        userLevel: 50,
+        opponentLevel: 50,
+        battleText: "What will Charizard do?",
+        battleOptions: ["Fight", "Pokemon", "Item", "Run"]
+    },
+    methods:{
+
+    }
+})
+```
+
+很好
+
+现在我们需要把这些数据插入到html之中，这样我们才能看到：
+
+```
+<body>
+<div id="app">
+    <h1 class="title">Vue.js Pokemon Battle</h1>
+ <!-- Begin battle scene -->
+ <div class="battle-scene">
+   <div class="box-top-left">
+     <h2 class="pokemon">{{opponentPokemon}}</h2>
+     <div class="hp-bar-top">
+       <div class="hp-bar-fill"></div>
+     </div>
+     <h4 class="level">Lvl. {{opponentLevel}}</h4>
+   </div>
+   <div class="box-top-right">
+     <img v-bind:src="opponentPokemonSrc" class="pokemon-top" />
+   </div>
+    <div class="box-bottom-left">
+      <img v-bind:src="userPokemonSrc" class="pokemon-bottom" />
+   </div>
+   <div class="box-bottom-right">
+      <h2 class="pokemon">{{userPokemon}}</h2>
+     <div class="hp-bar-bottom">
+       <div class="hp-bar-fill"></div>
+     </div>
+     <h4 class="level">Lvl. {{userLevel}}</h4>
+     <h4 class="hp">{{userHP}}/{{userHP}}</h4>
+   </div>
+   <div class="bottom-menu">
+     <div class="battle-text text-box-left">{{battleText}}</div>
+       <div class="text-box-right">
+         <h4 class="battle-text-top-left">{{battleOptions[0]}}</h4>
+         <h4 class="battle-text-top-right">{{battleOptions[1]}}</h4>
+         <h4 class="battle-text-bottom-left">{{battleOptions[2]}}      </h4>
+         <h4 class="battle-text-bottom-right">{{battleOptions[3]}}</h4> 
+     </div>
+   </div>
+   
+ 
+ </div> 
+  <!-- end battle scene -->
+ </div>
+</body>
+```
+到这里，我们应该会得到:<br>  
+![memory](../img/pokemon2.png)
+
+是不是很酷?
+
+那好，我们来讨论下它是怎么工作的。
+
+## 插入数据
+
+当我们需要在一些html标签中插入数据的时候，我们只需要像下面这样使用{{[数据的名字]}}:
+
+```
+<h2 class="pokemon">{{opponentPokemon}}</h2>
+<h4 class="level">Lvl. {{opponentLevel}}</h4>
+<h2 class="pokemon">{{userPokemon}}</h2>
+<h4 class="level">Lvl. {{userLevel}}</h4>
+<h4 class="hp">{{userHP}}/{{userHP}}</h4>
+<div class="battle-text text-box-left">{{battleText}}</div>
+//we also can do arrays like so
+<h4 class="battle-text-top-left">{{battleOptions[0]}}</h4>
+<h4 class="battle-text-top-right">{{battleOptions[1]}}</h4>
+<h4 class="battle-text-bottom-left">{{battleOptions[2]}}</h4>
+<h4 class="battle-text-bottom-right">{{battleOptions[3]}}</h4>
+```
+
+任何双括号之间的东西都会输出那个叫app的Vue.js实例中储存的数据。你可以看到，我们也可以在插入数据的周围添加字符串。
+
+现在，我们的图像被我们的Vue.js实例用一种不同的方式控制。我们的数据中有用于两个不同图像标签的src的图片链接。因为我们想在一个标签中绑定一个东西，我们可以使用v-bind:[what we want to bind] = “[name of some data]” ，对我们来说就是:
+```
+<img v-bind:src="opponentPokemonSrc" class="pokemon-top" />
+<img v-bind:src="userPokemonSrc" class="pokemon-bottom" />
+```
+
+
+
+
+
+
+
+
 
 
 
