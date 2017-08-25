@@ -246,6 +246,169 @@ var app = new Vue({
 ```
 
 
+## 样式绑定
+
+知道了以上之后，我们也可以绑定一个html标签的样式。我们将用这种做法去填满我们用纯css写的血条。
+
+我们为我们的神奇宝贝和对方的神奇宝贝添加血条
+```
+<body>
+<div id="app">
+    <h1 class="title">Vue.js Pokemon Battle</h1>
+ <!-- Begin battle scene -->
+ <div class="battle-scene">
+   <div class="box-top-left">
+     <h2 class="pokemon">{{opponentPokemon}}</h2>
+     <div class="hp-bar-top">
+       <div v-bind:style="opponentHpBar" class="hp-bar-fill"></div>
+     </div>
+     <h4 class="level">Lvl. {{opponentLevel}}</h4>
+   </div>
+   <div class="box-top-right">
+     <img v-bind:src="opponentPokemonSrc" class="pokemon-top" />
+   </div>
+    <div class="box-bottom-left">
+      <img v-bind:src="userPokemonSrc" class="pokemon-bottom" />
+   </div>
+   <div class="box-bottom-right">
+      <h2 class="pokemon"> {{userPokemon}}</h2>
+     <div class="hp-bar-bottom">
+       <div v-bind:style="userHpBar" class="hp-bar-fill"></div>
+     </div>
+     <h4 class="level">Lvl. {{userLevel}}</h4>
+     <h4 class="hp">{{userHP}}/{{userHP}}</h4>
+   </div>
+   <div class="bottom-menu">
+     <div class="battle-text text-box-left">
+       {{battleText}}
+     </div>
+       <div class="text-box-right">
+         <h4 class="battle-text-top-left">{{battleOptions[0]}}</h4>
+         <h4 class="battle-text-top-right">{{battleOptions[1]}}</h4>
+         <h4 class="battle-text-bottom-left">{{battleOptions[2]}}</h4>
+         <h4 class="battle-text-bottom-right">{{battleOptions[3]}}</h4>   
+     </div>
+   </div>
+   
+ 
+ </div> 
+  <!-- end battle scene -->
+ </div>
+</body>
+```
+
+
+看看我们都加了什么:
+
+```
+<div v-bind:style="opponentHpBar" class="hp-bar-fill"></div>
+<div v-bind:style="userHpBar" class="hp-bar-fill"></div>
+//our CSS
+.hp-bar-fill{
+  position: absolute;
+  height: 100%;
+  border-radius: 20px;
+  background: #FF8800;
+}
+```
+
+你可以看到我们往一个类名叫做.hp-bar-fill的标签上加入了一行v-bind:style。这个类名上有一个橘色(#ff800)并且没有设宽度。因为没有宽度，我们没有看到一个橘色的条。
+
+如果我们随便加一个宽，像60%，我们就可以看到橘色的条了。
+
+```
+.hp-bar-fill{
+  position: absolute;
+  height: 100%;
+  width: 60%;
+  border-radius: 20px;
+  background: #FF8800;
+}
+```
+![memory](https://cdn-images-1.medium.com/max/800/1*hGEk0HEp6Ycjf3P9QEQJqQ.png)
+
+
+我们来思考下血条是怎么工作的
+
+当一个神奇宝贝被攻击的时候，血条应该更新。因此，我们需要动态的控制血条的宽度。我们也需要考虑到每一个神奇宝贝的血条是不一样长的。
+
+所以我们加入了v-bind:style=”opponentHpBar” and v-bind:style=”userHpBar”这一行.有了前面这一行，我们可以通过控制我们Vue实例的data来控制血条。我们可以明确的相应控制我们的神奇宝贝和对方的神奇宝贝。同样重要的一点是，Vuejs只控制我们指定的样式。
+
+现在我们的Vue实例中没有任何数据叫做opponentHpBar或者userHPBar。
+
+那我们来编辑下Vue实例的数据：
+```
+var app = new Vue({
+  el: '#app',
+  data: {
+     userPokemonSrc: "http://guidesmedia.ign.com/guides/059687/images/blackwhite/pokemans_006.gif",
+     opponentPokemonSrc: "http://pre01.deviantart.net/959a/th/pre/f/2016/075/4/6/095_onix_by_rayo123000-d9vbjj3.png",
+     userPokemon: "Charizard",
+     opponentPokemon: "Onyx",
+     userHP: 100,
+     opponentHP: 100,
+     userLevel: 50,
+     opponentLevel: 50,
+     battleText: "What will Charizard do?",
+     battleOptions: ["Fight", "Pokemon", "Item", "Run"],
+  userHpBar: {
+    width: "100%"
+  },
+  opponentHpBar: {
+    width: "100%"
+  }
+ },
+  methods:{
+    
+  }
+  
+})
+```
+![memory](https://cdn-images-1.medium.com/max/800/1*LkxUVIofCfwRI3HOiRDHwA.png)
+
+
+棒极了！现在我们的血条可以通过下面的语法被vue实例控制：
+```
+//within data: {...}
+ [data name referenced in v-bind:style]: {
+    [CSS value to control]: "[value]"
+  }
+//in our case
+userHpBar: {
+    width: "100%"
+  },
+opponentHpBar: {
+    width: "100%"
+}
+```
+
+好！我们现在把我们的模板填充完毕，并且学到了关于Vue.js的事情，接下来我们来控制数据让他动起来
+
+# 控制我们的数据
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
