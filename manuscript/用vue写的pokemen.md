@@ -386,6 +386,169 @@ opponentHpBar: {
 
 # 控制我们的数据
 
+首先，先来回顾下我们需要的功能。
+
+就功能来说，我们需要做下面几点：
+
+1. 允许用户能够用他的神奇宝贝攻击对方的神奇宝贝并造成损伤。
+2. 在己方的神奇宝贝攻击完后对方的神奇宝贝会攻击并造成损伤。
+3. 没有神奇宝贝晕倒则继续游戏，如果有则停止游戏。
+4. 在过程中更新战斗信息和战斗选项。
+5. 当一个战斗结束之后允许新开一个战斗。
+
+我不会按照这个列表的顺序来写代码，我会从最简单的写到最有挑战性的。首先从第四条开始。
+
+我们的战斗信息会根据战斗选项的选择而更新，所以我们先来做战斗选项：
+
+![battle](https://cdn-images-1.medium.com/max/800/1*ceTX9ZZl4qQK5j14VRR2OQ.png)
+
+当这个教程结束的时候，非常推荐你添加别的功能，但现在除了战斗，我不会添加别的功能(这篇博客已经需要花费六个小时了)。
+
+所以我们先来做“pokemon”，“Item”或者“Run”被点击的时候更新战斗信息。
+
+无论哪个选项被点击了，我们都会调用一个在methods函数（processOption）。我们先来写函数的壳：
+```
+methods:{
+    processOption: function(){
+      
+    }   
+}
+```
+然后我们需要通过一个事件处理器调用这个函数。
+
+我们会像这样使用事件处理器:
+```
+<h4 v-on:click="processOption" class="battle-text-top-left">{{battleOptions[0]}}</h4>
+<h4 v-on:click="processOption" class="battle-text-top-right">{{battleOptions[1]}}</h4>
+<h4 v-on:click="processOption" class="battle-text-bottom-left">{{battleOptions[2]}}</h4>
+<h4 v-on:click="processOption" class="battle-text-bottom-right">{{battleOptions[3]}}</h4>
+```
+事件处理器语法如下：
+```
+v-on:[event]="[function name found in methods]"
+```
+所以当任何一个选项被点击了，现在暂时什么都没有processOption就会被触发。
+
+在processOption中，我们需要根据哪个选项被点击去控制数据。所以，我们需要像下面这样为我们的函数加一个参数：
+```
+methods:{
+  processOption: function(option){
+    
+  }   
+}
+```
+接下来我们传一个参数，这样我们的函数就知道哪一个选项被点击了，我们也可以相应的更新我们的战斗信息.
+```
+<h4 v-on:click="processOption(1)" class="battle-text-top-left">{{battleOptions[0]}}</h4>
+<h4 v-on:click="processOption(2)" class="battle-text-top-right">{{battleOptions[1]}}</h4>
+<h4 v-on:click="processOption(3)" class="battle-text-bottom-left">{{battleOptions[2]}}</h4>
+<h4 v-on:click="processOption(4)" class="battle-text-bottom-right">{{battleOptions[3]}}</h4>
+```
+下一步，我们更新我们的函数去控制这些选项：
+```
+methods:{
+    processOption: function(option){
+      switch(option){
+        case 1:
+          //handle fight, will be done later
+        break;
+        case 2:
+          //handle pokemon
+        break;
+        case 3:
+          //handle item
+        break;
+        case 4:
+          //handle run
+        break;
+      }
+    }   
+  }
+```
+接下来，我们来处理2-4的情况去更新战斗信息：
+```
+methods:{
+    processOption: function(option){
+      switch(option){
+        case 1:
+          //handle fight
+        break;
+        case 2:
+          //handle pokemon
+          this.battleText = "You're our only hope " + this.userPokemon + "!"
+        break;
+        case 3:
+          //handle item
+          this.battleText = "No items in bag."
+        break;
+        case 4:
+          //handle run
+          this.battleText = "Can't escape."
+        break;
+      }
+    }   
+  }
+```
+现在，当我们点击"Pokemon","Item"或者"run"的时候，我们可以看见战斗信息的更新：
+![battle](https://cdn-images-1.medium.com/max/800/1*8sARmdOmoTQTfl2YPcCVag.png)
+在这里我们this来获得我们的data。我们也可以用Vue实例的名字来获取其他Vue实例的data（也就是说，app.battleText而不是this.battleText）.
+
+你可以看到，用Vue控制数据非常容易。
+
+在我们进到下一步之前，我们先做个小修改。我们需要这些具体的战斗信息显示一段时间后又变成我们的默认信息。因此，我们加入setTimeout。（注意：从现在开始，在点击另外一个选项的时候你需要等下战斗信息更新）
+```
+methods:{
+  processOption: function(option){
+    switch(option){
+      case 1:
+        //handle fight
+      break;
+      case 2:
+        //handle pokemon
+        setTimeout(() => {
+        this.battleText = "What will " + this.userPokemon + " do?"
+    }, 2000);
+        
+        this.battleText = "You're our only hope " + this.userPokemon + "!"
+        
+      break;
+      case 3:
+        //handle item
+        setTimeout(() => {
+        this.battleText = "What will " + this.userPokemon + " do?"
+    }, 2000);
+        this.battleText = "No items in bag."
+      break;
+      case 4:
+        //handle run
+        setTimeout(() => {
+        this.battleText = "What will " + this.userPokemon + " do?"
+    }, 2000);
+        this.battleText = "Can't escape."
+      break;
+    }
+  }
+```
+通过使用setTimeout,在变回原来的默认信息“What will [Charizard] do?”之前会显示两秒的更新后的战斗信息。
+
+测试下上面的效果，当你测试完了之后，接下来去处理更加复杂的战斗选项。
+
+让我们先思考下。当你点击战斗按钮的时候，我们希望用可能的攻击选项来代替战斗中的选项。战斗选项被储存在一个数组中。选项的数量有几个。
+
+我们有两种想选择a）用不同的选项重写数组b）加入一个不活跃的新的fightOptions数组，当战斗选项被选择的时候battleOptions变的不活跃而fightOptions变的活跃。
+
+vue.js有很好的控制元素开启关闭的方式，所以，我们选择第二种方式。
+
+首先我们在data中加入一个叫做fightOptions的数组：
+```
+data: {
+//...
+fightOptions: ["Scratch", "Fly", "Flamethrower", "Ember"]
+//...
+}
+```
+
+
 
 
 
