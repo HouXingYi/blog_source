@@ -547,6 +547,116 @@ fightOptions: ["Scratch", "Fly", "Flamethrower", "Ember"]
 //...
 }
 ```
+下一步将我们的攻击选项加入我们的HTML
+```
+<div class="text-box-right">
+//battleOptions
+<h4 v-on:click="processOption(1)" class="battle-text-top-left">{{battleOptions[0]}}</h4>
+<h4 v-on:click="processOption(2)" class="battle-text-top-right">{{battleOptions[1]}}</h4>
+<h4 v-on:click="processOption(3)" class="battle-text-bottom-left">{{battleOptions[2]}}</h4>
+<h4 v-on:click="processOption(4)" class="battle-text-bottom-right">{{battleOptions[3]}}</h4>
+//fightOptions
+<h4 v-on:click="processOption(1)" class="battle-text-top-left">{{fightOptions[0]}}</h4>
+<h4 v-on:click="processOption(2)" class="battle-text-top-right">{{fightOptions[1]}}</h4>
+<h4 v-on:click="processOption(3)" class="battle-text-bottom-left">{{fightOptions[2]}}</h4>
+<h4 v-on:click="processOption(4)" class="battle-text-bottom-right">{{fightOptions[3]}}</h4> 
+         
+</div>
+```
+下一步，我们将battleOptions和fightOptions都用一个简单的父div包住。
+```
+<div class="text-box-right">
+//battleOptions
+<div id="battleOptions">
+<h4 v-on:click="processOption(1)" class="battle-text-top-left">{{battleOptions[0]}}</h4>
+<h4 v-on:click="processOption(2)" class="battle-text-top-right">{{battleOptions[1]}}</h4>
+<h4 v-on:click="processOption(3)" class="battle-text-bottom-left">{{battleOptions[2]}}</h4>
+<h4 v-on:click="processOption(4)" class="battle-text-bottom-right">{{battleOptions[3]}}</h4>
+</div>
+//fightOptions
+<div id="fightOptions">
+<h4 v-on:click="processOption(1)" class="battle-text-top-left">{{fightOptions[0]}}</h4>
+<h4 v-on:click="processOption(2)" class="battle-text-top-right">{{fightOptions[1]}}</h4>
+<h4 v-on:click="processOption(3)" class="battle-text-bottom-left">{{fightOptions[2]}}</h4>
+<h4 v-on:click="processOption(4)" class="battle-text-bottom-right">{{fightOptions[3]}}</h4>
+</div>
+         
+</div>
+```
+这时候，两个选项是重叠的。
+![battle](../img/pokemon3.png)
+在“战斗”按钮被点击之前，我们需要fightOptions不是激活状态而battleOptions是激活状态。
+所以我们加入神奇的Vue.js控制指令v-if:
+```
+<div v-if="optionsOn" id="battleOptions">
+<h4 v-on:click="processOption(1)" class="battle-text-top-left">{{battleOptions[0]}}</h4>
+<h4 v-on:click="processOption(2)" class="battle-text-top-right">{{battleOptions[1]}}</h4>
+<h4 v-on:click="processOption(3)" class="battle-text-bottom-left">{{battleOptions[2]}}</h4>
+<h4 v-on:click="processOption(4)" class="battle-text-bottom-right">{{battleOptions[3]}}</h4>
+</div>
+//fightOptions
+<div v-if="fightOn" id="fightOptions">
+<h4 v-on:click="processOption(1)" class="battle-text-top-left">{{fightOptions[0]}}</h4>
+<h4 v-on:click="processOption(2)" class="battle-text-top-right">{{fightOptions[1]}}</h4>
+<h4 v-on:click="processOption(3)" class="battle-text-bottom-left">{{fightOptions[2]}}</h4>
+<h4 v-on:click="processOption(4)" class="battle-text-bottom-right">{{fightOptions[3]}}</h4>
+</div>
+         
+</div>
+```
+optionsOn和fightOn对应Vuejs实例中data的名字，他们将会被设置为true或false。如果值是true,他们将会被激活并且渲染。相反则不会被渲染。
+所以，我们将下面的代码加入Vue实例中
+```
+data: {
+//....
+fightOn: false,
+optionsOn: true,
+//...
+}
+```
+默认状态下，因为optionsOn的值是true所以battleOptions将会被渲染，而fightOn的值是false所以fightOptions将不会被渲染。
+
+我们应该能在画面上看到效果。
+![png](https://cdn-images-1.medium.com/max/800/1*g-6auPPoDHQrN-TcaHrYcA.png)
+
+搞定以上之后，我们来添加processOption函数来响应战斗按钮被点击的情况。
+
+```
+methods:{
+    processOption: function(option){
+      switch(option){
+        case 1:
+          //handle fight
+          this.optionsOn = false
+          this.fightOn = true
+        break;
+        case 2:
+          //handle pokemon
+          setTimeout(() => {
+          this.battleText = "What will " + this.userPokemon + " do?"
+      }, 2000);
+          
+          this.battleText = "You're our only hope " + this.userPokemon + "!"
+          
+        break;
+        case 3:
+          //handle item
+          setTimeout(() => {
+          this.battleText = "What will " + this.userPokemon + " do?"
+      }, 2000);
+          this.battleText = "No items in bag."
+        break;
+        case 4:
+          //handle run
+          setTimeout(() => {
+          this.battleText = "What will " + this.userPokemon + " do?"
+      }, 2000);
+          this.battleText = "Can't escape."
+        break;
+      }
+    }   
+  }
+```
 
 
 
