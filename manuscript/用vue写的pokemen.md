@@ -547,6 +547,86 @@ fightOptions: ["Scratch", "Fly", "Flamethrower", "Ember"]
 //...
 }
 ```
+接下来，我们把攻击(fightOptions的值)加入我们的html
+```
+<div class="text-box-right">
+//battleOptions
+<h4 v-on:click="processOption(1)" class="battle-text-top-left">{{battleOptions[0]}}</h4>
+<h4 v-on:click="processOption(2)" class="battle-text-top-right">{{battleOptions[1]}}</h4>
+<h4 v-on:click="processOption(3)" class="battle-text-bottom-left">{{battleOptions[2]}}</h4>
+<h4 v-on:click="processOption(4)" class="battle-text-bottom-right">{{battleOptions[3]}}</h4>
+//fightOptions
+<h4 v-on:click="processOption(1)" class="battle-text-top-left">{{fightOptions[0]}}</h4>
+<h4 v-on:click="processOption(2)" class="battle-text-top-right">{{fightOptions[1]}}</h4>
+<h4 v-on:click="processOption(3)" class="battle-text-bottom-left">{{fightOptions[2]}}</h4>
+<h4 v-on:click="processOption(4)" class="battle-text-bottom-right">{{fightOptions[3]}}</h4> 
+         
+</div>
+```
+下一步，把battleOptions和fightOptions都用一个简单的父div包裹起来。
+```
+<div class="text-box-right">
+//battleOptions
+<div id="battleOptions">
+<h4 v-on:click="processOption(1)" class="battle-text-top-left">{{battleOptions[0]}}</h4>
+<h4 v-on:click="processOption(2)" class="battle-text-top-right">{{battleOptions[1]}}</h4>
+<h4 v-on:click="processOption(3)" class="battle-text-bottom-left">{{battleOptions[2]}}</h4>
+<h4 v-on:click="processOption(4)" class="battle-text-bottom-right">{{battleOptions[3]}}</h4>
+</div>
+//fightOptions
+<div id="fightOptions">
+<h4 v-on:click="processOption(1)" class="battle-text-top-left">{{fightOptions[0]}}</h4>
+<h4 v-on:click="processOption(2)" class="battle-text-top-right">{{fightOptions[1]}}</h4>
+<h4 v-on:click="processOption(3)" class="battle-text-bottom-left">{{fightOptions[2]}}</h4>
+<h4 v-on:click="processOption(4)" class="battle-text-bottom-right">{{fightOptions[3]}}</h4>
+</div>
+         
+</div>
+```
+这时候，两个选项将会重叠。
+
+<!-- 图片占位 -->
+
+直到点击fight按钮之前，我们都需要保持fightOptions处于不激活状态，而battleOptions处于激活状态。
+
+所以我们加入一些v-if来进行控制。
+
+```
+<div v-if="optionsOn" id="battleOptions">
+<h4 v-on:click="processOption(1)" class="battle-text-top-left">{{battleOptions[0]}}</h4>
+<h4 v-on:click="processOption(2)" class="battle-text-top-right">{{battleOptions[1]}}</h4>
+<h4 v-on:click="processOption(3)" class="battle-text-bottom-left">{{battleOptions[2]}}</h4>
+<h4 v-on:click="processOption(4)" class="battle-text-bottom-right">{{battleOptions[3]}}</h4>
+</div>
+//fightOptions
+<div v-if="fightOn" id="fightOptions">
+<h4 v-on:click="processOption(1)" class="battle-text-top-left">{{fightOptions[0]}}</h4>
+<h4 v-on:click="processOption(2)" class="battle-text-top-right">{{fightOptions[1]}}</h4>
+<h4 v-on:click="processOption(3)" class="battle-text-bottom-left">{{fightOptions[2]}}</h4>
+<h4 v-on:click="processOption(4)" class="battle-text-bottom-right">{{fightOptions[3]}}</h4>
+</div>
+         
+</div>
+```
+optionsOn和fightOn是由Vue实例中的data中的名字引用而来，并被设置为true或者false。如果值是true，就会被激活并渲染。如果值是false，就不会被渲染。
+
+所以我们将下面的代码加入Vue实例
+
+```
+data: {
+//....
+fightOn: false,
+optionsOn: true,
+//...
+}
+```
+在默认状态下，battleOptions将会被渲染因为optionsOn被设置为true而fightOptions将不会被渲染因为fightOn被设为false。
+
+我们现在可以在页面上看到效果。
+
+<!-- 图片占位 -->
+
+
 
 
 
