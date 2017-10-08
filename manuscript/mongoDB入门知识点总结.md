@@ -78,10 +78,21 @@ db.collectionName.getIndexes()
 db.collectionName.ensureIndex({x:1})
 
 
+## 索引简介
+
+1. 索引的种类与使用
+2. 索引的匹配规则
+3. 如何建立合适的索引
+4. 索引建立的情况评估
+
+
+索引类型
+_id索引（自动生成唯一索引）
 
 
 
 
+先暂时这样，这样平常应该够用了，有深入的需求再学。
 
 
 
