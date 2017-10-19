@@ -11,6 +11,10 @@ finished: true
 
 在学习nodejs的过程中必不可少要接触数据库，我选择了mongoDB作为我要学习的数据库。下面总结下我学习mongoDB的一些心得体会。
 
+一般不使用原生，js中使用mongoose
+
+
+
 ## mongoDB简介
 
 mongoDB是一个开源的NoSQL数据库（Not Only SQL）
