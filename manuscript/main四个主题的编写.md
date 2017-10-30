@@ -4,7 +4,7 @@
 
 1. http总结（图解http）
 2. 饿了么nodejs面试系列  https://elemefe.github.io/node-interview/#/sections/zh-cn/
-3. vue原理系列
+3. vue原理系列   参考  https://github.com/answershuto/learnVue
 4. ES6系列（深入理解ES6读后感）
 
 
