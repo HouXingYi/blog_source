@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "一个100行内的现代js路由"
+title: "[译]一个100行内的现代js路由"
 subtitle: "A modern JavaScript router in 100 lines"
 date: 2017-10-10
 author: HouXingYi
