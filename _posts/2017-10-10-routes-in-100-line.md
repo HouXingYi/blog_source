@@ -1,13 +1,18 @@
-
+---
+layout: post
+title: "一个100行内的现代js路由"
+subtitle: "A modern JavaScript router in 100 lines"
+date: 2017-10-10
+author: HouXingYi
+category: js
+tags: routes 路由
+finished: true
+---
 ```
 原文:http://krasimirtsonev.com/blog/article/A-modern-JavaScript-router-in-100-lines-history-api-pushState-hash-url
 作者:Krasimir
 ```
-
-# 一个100行内的现代js路由
-
 (这个js路由现在被放项目[Navigo](https://github.com/krasimir/navigo)中。这里还有一篇你可能会感兴趣的文章[Deep dive into client-side routing](http://krasimirtsonev.com/blog/article/deep-dive-into-client-side-routing-navigo-pushstate-hash))
-
 
 现今到处都是流行的单页面应用（SPA）。这样的应用需要一个坚实的路由机制。像[Emberjs](https://emberjs.com/)这样的框架确实是在建立在一个路由类上的。我不确定这是不是我喜欢的概念，但我确定的是[AbsurdJS](http://absurdjs.com/)需要一个内置的路由。并且这个路由在所有东西齐全的前提下，应该小巧、简单。那就让我们来看看这样一个模块是怎么样的。
 
@@ -31,12 +36,10 @@ var Router = {
     root: '/'
 }
 ```
-
 这里有三个我们需要的属性。
 * routes-这个保存着当前已注册的路由
 * mode-根据我们使用的是history还是hash显示'hash'或者'history'
 * root-应用的根URL路径，只有当我们使用pushState的时候我们才需要
-
 
 ## 配置
 
@@ -302,30 +305,8 @@ Router
 Router.navigate('/about');
 ```
 
-
 ## 总结
 
 这个路由大概90行。支持hash类型的URL和新的history API。如果你不想仅仅想使用路由这个功能而使用整个框架，这个就对你是有帮助的。
 
 这个类是[AbsurdJS](http://absurdjs.com/)的一部分。在[这里](http://absurdjs.com/pages/api/build-in-components/#router)可以查看文档。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
