@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/mongodb/2017/10/20/mongoose.html">
+  <link rel="alternate" type="application/rss+xml" title="侯星伊的个人博客" href="http://localhost:4000/feed.xml">
+
+<!-- Google font -->
+
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
+
+<!-- font awesome -->
+
+<link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+
+  
+
+  
+
+  </head>
+
+  <body>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>mongoose基础</title>
+  <meta name="description" content="在Nodejs开发中，我们一般使用mongoose来操作mongoDB数据库。下面我么来学习下mongoose常用的用法。">
+</head>
+
+
+  <div class="wrapper">
+          <header class="post-header">
+
+    <center><div class="post-title" itemprop="name headline">mongoose基础</div>
+
+		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="20 Oct 2017" itemprop="datePublished">Oct 20 2017</time>
+
+		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">HouXingYi</span>
+        
+		<br>
+		<!--<i class="fa fa-eye"></i> <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-pulse"></i></span>˚C</span>-->
+	</div>
+
+        
+        <div class="post-tags">
+        
+		<a class="post-tags-item" href="http://localhost:4000/tags/">mongoose</a>
+        
+	</div>
+    </center>
+    
+</header>
+
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="post-content">
+    <center>
+	
+	<p></p>
+	
+    </center>
+	<h2>Directory</h2>
+</div>
+
+<div id="category"></div>
+
+<div class="post-content" itemprop="articleBody">
+    <p>在Nodejs开发中，我们一般使用mongoose来操作mongoDB数据库。下面我么来学习下mongoose常用的用法。</p>
+
+<h2 id="准备工作">准备工作</h2>
+
+<p>那要使用它，首先你得装上node.js和mongodb并启动mongodb数据库 <br /></p>
+
+<p>Github地址：https://github.com/Automattic/mongoose <br />
+API Docs：http://mongoosejs.com/docs/guide.html</p>
+
+<h2 id="概念理解">概念理解</h2>
+
+<p>要学习mongoose首先要了解三个重要的概念，他们是Schema、Model、Document。它们的关系是Schema生成Model、Model创造Document。 <br /></p>
+
+<p>Schema类似于定义表结构，但并不完全准确。它用于创建表时的数据定义(不仅仅可以定义文档的结构和属性，还可以定义文档的实例方法、静态模型方法、复合索引等)，每个Schema会映射到mongodb中的一个collection。Schema不具备操作数据库的能力，主要用于定义结构。 <br /></p>
+
+<p>Model是由Schema编译而成的构造器，具有抽象属性和行为，可以对数据库进行增删查改。Model所能增删查改的具体值是由Schema定义的，Schema定义以外的值则没有效果。在mongoDB中一个数据库有多个collections（由Schema定义结构），而每个collections有多个document（类似js对象一般的键值对）。</p>
+
+<p>Model的每一个实例（instance）就是一个文档document。Document是由Model创建的实体，它的操作也会影响数据库。</p>
+
+<h2 id="连接数据库">连接数据库</h2>
+
+<p>在使用前首先连接数据库（若没有则创建之）</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>var mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost:27017/test'); 
+//已连接
+mongoose.connection.on('connected', function () {    
+    console.log('已连接');  
+});    
+//连接错误
+mongoose.connection.on('error',function (err) {    
+    console.log('出错');  
+});    
+//断开连接
+mongoose.connection.on('disconnected', function () {    
+    console.log('断开连接');  
+});    
+</code></pre>
+</div>
+
+<p>其它事件可以自行查看：http://mongoosejs.com/docs/api.html#connection_Connection</p>
+
+<h2 id="定义schema">定义Schema</h2>
+
+<p>Schema是mongoose中需要事先定义的数据模式，类似于表结构，不过mongoDB中不叫表，叫collections。<br /></p>
+
+<p>模型可以看作mysql中的数据表，属性可以看作是字段，当然这个类比并不十分正确。<br /></p>
+
+<p>每个Schema对应当前连接的数据库的一个collection,若不存在则会自动创建。 <br /></p>
+
+<p>Schema不具备操作数据库的能力。 <br /></p>
+
+<p>下面我们来看下如何创建Schema</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>var mongoose = require('mongoose');
+Schema = mongoose.Schema;
+
+var blogSchema = new Schema({
+  title:  String,
+  author: String,
+  body:   String,
+  comments: [{ body: String, date: Date }],
+  date: { type: Date, default: Date.now },
+  hidden: Boolean,
+  meta: {
+    votes: Number,
+    favs:  Number
+  }
+});
+</code></pre>
+</div>
+
+<p>type有下面这些，<code class="highlighter-rouge">String</code>、<code class="highlighter-rouge">Number</code>、<code class="highlighter-rouge">Boolean </code>、<code class="highlighter-rouge">Array</code>、<code class="highlighter-rouge">Buffer</code>、<code class="highlighter-rouge">Date</code>、<code class="highlighter-rouge">ObjectId</code>、<code class="highlighter-rouge">Mixed</code>类型</p>
+
+<h2 id="生成model">生成Model</h2>
+
+<p>模型Model是根据Schema编译出的构造器，或者称为类，通过Model可以实例化出文档对象document。 <br />
+下面根据Schema构建一个Model</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>var Blog = mongoose.model('Blog', blogSchema);
+</code></pre>
+</div>
+<p>Model实例化之后为document。</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>var blogInstance = new Blog({
+  ...
+});
+</code></pre>
+</div>
+
+<h2 id="常用数据库操作">常用数据库操作</h2>
+
+<h3 id="新增">新增</h3>
+
+<p><strong>document.save()</strong></p>
+
+<p>model实例化后的document可用save新增文档</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>//实例化model
+var blogInstance = new Blog({
+  ...
+});
+//调用save方法即插入一个新的document
+user.save(function (err, res) {
+    if (err) {
+        console.log("Error:" + err);
+    }
+    else {
+        console.log("Res:" + res);
+    }
+});
+</code></pre>
+</div>
+
+<p><strong>model.create()</strong></p>
+
+<p>使用save()方法，需要先实例化为文档，再使用save()方法保存文档。而create()方法，则直接在模型Model上操作，并且可以同时新增多个文档</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Blog.create({name:"xiaowang"},{name:"xiaoli"},function(err,doc1,doc2){
+  console.log(doc1);
+  console.log(doc2);
+});  
+</code></pre>
+</div>
+<h3 id="查询">查询</h3>
+
+<p>查询文档有以下三种方法</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>find()
+findById()
+findOne()
+</code></pre>
+</div>
+<p><strong>find()</strong>
+第一个参数表示查询条件，第二个参数用于控制返回的字段，第三个参数用于配置查询参数，第四个参数是回调函数，回调函数的形式为function(err,docs){}</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>Model.find(conditions, [projection], [options], [callback])
+</code></pre>
+</div>
+<p><strong>findById()</strong></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>Model.findById(id, [projection], [options], [callback])
+</code></pre>
+</div>
+<p><strong>findOne()</strong>
+该方法返回查找到的所有实例的第一个</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>Model.findOne([conditions], [projection], [options], [callback])
+</code></pre>
+</div>
+<h3 id="更新">更新</h3>
+<p>更新文档有以下两种方法</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>update()
+updateMany()
+</code></pre>
+</div>
+<p><strong>update()</strong>
+第一个参数conditions为查询条件，第二个参数doc为需要修改的数据，第三个参数options为控制选项，第四个参数是回调函数</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>Model.update(conditions, doc, [options], [callback])
+</code></pre>
+</div>
+<p><strong>updateMany()</strong>
+updateMany()与update()方法唯一的区别就是默认更新多个文档，即使设置{multi:false}也无法只更新第一个文档</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>Model.updateMany(conditions, doc, [options], [callback])
+</code></pre>
+</div>
+
+<h3 id="删除">删除</h3>
+<p>更新文档有以下三种方法</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>remove()
+findOneAndRemove()
+findByIdAndRemove()
+</code></pre>
+</div>
+<p><strong>remove()</strong></p>
+
+<p>remove有两种形式，一种是文档的remove()方法，一种是Model的remove()方法。<br /></p>
+
+<p>下面介绍Model的remove()方法，该方法的第一个参数conditions为查询条件，第二个参数回调函数的形式如下function(err){}。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>model.remove(conditions, [callback])
+</code></pre>
+</div>
+<p>下面介绍文档的remove()方法，该方法的参数回调函数的形式如下function(err,doc){}</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>document.remove([callback])
+</code></pre>
+</div>
+
+<p><strong>findOneAndRemove()</strong>
+model的remove()会删除符合条件的所有数据，如果只删除符合条件的第一条数据，则可以使用model的findOneAndRemove()方法</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>Model.findOneAndRemove(conditions, [options], [callback])
+</code></pre>
+</div>
+
+<p><strong>findByIdAndRemove()</strong></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>Model.findByIdAndRemove(id, [options], [callback])
+</code></pre>
+</div>
+
+<h3 id="前后钩子">前后钩子</h3>
+<p>前后钩子即pre()和post()方法，又称为中间件，是在执行某些操作时可以执行的函数。中间件在schema上指定，类似于静态方法或实例方法等</p>
+
+<p>可以在数据库执行下列操作时，设置前后钩子</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>init
+validate
+save
+remove
+count
+find
+findOne
+findOneAndRemove
+findOneAndUpdate
+insertMany
+update
+</code></pre>
+</div>
+<p><strong>pre()</strong>
+以find()方法为例，在执行find()方法之前，执行pre()方法</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>var schema = new mongoose.Schema({ age:Number, name: String,x:Number,y:Number});  
+schema.pre('find',function(next){
+    console.log('我是pre方法1');
+    next();
+});
+schema.pre('find',function(next){
+    console.log('我是pre方法2');
+    next();
+});  
+var temp = mongoose.model('temp', schema);
+temp.find(function(err,docs){
+    console.log(docs[0]);
+})    
+/*
+我是pre方法1
+我是pre方法2
+{ _id: 5972ed35e6f98ec60e3dc886,name: 'huochai',age: 27,x: 1,y: 2 }
+*/
+</code></pre>
+</div>
+
+<h3 id="查询后处理">查询后处理</h3>
+
+<p>常用的查询后处理的方法如下所示</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>sort     排序
+skip     跳过
+limit    限制
+select   显示字段
+exect    执行
+count    计数
+distinct 去重
+</code></pre>
+</div>
+<p>例子</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>//按照age从小到大排列
+temp.find().sort("age").exec(function(err,docs){
+    console.log(docs);
+}); 
+</code></pre>
+</div>
+
+<h3 id="文档验证">文档验证</h3>
+
+<p>如果不进行文档验证，保存文档时，就可以不按照Schema设置的字段进行设置，分为以下几种情况</p>
+<ol>
+  <li>缺少字段的文档可以保存成功</li>
+  <li>包含未设置的字段的文档也可以保存成功，未设置的字段不被保存</li>
+  <li>包含字段类型与设置不同的字段的文档也可以保存成功，不同字段类型的字段被保存为设置的字段类型</li>
+</ol>
+
+<p>而通过文档验证，就可以避免以上几种情况发生 <br />
+文档验证在SchemaType中定义，格式如下</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w"> </span><span class="err">name:</span><span class="w"> </span><span class="err">{type:String,</span><span class="w"> </span><span class="err">validator:value</span><span class="p">}</span><span class="w"> </span><span class="err">}</span><span class="w">
+</span></code></pre>
+</div>
+<p>常用验证包括以下几种</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>required: 数据必须填写
+default: 默认值
+validate: 自定义匹配
+min: 最小值(只适用于数字)
+max: 最大值(只适用于数字)
+match: 正则匹配(只适用于字符串)
+enum:  枚举匹配(只适用于字符串)
+</code></pre>
+</div>
+
+<h2 id="参考">参考</h2>
+
+<p><a href="https://www.cnblogs.com/xiaohuochai/p/7215067.html?utm_source=itdadao&amp;utm_medium=referral">Mongoose基础入门</a> <br />
+<a href="http://www.cnblogs.com/zhongweiv/p/mongoose.html">Mongoose介绍和入门</a></p>
+
+</div>
+
+<div>
+	
+	<div class="eof"></div>
+	
+</div>
+
+<!--先不分享-->
+<!-- <div class="share">
+    <p>Share this post with: </p>
+	<a href="https://twitter.com/intent/tweet?text=mongoose基础@&amp;url=http://localhost:4000/mongodb/2017/10/20/mongoose.html" class="twitter-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/mongodb/2017/10/20/mongoose.html" class="facebook-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://plus.google.com/share?url=http://localhost:4000/mongodb/2017/10/20/mongoose.html" class="googleplus-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+</div>
+ -->
+
+<!-- <div id="disqus_thread"></div>
+
+
+ 
+</div>
+  -->
+
+
+<div id="container"></div>
+<link rel="stylesheet" href="http://localhost:4000/gitment/default.css">
+<script src="http://localhost:4000/gitment/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id:window.location.pathname,
+  owner: 'HouXingYi',
+  repo: 'HouXingYi.github.io',
+  oauth: {
+    client_id: 'd8225497d80663e0c270',
+    client_secret: '748c7dd30b4c86dd92fe7176d4a60e5d44ee405e',
+  },
+})
+gitment.render('container')
+</script>
+
+
+</article>
+
+  </div>
+
+</body>
+
+<foot>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <center>
+        
+		<p>
+		 <a class="link" href="/index.html">index</a> /
+		 <a class="link" href="/archive/">Archive</a> /
+		 <a class="link" href="/category/">Category</a> / 
+		 <a class="link" href="/tags/">Tags</a> / 
+		 <a class="link" href="/about/">About</a> 
+		<!--/-->
+		<!--<a class="link" href="/contact/">Contact</a>-->
+        </p>
+
+        <span><script>document.write(new Date().getFullYear());</script></span>
+        <span>&copy;</span>
+        
+		<a class="link" href="">HouXingYi</a>
+		<br>
+		<span>Theme &copy; <a class="link" href="https://twitter.com/itisbenjamin1" target="_blank"> Ben</a> | </span>
+				<iframe
+			style="margin-left: 2px; margin-bottom:-5px;"
+			frameborder="0" scrolling="0" width="91px" height="20px"
+			src="https://ghbtns.com/github-btn.html?user=itisbenjamin&repo=Nice_Blog&type=star&count=true" >
+		</iframe>
+		<br>
+		<span>一共被点击<span id="busuanzi_value_site_pv"><i class="fa fa-spinner fa-pulse"></i></span>次</span>
+		<span>一共访问人数<span id="busuanzi_value_site_uv"><i class="fa fa-spinner fa-pulse"></i></span>次</span>
+    </center>
+    
+  </div>
+
+</footer>
+
+    <foot>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Derictory -->
+
+<!-- Hit analytics -->
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- Directory -->
+
+<script src="/js/jquery-1.7.2.min.js"></script>
+<script src="/js/highlight.min.js"></script>
+<script src="/js/main.js"></script>
+
+</foot>
+
+
+</foot>
+
+</html>
