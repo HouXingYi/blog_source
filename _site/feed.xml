@@ -6,9 +6,128 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 24 Nov 2017 19:57:52 +0800</pubDate>
-    <lastBuildDate>Fri, 24 Nov 2017 19:57:52 +0800</lastBuildDate>
+    <pubDate>Sun, 26 Nov 2017 18:06:44 +0800</pubDate>
+    <lastBuildDate>Sun, 26 Nov 2017 18:06:44 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
+    
+      <item>
+        <title>用Vuex来做vue应用的状态管理</title>
+        <description>&lt;h2 id=&quot;什么是vuex&quot;&gt;什么是Vuex&lt;/h2&gt;
+
+&lt;p&gt;Vuex是一个专为Vue.js应用程序开发的状态管理模式。&lt;/p&gt;
+
+&lt;p&gt;当我们的Vue应用越来越大的时候，有一些公用部分的状态不好管理，比如多重组件嵌套等。这时候，我们就可以用Vuex来进行统一的应用状态管理。&lt;/p&gt;
+
+&lt;h2 id=&quot;核心概念&quot;&gt;核心概念&lt;/h2&gt;
+
+&lt;h3 id=&quot;state&quot;&gt;State&lt;/h3&gt;
+
+&lt;p&gt;State是唯一的数据源，单一状态树&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;this.$store.state.count&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;mutations&quot;&gt;Mutations&lt;/h3&gt;
+&lt;p&gt;更改Vuex的store中的状态的&lt;code class=&quot;highlighter-rouge&quot;&gt;唯一方法&lt;/code&gt;是提交mutation,Mutation 必须是同步函数。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mutations: {
+  increment (state, payload) {
+    state.count += payload.amount
+  }
+}
+store.commit('increment', {
+  amount: 10
+})
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;actions&quot;&gt;Actions&lt;/h3&gt;
+&lt;p&gt;Action 类似于 mutation，不同在于:Action提交的是mutation，而不是直接变更状态,Action可以包含任意异步操作&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;const store = new Vuex.Store({
+  state: {
+    count: 0
+  },
+  mutations: {
+    increment (state) {
+      state.count++
+    }
+  },
+  actions: {
+    increment (context) {
+      context.commit('increment')
+    }
+  }
+})
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;getters&quot;&gt;Getters&lt;/h3&gt;
+&lt;p&gt;通过Getters可以派生出一些新的状态（在state的基础上）&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;const store = new Vuex.Store({
+  state: {
+    todos: [
+      { id: 1, text: '...', done: true },
+      { id: 2, text: '...', done: false }
+    ]
+  },
+  getters: {
+    doneTodos: state =&amp;gt; {
+      return state.todos.filter(todo =&amp;gt; todo.done)
+    }
+  }
+})
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;modules&quot;&gt;Modules&lt;/h3&gt;
+&lt;p&gt;面对复杂的应用程序，当管理的状态比较多时，我们需要将Vuex的store对象分割成模块(modules)。&lt;/p&gt;
+
+&lt;h2 id=&quot;例子&quot;&gt;例子&lt;/h2&gt;
+
+&lt;p&gt;你可以通过 store.state 来获取状态对象，以及通过 store.commit 方法触发状态变更。&lt;/p&gt;
+
+&lt;p&gt;最主要的是store是全局的&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;const store = new Vuex.Store({
+  state: {
+    count: 0
+  },
+  mutations: {
+  	increment: state =&amp;gt; state.count++,
+    decrement: state =&amp;gt; state.count--
+  }
+})
+
+new Vue({
+  el: '#app',
+  computed: {
+    count () {
+	    return store.state.count
+    }
+  },
+  methods: {
+    increment () {
+      store.commit('increment')
+    },
+    decrement () {
+    	store.commit('decrement')
+    }
+  }
+})
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Sun, 29 Oct 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/vue/2017/10/29/vuex.html</link>
+        <guid isPermaLink="true">http://localhost:4000/vue/2017/10/29/vuex.html</guid>
+        
+        <category>vuex</category>
+        
+        
+        <category>vue</category>
+        
+      </item>
     
       <item>
         <title>mongoDB常用操作</title>
@@ -594,8 +713,8 @@ enum:  枚举匹配(只适用于字符串)
 &lt;a href=&quot;http://www.cnblogs.com/zhongweiv/p/mongoose.html&quot;&gt;Mongoose介绍和入门&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Fri, 20 Oct 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/mongodb/2017/10/20/mongoose.1.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mongodb/2017/10/20/mongoose.1.html</guid>
+        <link>http://localhost:4000/mongodb/2017/10/20/mongoose.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mongodb/2017/10/20/mongoose.html</guid>
         
         <category>mongoose</category>
         

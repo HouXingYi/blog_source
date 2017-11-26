@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/vue/2017/10/29/vuex.html">
+  <link rel="alternate" type="application/rss+xml" title="侯星伊的个人博客" href="http://localhost:4000/feed.xml">
+
+<!-- Google font -->
+
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
+
+<!-- font awesome -->
+
+<link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+
+  
+
+  
+
+  </head>
+
+  <body>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>用Vuex来做vue应用的状态管理</title>
+  <meta name="description" content="什么是Vuex">
+</head>
+
+
+  <div class="wrapper">
+          <header class="post-header">
+
+    <center><div class="post-title" itemprop="name headline">用Vuex来做vue应用的状态管理</div>
+
+		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="29 Oct 2017" itemprop="datePublished">Oct 29 2017</time>
+
+		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">HouXingYi</span>
+        
+		<br>
+		<!--<i class="fa fa-eye"></i> <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-pulse"></i></span>˚C</span>-->
+	</div>
+
+        
+        <div class="post-tags">
+        
+		<a class="post-tags-item" href="http://localhost:4000/tags/">vuex</a>
+        
+	</div>
+    </center>
+    
+</header>
+
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="post-content">
+    <center>
+	
+	<p></p>
+	
+    </center>
+	<h2>Directory</h2>
+</div>
+
+<div id="category"></div>
+
+<div class="post-content" itemprop="articleBody">
+    <h2 id="什么是vuex">什么是Vuex</h2>
+
+<p>Vuex是一个专为Vue.js应用程序开发的状态管理模式。</p>
+
+<p>当我们的Vue应用越来越大的时候，有一些公用部分的状态不好管理，比如多重组件嵌套等。这时候，我们就可以用Vuex来进行统一的应用状态管理。</p>
+
+<h2 id="核心概念">核心概念</h2>
+
+<h3 id="state">State</h3>
+
+<p>State是唯一的数据源，单一状态树</p>
+
+<p><code class="highlighter-rouge">this.$store.state.count</code></p>
+
+<h3 id="mutations">Mutations</h3>
+<p>更改Vuex的store中的状态的<code class="highlighter-rouge">唯一方法</code>是提交mutation,Mutation 必须是同步函数。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mutations: {
+  increment (state, payload) {
+    state.count += payload.amount
+  }
+}
+store.commit('increment', {
+  amount: 10
+})
+</code></pre>
+</div>
+
+<h3 id="actions">Actions</h3>
+<p>Action 类似于 mutation，不同在于:Action提交的是mutation，而不是直接变更状态,Action可以包含任意异步操作</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>const store = new Vuex.Store({
+  state: {
+    count: 0
+  },
+  mutations: {
+    increment (state) {
+      state.count++
+    }
+  },
+  actions: {
+    increment (context) {
+      context.commit('increment')
+    }
+  }
+})
+</code></pre>
+</div>
+
+<h3 id="getters">Getters</h3>
+<p>通过Getters可以派生出一些新的状态（在state的基础上）</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>const store = new Vuex.Store({
+  state: {
+    todos: [
+      { id: 1, text: '...', done: true },
+      { id: 2, text: '...', done: false }
+    ]
+  },
+  getters: {
+    doneTodos: state =&gt; {
+      return state.todos.filter(todo =&gt; todo.done)
+    }
+  }
+})
+</code></pre>
+</div>
+
+<h3 id="modules">Modules</h3>
+<p>面对复杂的应用程序，当管理的状态比较多时，我们需要将Vuex的store对象分割成模块(modules)。</p>
+
+<h2 id="例子">例子</h2>
+
+<p>你可以通过 store.state 来获取状态对象，以及通过 store.commit 方法触发状态变更。</p>
+
+<p>最主要的是store是全局的</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>const store = new Vuex.Store({
+  state: {
+    count: 0
+  },
+  mutations: {
+  	increment: state =&gt; state.count++,
+    decrement: state =&gt; state.count--
+  }
+})
+
+new Vue({
+  el: '#app',
+  computed: {
+    count () {
+	    return store.state.count
+    }
+  },
+  methods: {
+    increment () {
+      store.commit('increment')
+    },
+    decrement () {
+    	store.commit('decrement')
+    }
+  }
+})
+</code></pre>
+</div>
+
+</div>
+
+<div>
+	
+	<div class="eof"></div>
+	
+</div>
+
+<!--先不分享-->
+<!-- <div class="share">
+    <p>Share this post with: </p>
+	<a href="https://twitter.com/intent/tweet?text=用Vuex来做vue应用的状态管理@&amp;url=http://localhost:4000/vue/2017/10/29/vuex.html" class="twitter-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/vue/2017/10/29/vuex.html" class="facebook-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://plus.google.com/share?url=http://localhost:4000/vue/2017/10/29/vuex.html" class="googleplus-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+</div>
+ -->
+
+<!-- <div id="disqus_thread"></div>
+
+
+ 
+</div>
+  -->
+
+
+<div id="container"></div>
+<link rel="stylesheet" href="http://localhost:4000/gitment/default.css">
+<script src="http://localhost:4000/gitment/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id:window.location.pathname,
+  owner: 'HouXingYi',
+  repo: 'HouXingYi.github.io',
+  oauth: {
+    client_id: 'd8225497d80663e0c270',
+    client_secret: '748c7dd30b4c86dd92fe7176d4a60e5d44ee405e',
+  },
+})
+gitment.render('container')
+</script>
+
+
+</article>
+
+  </div>
+
+</body>
+
+<foot>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <center>
+        
+		<p>
+		 <a class="link" href="/index.html">index</a> /
+		 <a class="link" href="/archive/">Archive</a> /
+		 <a class="link" href="/category/">Category</a> / 
+		 <a class="link" href="/tags/">Tags</a> / 
+		 <a class="link" href="/about/">About</a> 
+		<!--/-->
+		<!--<a class="link" href="/contact/">Contact</a>-->
+        </p>
+
+        <span><script>document.write(new Date().getFullYear());</script></span>
+        <span>&copy;</span>
+        
+		<a class="link" href="">HouXingYi</a>
+		<br>
+		<span>Theme &copy; <a class="link" href="https://twitter.com/itisbenjamin1" target="_blank"> Ben</a> | </span>
+				<iframe
+			style="margin-left: 2px; margin-bottom:-5px;"
+			frameborder="0" scrolling="0" width="91px" height="20px"
+			src="https://ghbtns.com/github-btn.html?user=itisbenjamin&repo=Nice_Blog&type=star&count=true" >
+		</iframe>
+		<br>
+		<span>一共被点击<span id="busuanzi_value_site_pv"><i class="fa fa-spinner fa-pulse"></i></span>次</span>
+		<span>一共访问人数<span id="busuanzi_value_site_uv"><i class="fa fa-spinner fa-pulse"></i></span>次</span>
+    </center>
+    
+  </div>
+
+</footer>
+
+    <foot>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Derictory -->
+
+<!-- Hit analytics -->
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- Directory -->
+
+<script src="/js/jquery-1.7.2.min.js"></script>
+<script src="/js/highlight.min.js"></script>
+<script src="/js/main.js"></script>
+
+</foot>
+
+
+</foot>
+
+</html>
