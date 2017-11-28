@@ -6,8 +6,8 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 26 Nov 2017 18:06:44 +0800</pubDate>
-    <lastBuildDate>Sun, 26 Nov 2017 18:06:44 +0800</lastBuildDate>
+    <pubDate>Tue, 28 Nov 2017 20:29:30 +0800</pubDate>
+    <lastBuildDate>Tue, 28 Nov 2017 20:29:30 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
     
       <item>
@@ -20,13 +20,13 @@
 
 &lt;h2 id=&quot;核心概念&quot;&gt;核心概念&lt;/h2&gt;
 
-&lt;h3 id=&quot;state&quot;&gt;State&lt;/h3&gt;
+&lt;h3 id=&quot;state-读&quot;&gt;State (读)&lt;/h3&gt;
 
 &lt;p&gt;State是唯一的数据源，单一状态树&lt;/p&gt;
 
 &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;this.$store.state.count&lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;mutations&quot;&gt;Mutations&lt;/h3&gt;
+&lt;h3 id=&quot;mutations-写&quot;&gt;Mutations (写)&lt;/h3&gt;
 &lt;p&gt;更改Vuex的store中的状态的&lt;code class=&quot;highlighter-rouge&quot;&gt;唯一方法&lt;/code&gt;是提交mutation,Mutation 必须是同步函数。&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mutations: {
@@ -89,7 +89,9 @@ store.commit('increment', {
 
 &lt;p&gt;最主要的是store是全局的&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;const store = new Vuex.Store({
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Vue.use(Vuex);
+
+const store = new Vuex.Store({
   state: {
     count: 0
   },
