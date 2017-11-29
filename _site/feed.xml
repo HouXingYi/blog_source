@@ -6,9 +6,285 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 28 Nov 2017 20:29:30 +0800</pubDate>
-    <lastBuildDate>Tue, 28 Nov 2017 20:29:30 +0800</lastBuildDate>
+    <pubDate>Wed, 29 Nov 2017 15:42:48 +0800</pubDate>
+    <lastBuildDate>Wed, 29 Nov 2017 15:42:48 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
+    
+      <item>
+        <title>mongoose之Population</title>
+        <description>&lt;p&gt;在MongoDB中没有关系型数据库的join特性，所以在document进行相互关联的时候就比较麻烦。&lt;/p&gt;
+
+&lt;p&gt;在mongoose中有一个&lt;code class=&quot;highlighter-rouge&quot;&gt;population&lt;/code&gt;用于解决这类问题。在定义&lt;code class=&quot;highlighter-rouge&quot;&gt;Schema&lt;/code&gt;的时候，如果设置某个&lt;code class=&quot;highlighter-rouge&quot;&gt;field&lt;/code&gt;关联另一个&lt;code class=&quot;highlighter-rouge&quot;&gt;Schema&lt;/code&gt;，那么在获取&lt;code class=&quot;highlighter-rouge&quot;&gt;document&lt;/code&gt;的时候就可以使用&lt;code class=&quot;highlighter-rouge&quot;&gt;Population&lt;/code&gt;功能通过关联&lt;code class=&quot;highlighter-rouge&quot;&gt;Schema&lt;/code&gt;的&lt;code class=&quot;highlighter-rouge&quot;&gt;field&lt;/code&gt;找到关联的另一个&lt;code class=&quot;highlighter-rouge&quot;&gt;document&lt;/code&gt;，并且用被关联&lt;code class=&quot;highlighter-rouge&quot;&gt;document&lt;/code&gt;的内容替换掉原来关联&lt;code class=&quot;highlighter-rouge&quot;&gt;field&lt;/code&gt;的内容。&lt;/p&gt;
+
+&lt;h2 id=&quot;例子&quot;&gt;例子&lt;/h2&gt;
+
+&lt;p&gt;下面我拿官方的例子来说明&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+
+var personSchema = Schema({
+  _id: Schema.Types.ObjectId,
+  name: String,
+  age: Number,
+  stories: [{ type: Schema.Types.ObjectId, ref: 'Story' }]
+});
+
+var storySchema = Schema({
+  author: { type: Schema.Types.ObjectId, ref: 'Person' },
+  title: String,
+  fans: [{ type: Schema.Types.ObjectId, ref: 'Person' }]
+});
+
+var Story = mongoose.model('Story', storySchema);
+var Person = mongoose.model('Person', personSchema);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;首先先定义两个model，并且这两个model的schema相互引用。可以看到在person的stories字段（field ）中我们定义了数组，表示关联的数据解析为数组。其中ref选项告诉mongoose在使用populate的时候使用什么model，并且后续所有的传入的_id都要在这个model之中。&lt;/p&gt;
+
+&lt;h2 id=&quot;保存数据&quot;&gt;保存数据&lt;/h2&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var author = new Person({
+  _id: new mongoose.Types.ObjectId(),
+  name: 'Ian Fleming',
+  age: 50
+});
+
+author.save(function (err) {
+  if (err) return handleError(err);
+  
+  var story1 = new Story({
+    title: 'Casino Royale',
+    author: author._id    // assign the _id from the person
+  });
+  
+  story1.save(function (err) {
+    if (err) return handleError(err);
+    // thats it!
+  });
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;保存数据的时候并没有什么不同，只是记得要分配下_id，若是_ids,则把所有需要展现的document的_id做成一个数组传入。&lt;/p&gt;
+
+&lt;h2 id=&quot;解析出引用&quot;&gt;解析出引用&lt;/h2&gt;
+
+&lt;p&gt;上面做的一些操作并没有什么特别的，但接下来我们可以看到通过populate我们解析除了内嵌的关联document。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Story.
+  findOne({ title: 'Casino Royale' }).
+  populate('author').
+  exec(function (err, story) {
+    if (err) return handleError(err);
+    console.log('The author is %s', story.author.name);
+    // prints &quot;The author is Ian Fleming&quot;
+  });
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;下面我说下populate方法的常用用法&lt;/p&gt;
+
+&lt;h2 id=&quot;querypopulate&quot;&gt;Query#populate&lt;/h2&gt;
+
+&lt;p&gt;就是查询语句之后可以调用populate&lt;/p&gt;
+
+&lt;p&gt;语法&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;**`Query.populate(path, [select], [model], [match], [options])`**
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;参数&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;path&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;类型：&lt;code class=&quot;highlighter-rouge&quot;&gt;String&lt;/code&gt;或&lt;code class=&quot;highlighter-rouge&quot;&gt;Object&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;String类型的时， 指定要填充的关联字段，要填充多个关联字段可以以空格分隔。&lt;/p&gt;
+
+&lt;p&gt;Object类型的时，就是把 populate 的参数封装到一个对象里。当然也可以是个数组。下面的例子中将会实现。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;select&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;类型：&lt;code class=&quot;highlighter-rouge&quot;&gt;Object&lt;/code&gt;或&lt;code class=&quot;highlighter-rouge&quot;&gt;String&lt;/code&gt;，可选，指定填充 document 中的哪些字段。&lt;/p&gt;
+
+&lt;p&gt;Object类型的时，格式如:{name: 1, _id: 0},为0表示不填充，为1时表示填充。
+　　
+String类型的时，格式如:”name -_id”，用空格分隔字段，在字段名前加上-表示不填充。详细语法介绍 query-select&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;model&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;类型：Model，可选，指定关联字段的 model，如果没有指定就会使用Schema的ref。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;match&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;类型：Object，可选，指定附加的查询条件。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;options&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;类型：Object，可选，指定附加的其他查询选项，如排序以及条数限制等等。&lt;/p&gt;
+
+&lt;p&gt;例子&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//填充所有 users 的 posts
+User.find()
+    .populate('posts', 'title', null, {sort: { title: -1 }})
+    .exec(function(err, docs) {
+        console.log(docs[0].posts[0].title); // post-by-aikin
+    });
+
+//填充 user 'luajin'的 posts
+User.findOne({name: 'luajin'})
+    .populate({path: 'posts', select: { title: 1 }, options: {sort: { title: -1 }}})
+    .exec(function(err, doc) {
+        console.log(doc.posts[0].title);  // post-by-luajin
+    });
+
+//这里的 populate 方法传入的参数形式不同，其实实现的功能是一样的，只是表示形式不一样。
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;modelpopulate&quot;&gt;Model#populate&lt;/h2&gt;
+
+&lt;p&gt;model直接调用populate&lt;/p&gt;
+
+&lt;p&gt;语法&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;**`Model.populate(docs, options, [cb(err,doc)])`**
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;参数&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;docs&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;类型：Document或Array。单个需要被填充的 doucment 或者 document 的数组。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;options&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;类型：Object。以键值对的形式表示。&lt;/p&gt;
+
+&lt;p&gt;keys：path select match model options，这些键对应值的类型和功能，与上述Query#populate方法的参数相同。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;[cb(err,doc)]&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;类型：Function，回调函数，接收两个参数，错误err和填充完的doc(s)。&lt;/p&gt;
+
+&lt;p&gt;例子&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Post.find({title: 'post-by-aikin'})
+    .populate('poster comments')
+    .exec(function(err, docs) {
+
+        var opts = [{
+            path   : 'comments.commenter',
+            select : 'name',
+            model  : 'User'
+        }];
+
+        Post.populate(docs, opts, function(err, populatedDocs) {
+            console.log(populatedDocs[0].poster.name);                  // aikin
+            console.log(populatedDocs[0].comments[0].commenter.name);  // luna
+        });
+    });
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;documentpopulate&quot;&gt;Document#populate&lt;/h2&gt;
+
+&lt;p&gt;document直接调用populate&lt;/p&gt;
+
+&lt;p&gt;语法&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;**`Document.populate([path], [callback])`**
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;参数&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;path&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;类型：String或Object。与上述Query#populate`方法的 path 参数相同。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;callback&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;类型：Function。回调函数，接收两个参数，错误err和填充完的doc(s)。&lt;/p&gt;
+
+&lt;p&gt;例子&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;User.findOne({name: 'aikin'})
+    .exec(function(err, doc) {
+
+        var opts = [{
+            path   : 'posts',
+            select : 'title'
+        }];
+
+        doc.populate(opts, function(err, populatedDoc) {
+            console.log(populatedDoc.posts[0].title);  // post-by-aikin
+        });
+    });
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;跨越等级的populate&quot;&gt;跨越等级的Populate&lt;/h2&gt;
+
+&lt;p&gt;populate可以进行多重引用&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var userSchema = new Schema({
+  name: String,
+  friends: [{ type: ObjectId, ref: 'User' }]
+});
+
+User.
+  findOne({ name: 'Val' }).
+  populate({
+    path: 'friends',
+    // Get friends of friends - populate the 'friends' array for every friend
+    populate: { path: 'friends' }
+  });
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://mongoosejs.com/docs/populate.html&quot;&gt;官方starter&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://segmentfault.com/a/1190000002727265&quot;&gt;Mongoose 之 Population 使用&lt;/a&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 30 Oct 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/mongodb/2017/10/30/populate.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mongodb/2017/10/30/populate.html</guid>
+        
+        <category>mongoose</category>
+        
+        <category>populate</category>
+        
+        
+        <category>mongoDB</category>
+        
+      </item>
     
       <item>
         <title>用Vuex来做vue应用的状态管理</title>
