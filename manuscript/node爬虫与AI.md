@@ -14,6 +14,8 @@ node学习 AI
 https://juejin.im/post/5a09949e51882509e5432da7?utm_source=gold_browser_extension
 一只node爬虫的升级打怪之路
 
+https://juejin.im/entry/5a1f61846fb9a04509094656?utm_source=gold_browser_extension
+给女票写的一个简书爬虫
 
 
 
