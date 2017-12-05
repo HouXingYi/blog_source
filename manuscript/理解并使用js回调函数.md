@@ -1,4 +1,7 @@
 
+原地址
+http://www.zcfy.cc/original/understand-javascript-callback-functions-and-use-them-javascript-is-sexy-4642.html
+
 # 理解并使用js回调函数|性感的js
 
 在 JavaScript 中，函数是第一类对象；这意味着，函数是Object类型并且可以像其他对象一样（比如String，Array，Number）以第一类的方式使用，因为他们都是对象。他们可以“被储存进变量中，作为参数传入一个函数，在函数中被创建，并在函数中被返回”。
@@ -228,6 +231,45 @@ $.ajax({
 ```
 
 ## "回调地狱"问题和解决方案
+
+进行任何顺序的异步代码执行的时候，经常会出现很多层的回调函数，在某种程度下，会像以下的代码这样。以下的这些凌乱的代码我们称之为回调地狱，因为太多层回调以至于难以理解代码。我从node-mongodb-native中找到下面的代码。以下的代码只是用于展示：
+
+```
+var p_client = new Db('integration_tests_20', new Server("127.0.0.1", 27017, {}), {'pk':CustomPKFactory});
+p_client.open(function(err, p_client) {
+    p_client.dropDatabase(function(err, done) {
+        p_client.createCollection('test_custom_key', function(err, collection) {
+            collection.insert({'a':1}, function(err, docs) {
+                collection.find({'_id':new ObjectID("aaaaaaaaaaaa")}, function(err, cursor) {
+                    cursor.toArray(function(err, items) {
+                        test.assertEquals(1, items.length);
+
+                        // Let's close the db
+                        p_client.close();
+                    });
+                });
+            });
+        });
+    });
+});
+```
+
+你可能不会经常在代码里遇到这样的问题，但你总会不时的遇见，这时候你有以下两种解决方案。
+
+1. 相比于在函数的参数中定义一个匿名函数，你可以显示的声明函数并命名，然后用传递函数名的方法代替回调。
+2. 模块化：把你的代码模块化，你可以导出一部分代码做特定的事情。然后你在你更大的应用中导入这个模块。
+
+## Make Your Own Callback Functions （ 创建你自己的回调函数 ）
+
+现在你已经完全掌握了JavaScript回调函数的方方面面了，并且你已知道使用回调函数非常简单而强大，所以现在你现在应该着眼于你自己的代码中使用回调函数的机会，因为它会让你：
+
+1. 不重复代码
+2. 更多通用的代码，实现更好的抽象
+3. 更好的可维护性
+4. 更好的可读性
+5. 更多专业的函数
+
+
 
 
 
