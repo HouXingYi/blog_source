@@ -6,9 +6,231 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 30 Nov 2017 11:14:39 +0800</pubDate>
-    <lastBuildDate>Thu, 30 Nov 2017 11:14:39 +0800</lastBuildDate>
+    <pubDate>Thu, 07 Dec 2017 11:27:19 +0800</pubDate>
+    <lastBuildDate>Thu, 07 Dec 2017 11:27:19 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
+    
+      <item>
+        <title>《深入理解ES6》之块级作用域与字符串</title>
+        <description>&lt;h2 id=&quot;块级作用域绑定&quot;&gt;块级作用域绑定&lt;/h2&gt;
+
+&lt;h3 id=&quot;使用var声明&quot;&gt;使用var声明&lt;/h3&gt;
+
+&lt;p&gt;原来我们在js中声明变量是使用var关键字。&lt;/p&gt;
+
+&lt;p&gt;我们都知道，使用var声明变量，会有变量提升，比如下面的代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;console.log(value); //undefined
+var value = 0;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;通知台会打印undefined，实际JavaScript引擎将代码理解成下面这样：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var value;
+console.log(value); //undefined
+value = 0;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;所有的变量的声明都会被提升至函数的顶部。&lt;/p&gt;
+
+&lt;p&gt;另一个使用var声明的特点是，var声明的变量作用域是函数作用域。&lt;/p&gt;
+
+&lt;h3 id=&quot;块级声明&quot;&gt;块级声明&lt;/h3&gt;
+
+&lt;p&gt;ES6引入了块级声明，具体有let声明和const声明。&lt;/p&gt;
+
+&lt;p&gt;let声明的用法与var相同，区别有如下：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;不会变量提升&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;用let声明变量，在变量声明之前是不可以使用的，若使用则会报错。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;console.log(value); //ReferenceError: value is not defined
+let value = 0;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;块级作用域&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;用let声明的变量，作用的范围在{}之中，执行流离开{}变量就会销毁。&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;禁止重声明&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;var重复声明则后面的会覆盖前面的，let重复声明则会报错。&lt;/p&gt;
+
+&lt;p&gt;const声明的行为类似于let，但const定义的为常量，不可在使用过程中修改。&lt;/p&gt;
+
+&lt;p&gt;但是，有一点要注意，js中的常量如果是对象，则对象的值可以修改。这一点与其他语言中的常量有所不同。&lt;/p&gt;
+
+&lt;h2 id=&quot;循环中的块作用域&quot;&gt;循环中的块作用域&lt;/h2&gt;
+
+&lt;p&gt;js编程中的一个经典问题如下：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var funcs = [];
+
+for(var i = 0; i &amp;lt; 10; i++){
+    funcs.push(function(){
+        console.log(i);
+    });
+}
+
+funcs.forEach(function(func){
+    func(); //输出10次数字10
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;这个问题的原因是js并不像我们想象的那样运行，我们希望每次的i都是独立的i，每次打印当前循环阶段的i。&lt;/p&gt;
+
+&lt;p&gt;而实际情况是，所有的i都是共享的，而在循环结束的时候，i的值为10。传入的回调函数作为闭包可以访问i的值，但当调用的时候，i已经变成10了。所以每次调用打印的都是10。&lt;/p&gt;
+
+&lt;p&gt;通常解决这个问题我们都是采用立即调用函数表达式（IIFE）。如下：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var funcs = [];
+
+for(var i = 0; i &amp;lt; 10; i++){
+    funcs.push((function(value){
+        return function(){
+            console.log(value);
+        }
+    }(i)));
+}
+
+funcs.forEach(function(func){
+    func(); //输出0，然后是1、2直到9
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;既丑陋又难以理解。&lt;/p&gt;
+
+&lt;p&gt;而使用let在循环中声明变量就简单多了：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var funcs = [];
+
+for(let i = 0; i &amp;lt; 10; i++){
+    funcs.push(function(){
+        console.log(i);
+    });
+}
+
+funcs.forEach(function(func){
+    func(); //输出0，然后是1、2直到9
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;这种结果符合我们理解的期望。每次循环的时候let声明都会创建一个新变量i，并将其初始化为i的当前值。&lt;/p&gt;
+
+&lt;p&gt;需要注意的是，let声明在循环中的这种行为是专门定义的，与let的不提升特性无关。&lt;/p&gt;
+
+&lt;p&gt;而const声明可以在for-in和for-of中使用，但是若在for循环中，出现i++等修改常量的行为则会报错。&lt;/p&gt;
+
+&lt;h2 id=&quot;字符串&quot;&gt;字符串&lt;/h2&gt;
+
+&lt;h3 id=&quot;模板字面量&quot;&gt;模板字面量&lt;/h3&gt;
+
+&lt;p&gt;模板字面量是ES6中一个重要的新增特性，主要有下面这些能力：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;多行字符串&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;模板字面量可以轻易的创建多行字符串：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let message = `Multiline
+string`;
+
+console.log(message);            //&quot;Multiline
+                                 // string&quot;
+console.log(message.length);     //16
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;字符串占位符&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;在一个模板字面量中，你可以把任何合法的JavaScript表达式嵌入到占位符中并将其作为字符串的一部分输出到结果中。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let name = &quot;Nicholas&quot;,
+    message = `Hello, ${name}.`;
+
+console.log(message);        //&quot;Hello,Nicholas.&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;还可以嵌入如运算式、函数调用等JavaScript表达式&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let count = 10,
+    price = 0.25,
+    message = `${count} items cost $${(count * price).toFixed(2)}.`;
+
+console.log(message);                //&quot;10 items cost $2.50.&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;还可以在一个模板字面量里面嵌入另外一个模板字面量&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let name = &quot;Nicholas&quot;,
+    message = `Hello, ${
+        `my name is ${ name }`
+    }.`;
+
+console.log(message);        //&quot;Hello,my name is Nicholas.&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;标签模板&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;模板标签可以执行模板字面量上的转换并返回最终的字符串值。等于可以自定义字符串组合的方式。标签指的是在模板字面量第一个反撇号(`)前方标注的字符串。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function passthru(literals,...substitutions){
+    let result = &quot;&quot;;
+
+    //根据substitution的数量来确定循环的执行次数
+    for(let i = 0; i &amp;lt; substitutions.length; i++){
+
+        result += literals[i];
+        result += substitutions[i];
+
+    }
+
+    //合并最后一个literal
+    result += literals[literals.length - 1];
+
+    return result;
+
+}
+
+let count = 10,
+    price = 0.25,
+    message = passthru`${count} items cost $${(count * price).toFixed(2)}.`
+
+console.log(message);        //&quot;10 items cost $2.50.&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+</description>
+        <pubDate>Sun, 05 Nov 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/js/2017/11/05/ES6-1.html</link>
+        <guid isPermaLink="true">http://localhost:4000/js/2017/11/05/ES6-1.html</guid>
+        
+        <category>ES6</category>
+        
+        
+        <category>js</category>
+        
+      </item>
     
       <item>
         <title>js异步编程解决方案</title>
@@ -2013,157 +2235,6 @@ doSomethingAsync().
         
         
         <category>JS</category>
-        
-      </item>
-    
-      <item>
-        <title>理解JS的this关键字</title>
-        <description>&lt;h2 id=&quot;this是什么&quot;&gt;this是什么&lt;/h2&gt;
-
-&lt;p&gt;this是JavaScript中一个关键字，this提供了一种优雅的方式来隐式传递一个对象引用，因此可以把API设计得更加简洁并且易于复用。&lt;br /&gt;
-但是，在平常使用中经常会对this产生一些误解，比较常见的会认为this“指向自身”或者“指向函数的作用域”&lt;/p&gt;
-
-&lt;h3 id=&quot;指向自身&quot;&gt;指向自身&lt;/h3&gt;
-&lt;p&gt;对于这个误解可以看下以下代码&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function foo(){
-    this.a = 1;
-}
-foo.a = 0;
-foo();
-console.log(foo.a);//0
-console.log(this.a);//1
-console.log(window.a);//1
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;通过以上代码可以看到，this并不指向foo而是指向了window，可见this指向自身并不成立&lt;/p&gt;
-&lt;h3 id=&quot;指向函数的作用域&quot;&gt;指向函数的作用域&lt;/h3&gt;
-&lt;p&gt;这也是个常见的误解,请看一下代码&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function foo(){
-    var a = 1;
-    bar();
-}
-function bar(){
-    console.log( this.a );
-}
-foo();//undefined
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;这段代码，希望利用this向上查找到a，代替作用域的效果，但并没有成功。&lt;/p&gt;
-&lt;h3 id=&quot;this究竟是什么&quot;&gt;this究竟是什么&lt;/h3&gt;
-&lt;p&gt;通过以上一些例子，我们可以看到，this的指向飘忽不定,在不同的场景下，this会化身不同的对象。如果不了解this的机制就很难猜到this的指向。&lt;br /&gt;
-那么this究竟是什么？&lt;br /&gt;
-&lt;strong&gt;&lt;em&gt;先上结论：实际上，this是在运行的时候进行绑定的，并不是在编写时绑定，它指向什么完全取决于函数在哪里被调用。&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;this绑定规则&quot;&gt;this绑定规则&lt;/h2&gt;
-&lt;p&gt;要确定this的值，首先要看函数的调用位置。找到调用位置后，需要判断应用下面四条规则的哪一条&lt;/p&gt;
-&lt;h3 id=&quot;默认绑定&quot;&gt;默认绑定&lt;/h3&gt;
-&lt;p&gt;这条规则是无法应用其他规则时的默认规则,请看以下代码&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function foo(){
-    console.log( this.a );
-}
-var a = 2;
-foo();//2
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;在这里，foo()是直接进行调用，因此只能使用默认绑定，this指向全局对象。&lt;/p&gt;
-&lt;h3 id=&quot;隐式绑定&quot;&gt;隐式绑定&lt;/h3&gt;
-&lt;p&gt;这种情况是函数是被某个上下文对象调用的，比如下面的代码&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var o = {
-    a:3,
-    foo:function(){
-        console.log(this.a);
-    }
-}
-o.foo();
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;h4 id=&quot;隐式丢失&quot;&gt;隐式丢失&lt;/h4&gt;
-&lt;p&gt;隐式绑定一个常见的问题是被隐式绑定的函数会丢失绑定对象，比较常见的情况如下&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function foo(){
-    console.log(this.a);
-}
-function doFoo(fn){
-    fn();
-}
-var obj = {
-    a : 2,
-    foo : foo
-}
-var a = &quot;global&quot;;
-doFoo(obj.foo);//global
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;这里没有如预想的应用隐式绑定，而是应用了默认绑定，将this绑定到全局对象上了，这种情况在应用隐式绑定的时候经常遇到。&lt;/p&gt;
-&lt;h3 id=&quot;显式绑定&quot;&gt;显式绑定&lt;/h3&gt;
-&lt;p&gt;显式绑定通过call()或apply()方法，用于显式的指定this的绑定对象&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function foo(){
-    console.log(this.a);
-}
-var obj = {
-    a : 2
-}
-foo.call(obj);// 2
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;h4 id=&quot;硬绑定&quot;&gt;硬绑定&lt;/h4&gt;
-&lt;p&gt;但是，显式绑定并没有解决我们之前提出的丢失绑定问题，但是显式绑定的一个变种可以解决这个问题&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function foo(something){
-    console.log( this.a,something );
-    return this.a + something;
-}
-function bind(fn,obj){
-    return function(){
-        return fn.apply(obj,arguments);
-    }
-}
-function doFoo(fn,arg){
-    fn(arg);
-}
-var obj = {
-    a:2
-};
-var bar = bind(foo,obj);
-doFoo(bar,3);// 2 3 
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;这里，我们创建了一个bind函数用于绑定函数与上下文对象，这种模式称为&lt;em&gt;硬绑定&lt;/em&gt;。&lt;br /&gt;
-ES5中提供了内置的bind方法&lt;/p&gt;
-&lt;h3 id=&quot;new绑定&quot;&gt;new绑定&lt;/h3&gt;
-&lt;p&gt;在JS中，对函数使用new操作符的时候，我们称此函数为构造函数，或者更准确的说，对这个函数进行了“构造调用”。&lt;br /&gt;
-使用new来调用函数，会自动执行下面的操作。&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;创建一个全新的对象&lt;/li&gt;
-  &lt;li&gt;这个新对象会被执行[[Prototype]]连接(新对象的_proto_指向函数的原型)&lt;/li&gt;
-  &lt;li&gt;这个新对象会绑定到函数调用的this&lt;/li&gt;
-  &lt;li&gt;如果函数没有返回，自动返回这个新对象&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;new是最后一种可以影响函数调用时this绑定行为的方法，我们称之为new绑定&lt;/p&gt;
-
-&lt;h3 id=&quot;优先级&quot;&gt;优先级&lt;/h3&gt;
-
-&lt;p&gt;现在我们已经了解了函数调用中this绑定的四条规则，你需要做的就是找到函数的调用位置并判断应当应用哪条规则。如果某个调用位置可以应用多条，我们按照优先级应用这四条规则。&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;函数是否在new中调用(new绑定)？如果是的话this绑定的是新创建的对象。&lt;/li&gt;
-  &lt;li&gt;函数是否通过call、apply(显式绑定)或者硬绑定调用？如果是的话，this绑定的是指定的对象。&lt;/li&gt;
-  &lt;li&gt;函数是否在某个上下文对象中调用(隐式绑定)？如果是的话，this绑定的是那个上下文对象。&lt;/li&gt;
-  &lt;li&gt;如果都不是的话，使用默认绑定。如果在严格模式下，就绑定到undefined，否则绑定到全局对象。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&quot;结束&quot;&gt;结束&lt;/h2&gt;
-&lt;p&gt;一般情况下通过以上四种规则就可以理解大部分的this的使用情况。当然除了这些一般的情况下也有一些例外，比如ES6的箭头函数中的this会继承外层函数调用的this绑定。碰到这些例外情况就具体情况具体分析了。&lt;/p&gt;
-
-</description>
-        <pubDate>Sat, 10 Jun 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/%E5%89%8D%E7%AB%AF/2017/06/10/know_everything_about_this.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E5%89%8D%E7%AB%AF/2017/06/10/know_everything_about_this.html</guid>
-        
-        <category>this</category>
-        
-        <category>js</category>
-        
-        
-        <category>前端</category>
         
       </item>
     

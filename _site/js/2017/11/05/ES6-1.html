@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/js/2017/11/05/ES6-1.html">
+  <link rel="alternate" type="application/rss+xml" title="侯星伊的个人博客" href="http://localhost:4000/feed.xml">
+
+<!-- Google font -->
+
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
+
+<!-- font awesome -->
+
+<link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+
+  
+
+  
+
+  </head>
+
+  <body>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>《深入理解ES6》之块级作用域与字符串</title>
+  <meta name="description" content="块级作用域绑定">
+</head>
+
+
+  <div class="wrapper">
+          <header class="post-header">
+
+    <center><div class="post-title" itemprop="name headline">《深入理解ES6》之块级作用域与字符串</div>
+
+		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="05 Nov 2017" itemprop="datePublished">Nov 5 2017</time>
+
+		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">HouXingYi</span>
+        
+		<br>
+		<!--<i class="fa fa-eye"></i> <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-pulse"></i></span>˚C</span>-->
+	</div>
+
+        
+        <div class="post-tags">
+        
+		<a class="post-tags-item" href="http://localhost:4000/tags/">ES6</a>
+        
+	</div>
+    </center>
+    
+</header>
+
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="post-content">
+    <center>
+	
+	<p></p>
+	
+    </center>
+	<h2>Directory</h2>
+</div>
+
+<div id="category"></div>
+
+<div class="post-content" itemprop="articleBody">
+    <h2 id="块级作用域绑定">块级作用域绑定</h2>
+
+<h3 id="使用var声明">使用var声明</h3>
+
+<p>原来我们在js中声明变量是使用var关键字。</p>
+
+<p>我们都知道，使用var声明变量，会有变量提升，比如下面的代码：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>console.log(value); //undefined
+var value = 0;
+</code></pre>
+</div>
+<p>通知台会打印undefined，实际JavaScript引擎将代码理解成下面这样：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>var value;
+console.log(value); //undefined
+value = 0;
+</code></pre>
+</div>
+
+<p>所有的变量的声明都会被提升至函数的顶部。</p>
+
+<p>另一个使用var声明的特点是，var声明的变量作用域是函数作用域。</p>
+
+<h3 id="块级声明">块级声明</h3>
+
+<p>ES6引入了块级声明，具体有let声明和const声明。</p>
+
+<p>let声明的用法与var相同，区别有如下：</p>
+
+<ol>
+  <li>不会变量提升</li>
+</ol>
+
+<p>用let声明变量，在变量声明之前是不可以使用的，若使用则会报错。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>console.log(value); //ReferenceError: value is not defined
+let value = 0;
+</code></pre>
+</div>
+
+<ol>
+  <li>块级作用域</li>
+</ol>
+
+<p>用let声明的变量，作用的范围在{}之中，执行流离开{}变量就会销毁。</p>
+
+<ol>
+  <li>禁止重声明</li>
+</ol>
+
+<p>var重复声明则后面的会覆盖前面的，let重复声明则会报错。</p>
+
+<p>const声明的行为类似于let，但const定义的为常量，不可在使用过程中修改。</p>
+
+<p>但是，有一点要注意，js中的常量如果是对象，则对象的值可以修改。这一点与其他语言中的常量有所不同。</p>
+
+<h2 id="循环中的块作用域">循环中的块作用域</h2>
+
+<p>js编程中的一个经典问题如下：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>var funcs = [];
+
+for(var i = 0; i &lt; 10; i++){
+    funcs.push(function(){
+        console.log(i);
+    });
+}
+
+funcs.forEach(function(func){
+    func(); //输出10次数字10
+});
+</code></pre>
+</div>
+
+<p>这个问题的原因是js并不像我们想象的那样运行，我们希望每次的i都是独立的i，每次打印当前循环阶段的i。</p>
+
+<p>而实际情况是，所有的i都是共享的，而在循环结束的时候，i的值为10。传入的回调函数作为闭包可以访问i的值，但当调用的时候，i已经变成10了。所以每次调用打印的都是10。</p>
+
+<p>通常解决这个问题我们都是采用立即调用函数表达式（IIFE）。如下：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>var funcs = [];
+
+for(var i = 0; i &lt; 10; i++){
+    funcs.push((function(value){
+        return function(){
+            console.log(value);
+        }
+    }(i)));
+}
+
+funcs.forEach(function(func){
+    func(); //输出0，然后是1、2直到9
+});
+</code></pre>
+</div>
+
+<p>既丑陋又难以理解。</p>
+
+<p>而使用let在循环中声明变量就简单多了：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>var funcs = [];
+
+for(let i = 0; i &lt; 10; i++){
+    funcs.push(function(){
+        console.log(i);
+    });
+}
+
+funcs.forEach(function(func){
+    func(); //输出0，然后是1、2直到9
+});
+</code></pre>
+</div>
+
+<p>这种结果符合我们理解的期望。每次循环的时候let声明都会创建一个新变量i，并将其初始化为i的当前值。</p>
+
+<p>需要注意的是，let声明在循环中的这种行为是专门定义的，与let的不提升特性无关。</p>
+
+<p>而const声明可以在for-in和for-of中使用，但是若在for循环中，出现i++等修改常量的行为则会报错。</p>
+
+<h2 id="字符串">字符串</h2>
+
+<h3 id="模板字面量">模板字面量</h3>
+
+<p>模板字面量是ES6中一个重要的新增特性，主要有下面这些能力：</p>
+
+<ol>
+  <li>多行字符串</li>
+</ol>
+
+<p>模板字面量可以轻易的创建多行字符串：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>let message = `Multiline
+string`;
+
+console.log(message);            //"Multiline
+                                 // string"
+console.log(message.length);     //16
+</code></pre>
+</div>
+
+<ol>
+  <li>字符串占位符</li>
+</ol>
+
+<p>在一个模板字面量中，你可以把任何合法的JavaScript表达式嵌入到占位符中并将其作为字符串的一部分输出到结果中。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>let name = "Nicholas",
+    message = `Hello, ${name}.`;
+
+console.log(message);        //"Hello,Nicholas."
+</code></pre>
+</div>
+
+<p>还可以嵌入如运算式、函数调用等JavaScript表达式</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>let count = 10,
+    price = 0.25,
+    message = `${count} items cost $${(count * price).toFixed(2)}.`;
+
+console.log(message);                //"10 items cost $2.50."
+</code></pre>
+</div>
+
+<p>还可以在一个模板字面量里面嵌入另外一个模板字面量</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>let name = "Nicholas",
+    message = `Hello, ${
+        `my name is ${ name }`
+    }.`;
+
+console.log(message);        //"Hello,my name is Nicholas."
+</code></pre>
+</div>
+
+<ol>
+  <li>标签模板</li>
+</ol>
+
+<p>模板标签可以执行模板字面量上的转换并返回最终的字符串值。等于可以自定义字符串组合的方式。标签指的是在模板字面量第一个反撇号(`)前方标注的字符串。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>function passthru(literals,...substitutions){
+    let result = "";
+
+    //根据substitution的数量来确定循环的执行次数
+    for(let i = 0; i &lt; substitutions.length; i++){
+
+        result += literals[i];
+        result += substitutions[i];
+
+    }
+
+    //合并最后一个literal
+    result += literals[literals.length - 1];
+
+    return result;
+
+}
+
+let count = 10,
+    price = 0.25,
+    message = passthru`${count} items cost $${(count * price).toFixed(2)}.`
+
+console.log(message);        //"10 items cost $2.50."
+</code></pre>
+</div>
+
+
+</div>
+
+<div>
+	
+	<div class="eof"></div>
+	
+</div>
+
+<!--先不分享-->
+<!-- <div class="share">
+    <p>Share this post with: </p>
+	<a href="https://twitter.com/intent/tweet?text=《深入理解ES6》之块级作用域与字符串@&amp;url=http://localhost:4000/js/2017/11/05/ES6-1.html" class="twitter-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/js/2017/11/05/ES6-1.html" class="facebook-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://plus.google.com/share?url=http://localhost:4000/js/2017/11/05/ES6-1.html" class="googleplus-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+</div>
+ -->
+
+<!-- <div id="disqus_thread"></div>
+
+
+ 
+</div>
+  -->
+
+
+<div id="container"></div>
+<link rel="stylesheet" href="http://localhost:4000/gitment/default.css">
+<script src="http://localhost:4000/gitment/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id:window.location.pathname,
+  owner: 'HouXingYi',
+  repo: 'HouXingYi.github.io',
+  oauth: {
+    client_id: 'd8225497d80663e0c270',
+    client_secret: '748c7dd30b4c86dd92fe7176d4a60e5d44ee405e',
+  },
+})
+gitment.render('container')
+</script>
+
+
+</article>
+
+  </div>
+
+</body>
+
+<foot>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <center>
+        
+		<p>
+		 <a class="link" href="/index.html">index</a> /
+		 <a class="link" href="/archive/">Archive</a> /
+		 <a class="link" href="/category/">Category</a> / 
+		 <a class="link" href="/tags/">Tags</a> / 
+		 <a class="link" href="/about/">About</a> 
+		<!--/-->
+		<!--<a class="link" href="/contact/">Contact</a>-->
+        </p>
+
+        <span><script>document.write(new Date().getFullYear());</script></span>
+        <span>&copy;</span>
+        
+		<a class="link" href="">HouXingYi</a>
+		<br>
+		<span>Theme &copy; <a class="link" href="https://twitter.com/itisbenjamin1" target="_blank"> Ben</a> | </span>
+				<iframe
+			style="margin-left: 2px; margin-bottom:-5px;"
+			frameborder="0" scrolling="0" width="91px" height="20px"
+			src="https://ghbtns.com/github-btn.html?user=itisbenjamin&repo=Nice_Blog&type=star&count=true" >
+		</iframe>
+		<br>
+		<span>一共被点击<span id="busuanzi_value_site_pv"><i class="fa fa-spinner fa-pulse"></i></span>次</span>
+		<span>一共访问人数<span id="busuanzi_value_site_uv"><i class="fa fa-spinner fa-pulse"></i></span>次</span>
+    </center>
+    
+  </div>
+
+</footer>
+
+    <foot>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Derictory -->
+
+<!-- Hit analytics -->
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- Directory -->
+
+<script src="/js/jquery-1.7.2.min.js"></script>
+<script src="/js/highlight.min.js"></script>
+<script src="/js/main.js"></script>
+
+</foot>
+
+
+</foot>
+
+</html>
