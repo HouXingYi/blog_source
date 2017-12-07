@@ -4,11 +4,11 @@ http://www.zcfy.cc/original/understand-javascript-callback-functions-and-use-the
 
 # 理解并使用js回调函数|性感的js
 
-在 JavaScript 中，函数是第一类对象；这意味着，函数是Object类型并且可以像其他对象一样（比如String，Array，Number）以第一类的方式使用，因为他们都是对象。他们可以“被储存进变量中，作为参数传入一个函数，在函数中被创建，并在函数中被返回”。
+在 JavaScript 中，函数是第一类对象；这意味着，函数是Object类型并且可以像其他对象一样（比如String，Array，Number）以第一类的方式使用，因为他们本身都是对象。他们可以“被储存进变量中，作为参数传入一个函数，在函数中被创建，并在函数中被返回”。
 
 因为函数是第一类对象，我们可以把函数作为参数传入另外一个函数并且之后可以执行传入的函数或者甚至把函数返回出来以供后面执行。这就是在 JavaScript 中使用回调函数的本质。在余下的文章中我们会学到 JavaScript 回调函数的方方面面。回调函数大概是在 JavaScript 中使用最为广泛的函数式编程技术了，你大概可以在任何JavaScript代码或者jQuery代码中看到它，然而它对许多JavaScript开发者来说还是保持神秘。当你读完这篇文章的时候，它将不再神秘了。
 
-回调函数是由一个叫做函数式编程的编程范式而来的。最基础来说，函数式编程具体规定了把函数作为参数来使用。函数式编程曾经是-当然现在也是，不过程度有所减少-被认为是一种编程大师的特殊技巧。
+**回调函数**是由一个叫做**函数式编程**的编程范式而来的。最基础来说，函数式编程具体规定了把函数作为参数来使用。函数式编程曾经是-当然现在也是，不过程度有所减少-被认为是一种编程大师的特殊技巧。
 
 幸运的是，函数式编程这门技术已经被解释清楚，以至于像你我这样的普通人也可以轻而易举的理解和使用了。函数式编程中一个主要的技巧正好就是回调函数。很快你就会读到，实现一个回调函数就像传入一个普通变量作为参数那样简单。这个技巧如此简单以至于我总是惊奇它经常被放在高级JavaScript主题下。
 
@@ -19,8 +19,7 @@ http://www.zcfy.cc/original/understand-javascript-callback-functions-and-use-the
 思考下面这个在jQuery中回调函数的常见用法：
 
 ```
-//Note that the item in the click method's parameter is a function, not a variable.
-//The item is a callback function
+//注意传入click方法的参数是一个函数，不是一个变量。
 $("#btn_1").click(function() {
   alert("Btn 1 Clicked");
 });
@@ -40,7 +39,7 @@ console.log(index + 1 + ". " + eachName); // 1\. Mike, 2\. Stacy, 3\. Andy, 4\. 
 
 和上面一样，注意我们把一个匿名函数作为参数给 forEach 方法的这种方式。
 
-到此为止我们已经把匿名函数做为参数传给了另一个函数或方法。接下来在我们看更多具体的例子之前，让我们先来理解回调是如何工作的并开始做我们自己的回调函数。
+到此为止我们已经把匿名函数做为参数传给了另一个函数或方法。接下来在我们看更多具体的例子之前，让我们先来理解回调是如何工作的并开始创建我们自己的回调函数。
 
 ## 回调函数是怎么工作的
 
@@ -50,30 +49,29 @@ console.log(index + 1 + ". " + eachName); // 1\. Mike, 2\. Stacy, 3\. Andy, 4\. 
 
 注意回调函数不是立即就执行。它是在包含的函数体中指定的地方“回头调用”。所以，即使第一个jQuery例子张的像这样：
 ```
-//The anonymous function is not being executed there in the parameter. 
-//The item is a callback function
+//在参数中匿名函数并没有执行
 $("#btn_1").click(function() {
   alert("Btn 1 Clicked");
 });
 ```
 那个匿名函数将会过一会在函数体中调用。即使没有命名，它也可以通过arguments对象在函数体中获得。
 
-### 回调函数是闭包
+**回调函数是闭包**
 
 当我们把一个回调函数作为参数传入另一个函数，回调在包含函数体中某一个位置被调用，就好像回调是在包含函数体中被定义一样。这意味着回调是一个闭包。读我的另一个博文[Understand JavaScript Closures With Ease](http://javascriptissexy.com/understand-javascript-closures-with-ease/)，了解更多关于闭包的事情。众所周知，闭包可以获得包含函数的作用域，这样闭包就可以访问包含函数的内部的变量,甚至也能访问全局的变量。
 
-## 当实现回调函数的基本原则
+## 实现回调函数的基本原则
 
-在不复杂的情况下，回调有一些值得注意的原则在我们实现的时候需要熟悉的
+在不复杂的情况下，回调有一些值得注意的原则在我们实现的时候需要熟悉的。
 
-### 使用命名过的或匿名函数作为回调
+**使用命名过的或匿名函数作为回调**
 
 在先前的jQuery和forEach例子，我们使用定义在包含函数的参数中的匿名函数。这是一种经常使用模式之一。另一个流行的模式是声明一个命名函数然后将这个函数的名字作为参数。考虑以下：
 ```
-// global variable
+// 全局变量
 var allUserData = [];
 
-// generic logStuff function that prints to console
+// 打印用logStuff函数 
 function logStuff (userData) {
     if ( typeof userData === "string")
     {
@@ -89,34 +87,34 @@ function logStuff (userData) {
 
 }
 
-// A function that takes two parameters, the last one a callback function
+// 一个有两个参数的函数，最后一个参数是回调函数
 function getInput (options, callback) {
     allUserData.push (options);
     callback (options);
 
 }
 
-// When we call the getInput function, we pass logStuff as a parameter.
-// So logStuff will be the function that will called back (or executed) inside the getInput function
+// 当我们调用getInput函数的时候，我们传入logStuff作为参数
+// 所以logStuff函数将会在getInput函数内部回头调用（或者说执行）
 getInput ({name:"Rich", speciality:"JavaScript"}, logStuff);
 //  name: Rich
 // speciality: JavaScript
 ```
-### 传参给回调函数
+**传参给回调函数**
 
 因为回调函数在执行的时候就是一个正常的函数，那我们自然可以传参给它。我们可以传入任意的包含函数的内容（或者全局内容）作为参数传给回调函数。在之前的例子中，我们传options作为参数给回调函数。下面来传下全局变量和本地变量：
 ```
-//Global variable
+//全局变量
 var generalLastName = "Clinton";
 
 function getInput (options, callback) {
     allUserData.push (options);
-// Pass the global variable generalLastName to the callback function
+// 把全局变量generalLastName传给回调函数
     callback (generalLastName, options);
 }
 ```
 
-### 在执行回调的时候确保它是个函数
+**在执行回调的时候确保它是个函数**
 
 在调用传入的回调函数参数之前检查是否确实是一个函数总是明智的。同样，让这个回调函数可选，也是一个好的实践。
 
@@ -126,9 +124,9 @@ function getInput (options, callback) {
 function getInput(options, callback) {
     allUserData.push(options);
 
-    // Make sure the callback is a function
+    // 确认回调是一个函数
     if (typeof callback === "function") {
-    // Call it, since we have confirmed it is callable
+    // 已确认是一个函数，就可以放心的调用了
         callback(options);
     }
 }
@@ -136,27 +134,26 @@ function getInput(options, callback) {
 
 如果getInput函数在没有回调函数作为参数或用非函数代替函数传入的情况下调用的话，没有这些适当的检查，我们的代码将会报一个运行时错误。
 
-### 当使用带有this对象的方法作为回调的问题
+**当使用带有this对象的方法作为回调的问题**
 
 当回调是一个使用this对象的方法时，我们要改变下调用回调函数的方式来保持this对象上下文。否则当回调传给一个全局函数的时候，this对象将会指向全局window对象。或者它会指向包含这个方法的对象。
 
 ```
-// Define an object with some properties and a method
-// We will later pass the method as a callback function to another function
+// 定义一个有着一些属性和方法的对象
+// 过一会会把方法作为回调函数传给另一个函数
 var clientData = {
     id: 094545,
     fullName: "Not Set",
-    // setUserName is a method on the clientData object
+    // setUserName是一个在clientData对象上的方法
     setUserName: function (firstName, lastName)  {
-        // this refers to the fullName property in this object
       this.fullName = firstName + " " + lastName;
     }
 }
 
 function getUserInput(firstName, lastName, callback)  {
-    // Do other stuff to validate firstName/lastName here
+    // 在这里可以验证下firstName/lastName
 
-    // Now save the names
+    // 在这里保存名字
     callback (firstName, lastName);
 }
 ```
@@ -168,39 +165,38 @@ getUserInput ("Barack", "Obama", clientData.setUserName);
 
 console.log (clientData.fullName);// Not Set
 
-// The fullName property was initialized on the window object
+// fullName属性在window对象上被初始化了
 console.log (window.fullName); // Barack Obama
 ```
 
-### 使用Call或者Apply函数来保持this
+**使用Call或者Apply函数来保持this**
 
-我们可以通过使用Call或者Apply函数解决之前的问题 (我们将会在之后的一篇博客里讨论着两个方法)。暂时，你只需要知道在JavaScript中，每一个函数都有两个方法：Call和Apply。这两个方法用于设置函数中的this对象并且传入参数。
+我们可以通过使用_Call_或者_Apply_函数解决之前的问题 (我们将会在之后的一篇博客里讨论着两个方法)。暂时，你只需要知道在JavaScript中，每一个函数都有两个方法：Call和Apply。这两个方法用于设置函数中的_this_对象并且传入参数。
 
-Call把第一个参数的值用于函数内的this对象，然后剩下的参数独立地传给函数（通过逗号分隔）。Apply函数也是把第一个参数的值用于函数内的this对象，然而最后一个参数是一个传给对象的数组（或者arguments对象）。
+**Call**把第一个参数的值用于函数内的_this_对象，然后剩下的参数独立地传给函数（通过逗号分隔）。**Apply**函数也是把第一个参数的值用于函数内的_this_对象，然而最后一个参数是一个传给对象的数组（或者_arguments_对象）。
 
 这听起来很复杂，但是让我们来看看使用Apply或Call是多么简单。想要解决先前例子中的问题，我们将会使用Apply函数：
 ```
-//Note that we have added an extra parameter for the callback object, called "callbackObj"
+//注意这里我们为回调对象多加了个参数，叫做callbackObj
 function getUserInput(firstName, lastName, callback, callbackObj)  {
-    // Do other stuff to validate name here
 
-    // The use of the Apply function below will set the this object to be callbackObj
+    // 用apply函数把this指向callbackObj
     callback.apply (callbackObj, [firstName, lastName]);
 }
 ```
 
 随着Apply函数正确地设置this对象，我们现在也在clientData对象上可以正确地执行回调并且正确地设置fullName属性了：
 ```
-// We pass the clientData.setUserName method and the clientData object as parameters. The clientData object will be used by the Apply function to set the this object
- getUserInput ("Barack", "Obama", clientData.setUserName, clientData);
+// 我们传入clientData.setUserName方法和clientData对象作为参数。clientData对象将用apply函数设置this对象
+getUserInput ("Barack", "Obama", clientData.setUserName, clientData);
 
-// the fullName property on the clientData was correctly set
+// clientData上的fullName属性被正确地设置。
 console.log (clientData.fullName); // Barack Obama
 ```
 
 我们也可以使用Call函数，但是在这个例子中我们使用Apply函数。
 
-### 允许多个回调函数
+**允许多个回调函数**
 
 我们可以传入不止一个回调函数作为函数的参数，就像我们可以传入不止一个参数。下面是一个典型jQuery AJAX函数：
 
@@ -232,7 +228,7 @@ $.ajax({
 
 ## "回调地狱"问题和解决方案
 
-进行任何顺序的异步代码执行的时候，经常会出现很多层的回调函数，在某种程度下，会像以下的代码这样。以下的这些凌乱的代码我们称之为回调地狱，因为太多层回调以至于难以理解代码。我从node-mongodb-native中找到下面的代码。以下的代码只是用于展示：
+进行任何顺序的异步代码执行的时候，经常会出现很多层的回调函数，在某种程度下，会像以下的代码这样。以下的这些凌乱的代码我们称之为回调地狱，因为太多层回调以至于难以理解代码。我从node-mongodb-native中找到下面的代码。**以下的代码只是用于展示**：
 
 ```
 var p_client = new Db('integration_tests_20', new Server("127.0.0.1", 27017, {}), {'pk':CustomPKFactory});
@@ -259,7 +255,7 @@ p_client.open(function(err, p_client) {
 1. 相比于在函数的参数中定义一个匿名函数，你可以显示的声明函数并命名，然后用传递函数名的方法代替回调。
 2. 模块化：把你的代码模块化，你可以导出一部分代码做特定的事情。然后你在你更大的应用中导入这个模块。
 
-## Make Your Own Callback Functions （ 创建你自己的回调函数 ）
+## 创建你自己的回调函数 
 
 现在你已经完全掌握了JavaScript回调函数的方方面面了，并且你已知道使用回调函数非常简单而强大，所以现在你现在应该着眼于你自己的代码中使用回调函数的机会，因为它会让你：
 
@@ -276,7 +272,8 @@ p_client.open(function(err, p_client) {
 简单来说，getUserInput函数是通用的：它可以执行各种功能的回调：
 
 ```
-// First, setup the generic poem creator function; it will be the callback function in the getUserInput function below.
+
+// 首先，创建通用诗歌创作函数；它将会是下面的getUserInput函数的回调函数
 function genericPoemMaker(name, gender) {
     console.log(name + " is finer than fine wine.");
     console.log("Altruistic and noble for the modern time.");
@@ -284,13 +281,14 @@ function genericPoemMaker(name, gender) {
     console.log("A " + gender + " of unfortunate tragedies who still manages a perpetual smile");
 }
 
-//The callback, which is the last item in the parameter, will be our genericPoemMaker function we defined above.
+
+//最后一个参数就是回调函数，它将会是我们上面定义的genericPoemMaker
 function getUserInput(firstName, lastName, gender, callback) {
     var fullName = firstName + " " + lastName;
 
-    // Make sure the callback is a function
+    // 确认回调是函数
     if (typeof callback === "function") {
-    // Execute the callback function and pass the parameters to it
+    // 执行回调函数并传入参数
     callback(fullName, gender);
     }
 }
@@ -316,10 +314,10 @@ function greetUser(customerName, sex)  {
   console.log("Hello, " + salutation + " " + customerName);
 }
 
-// Pass the greetUser function as a callback to getUserInput
+// 将greetUser函数作为回调传入getUserInput
 getUserInput("Bill", "Gates", "Man", greetUser);
 
-// And this is the output
+// 下面是输出
 Hello, Mr. Bill Gates
 ```
 
@@ -343,7 +341,7 @@ JavaScript回调函数好用而又强大，它为你的web应用和代码带来�
 1. http://c2.com/cgi/wiki?FirstClass
 2. https://github.com/mongodb/node-mongodb-native
 3. http://callbackhell.com/
-4. JavaScript Patterns by Stoyan Stefanov (Sep 28, 2010)
+4. [JavaScript Patterns](https://www.amazon.com/gp/product/0596806752/ref=as_li_tf_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0596806752&linkCode=as2&tag=interhaptic-20) by Stoyan Stefanov (Sep 28, 2010)
 
 
 
