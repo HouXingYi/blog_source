@@ -6,9 +6,140 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 08 Dec 2017 10:30:30 +0800</pubDate>
-    <lastBuildDate>Fri, 08 Dec 2017 10:30:30 +0800</lastBuildDate>
+    <pubDate>Fri, 08 Dec 2017 20:55:00 +0800</pubDate>
+    <lastBuildDate>Fri, 08 Dec 2017 20:55:00 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
+    
+      <item>
+        <title>《深入理解ES6》笔记之函数</title>
+        <description>&lt;h2 id=&quot;函数形参的默认值&quot;&gt;函数形参的默认值&lt;/h2&gt;
+
+&lt;p&gt;在ES6中可以为函数形参指定默认值，如下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function makeRequest(url, timeout = 2000,callback = function() {}) {
+
+    //函数的其余部分
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;还可以使用非原始值传参,如下面这样：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let value = 5;
+
+function() {
+    return value++;
+}
+
+function add(first,second = getValue()){
+    return first+second;
+}
+
+console.log(add(1,1));     //2
+console.log(add(1));       //6
+console.log(add(1));       //7
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;getValue在声明的时候不会调用，只有在调用add且不传入第二个参数时才会调用。&lt;/p&gt;
+
+&lt;h2 id=&quot;不定参数&quot;&gt;不定参数&lt;/h2&gt;
+
+&lt;p&gt;在函数的命名参数前添加三个点(…)就表明这是一个不定参数，该参数为一个数组，包含着自它之后传入的所有参数，通过这个数组名即可逐一访问里面的参数。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function checkArgs(normalPara,...args){
+    console.log(normalPara);
+    console.log(args.length);
+    console.log(arguments.length);
+    console.log(args[0],arguments[1]);
+    console.log(args[1],arguments[2]);
+}
+
+checkArgs(&quot;a&quot;,&quot;b&quot;,&quot;c&quot;);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;调用checkArgs()，输出以下内容&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;a
+2
+3
+b b
+c c
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;箭头函数&quot;&gt;箭头函数&lt;/h2&gt;
+
+&lt;p&gt;箭头函数是一种使用箭头（=&amp;gt;）定义函数的新语法，但是它与传统的JavaScript函数有些许不同，主要集中在以下方面：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;没有this、super、arguments和new.target绑定&lt;/li&gt;
+  &lt;li&gt;不能通过new关键字调用&lt;/li&gt;
+  &lt;li&gt;没有原型&lt;/li&gt;
+  &lt;li&gt;不可以改变this的绑定&lt;/li&gt;
+  &lt;li&gt;不支持arguments对象&lt;/li&gt;
+  &lt;li&gt;不支持重复的命名参数&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;箭头函数语法&quot;&gt;箭头函数语法&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;语法&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;箭头函数语法多变，但无论再怎么变化，主要由三部分组成，参数、箭头、函数体。&lt;/p&gt;
+
+&lt;p&gt;比如单参数，简单返回&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;value =&amp;gt; value
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;空函数&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;() =&amp;gt; {}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;多参数，多返回&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;（num1，num2）=&amp;gt; num1 + num2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;类传统形式&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;（num1，num2）= {
+    //do something
+
+    return num1 + num2;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;没有this绑定&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;js中函数内的this经常在调用的过程中发生改变，以前我们只能用蹩脚的bind或者call之类的来解决。现在，我们可以直接使用箭头函数。&lt;/p&gt;
+
+&lt;p&gt;箭头函数中的this值取决于改函数外部非箭头函数的this值，且不能通过call()、apply()和bind()方法来改变this的值。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var handler = {
+  id: '123456',
+
+  init: function() {
+    document.addEventListener('click',
+      event =&amp;gt; this.doSomething(event.type), false);
+  },
+
+  doSomething: function(type) {
+    console.log('Handling ' + type  + ' for ' + this.id);
+  }
+};
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;上面的例子中使用了箭头函数，于是导致this.dosomething这一行的this总是指向handler对象，这种行为为我们带来了许多方便。&lt;/p&gt;
+
+&lt;p&gt;箭头函数缺少正常函数所拥有的prototype属性，它的设计初衷是“即用即弃”。在日常开发中很适合用于回调函数。&lt;/p&gt;
+
+</description>
+        <pubDate>Thu, 09 Nov 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/js/2017/11/09/ES6-2.html</link>
+        <guid isPermaLink="true">http://localhost:4000/js/2017/11/09/ES6-2.html</guid>
+        
+        <category>function</category>
+        
+        
+        <category>js</category>
+        
+      </item>
     
       <item>
         <title>理解并使用js回调函数|性感的js</title>
@@ -2251,182 +2382,6 @@ Router.navigate('/about');
         
         
         <category>js</category>
-        
-      </item>
-    
-      <item>
-        <title>入门正则表达式</title>
-        <description>&lt;h2 id=&quot;资料&quot;&gt;资料&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://deerchao.net/tutorials/regex/regex.htm&quot;&gt;正则表达式30分钟入门教程&lt;/a&gt;
-&lt;a href=&quot;https://juejin.im/post/582455e467f3560058c6641e&quot;&gt;《JavaScript 闯关记》之正则表达式&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;正则表达式是什么&quot;&gt;正则表达式是什么&lt;/h2&gt;
-
-&lt;p&gt;在编写处理字符串的程序或网页时，经常会有查找符合某些复杂规则的字符串的需要。正则表达式就是用于描述这些规则的工具。换句话说，正则表达式就是记录文本规则的代码。&lt;/p&gt;
-
-&lt;h2 id=&quot;为什么要用正则表达式&quot;&gt;为什么要用正则表达式&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;密码、账号等验证。&lt;/li&gt;
-  &lt;li&gt;看源码需要，写框架，后端编程，路由都离不开正则&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;元字符&quot;&gt;元字符&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.runoob.com/regexp/regexp-metachar.html&quot;&gt;常用的正则表达式元字符&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;例子加深理解&quot;&gt;例子加深理解&lt;/h2&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;例子一 &lt;br /&gt;
-    &lt;ul&gt;
-      &lt;li&gt;正则表达式:&lt;code class=&quot;highlighter-rouge&quot;&gt;\bhi\b.*\bLucy\b&lt;/code&gt;&lt;/li&gt;
-      &lt;li&gt;含义:先是一个单词hi,然后是任意个任意字符(但不能是换行)，最后是Lucy这个单词&lt;/li&gt;
-      &lt;li&gt;知识点:&lt;/li&gt;
-    &lt;/ul&gt;
-    &lt;ol&gt;
-      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\b&lt;/code&gt;:代表着&lt;em&gt;单词的开头或结尾，也就是单词的分界处&lt;/em&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;.&lt;/code&gt;:匹配&lt;em&gt;除了换行符以外的任意字符&lt;/em&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;*&lt;/code&gt;:它指定&lt;em&gt;前边的内容可以连续重复使用任意次以使整个表达式得到匹配&lt;/em&gt;&lt;/li&gt;
-    &lt;/ol&gt;
-  &lt;/li&gt;
-  &lt;li&gt;例子二
-    &lt;ul&gt;
-      &lt;li&gt;正则表达式:&lt;code class=&quot;highlighter-rouge&quot;&gt;0\d\d-\d\d\d\d\d\d\d\d&lt;/code&gt; 或 &lt;code class=&quot;highlighter-rouge&quot;&gt;0\d{2}-\d{8}&lt;/code&gt;&lt;/li&gt;
-      &lt;li&gt;含义:以0开头，然后是两个数字，然后是一个连字号“-”，最后是8个数字&lt;/li&gt;
-      &lt;li&gt;知识点:&lt;/li&gt;
-    &lt;/ul&gt;
-    &lt;ol&gt;
-      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\d&lt;/code&gt;:匹配&lt;em&gt;一位数字&lt;/em&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;:匹配&lt;em&gt;必须连续重复匹配2次&lt;/em&gt;&lt;/li&gt;
-    &lt;/ol&gt;
-  &lt;/li&gt;
-  &lt;li&gt;例子三
-    &lt;ul&gt;
-      &lt;li&gt;正则表达式:&lt;code class=&quot;highlighter-rouge&quot;&gt;\ba\w*\b&lt;/code&gt;&lt;/li&gt;
-      &lt;li&gt;含义:a开头的单词——先是某个单词开始处(\b)，然后是字母a,然后是任意数量的字母或数字(\w*)，最后是单词结束处(\b)&lt;/li&gt;
-      &lt;li&gt;知识点:&lt;/li&gt;
-    &lt;/ul&gt;
-    &lt;ol&gt;
-      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\w&lt;/code&gt;:匹配&lt;em&gt;字母或数字或下划线或汉字等&lt;/em&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\s&lt;/code&gt;:匹配&lt;em&gt;任意的空白符，包括空格，制表符(Tab)，换行符，中文全角空格等&lt;/em&gt;（虽然这里没有）&lt;/li&gt;
-    &lt;/ol&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&quot;还有一些元字符&quot;&gt;还有一些元字符&lt;/h2&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;^&lt;/code&gt;:匹配&lt;em&gt;匹配字符串的开始&lt;/em&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;$&lt;/code&gt;:匹配&lt;em&gt;匹配字符串的结束&lt;/em&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;n,m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;:重复的次数不能少于n次，不能多于m次&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;\&lt;/code&gt;:标记为一个元字符、或一个原义字符、或一个 向后引用、或一个八进制转义符&lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;重复：&lt;/p&gt;
-
-    &lt;table&gt;
-      &lt;thead&gt;
-        &lt;tr&gt;
-          &lt;th&gt;代码/语法&lt;/th&gt;
-          &lt;th&gt;说明&lt;/th&gt;
-        &lt;/tr&gt;
-      &lt;/thead&gt;
-      &lt;tbody&gt;
-        &lt;tr&gt;
-          &lt;td&gt;*&lt;/td&gt;
-          &lt;td&gt;重复零次或更多次&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;+&lt;/td&gt;
-          &lt;td&gt;重复一次或更多次&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;?&lt;/td&gt;
-          &lt;td&gt;重复零次或一次&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;{n}&lt;/td&gt;
-          &lt;td&gt;重复n次&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;{n,}&lt;/td&gt;
-          &lt;td&gt;重复n次或更多次&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;{n,m}&lt;/td&gt;
-          &lt;td&gt;重复n到m次&lt;/td&gt;
-        &lt;/tr&gt;
-      &lt;/tbody&gt;
-    &lt;/table&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;字符类&lt;/p&gt;
-
-    &lt;p&gt;匹配没有预定义元字符的字符集合 : 只需要在方括号里列出它们就行了 &lt;br /&gt;
- 如：&lt;code class=&quot;highlighter-rouge&quot;&gt;[aeiou]&lt;/code&gt;就匹配任何一个英文元音字母&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&quot;一些稍微高级的话题&quot;&gt;一些稍微高级的话题&lt;/h2&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;分枝条件：&lt;code class=&quot;highlighter-rouge&quot;&gt;|&lt;/code&gt;类似于编程中的&lt;em&gt;或&lt;/em&gt;，指的是有几种规则，如果满足其中任意一种规则都应该当成匹配&lt;/li&gt;
-  &lt;li&gt;分组：用小括号来指定&lt;em&gt;子表达式&lt;/em&gt;&lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;反义：&lt;/p&gt;
-
-    &lt;table&gt;
-      &lt;thead&gt;
-        &lt;tr&gt;
-          &lt;th&gt;代码/语法&lt;/th&gt;
-          &lt;th&gt;说明&lt;/th&gt;
-        &lt;/tr&gt;
-      &lt;/thead&gt;
-      &lt;tbody&gt;
-        &lt;tr&gt;
-          &lt;td&gt;\W&lt;/td&gt;
-          &lt;td&gt;匹配任意不是字母，数字，下划线，汉字的字符&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;\S&lt;/td&gt;
-          &lt;td&gt;匹配任意不是空白符的字符&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;\D&lt;/td&gt;
-          &lt;td&gt;匹配任意非数字的字符&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;\B&lt;/td&gt;
-          &lt;td&gt;匹配不是单词开头或结束的位置&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;[^x]&lt;/td&gt;
-          &lt;td&gt;匹配除了x以外的任意字符&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;[^aeiou]&lt;/td&gt;
-          &lt;td&gt;匹配除了aeiou这几个字母以外的任意字符&lt;/td&gt;
-        &lt;/tr&gt;
-      &lt;/tbody&gt;
-    &lt;/table&gt;
-  &lt;/li&gt;
-  &lt;li&gt;后向引用：使用小括号指定一个子表达式后，匹配这个子表达式的文本(也就是此分组捕获的内容)可以在表达式或其它程序中作进一步的处理。默认情况下，每个分组会自动拥有一个组号。&lt;br /&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;后向引用&lt;/code&gt;用于重复搜索前面某个分组匹配的文本。例如，&lt;code class=&quot;highlighter-rouge&quot;&gt;\1&lt;/code&gt;代表分组1匹配的文本。&lt;/li&gt;
-  &lt;li&gt;零宽断言：查找在某些内容(但并不包括这些内容)之前或之后的东西。&lt;br /&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;(?=exp)&lt;/code&gt;也叫&lt;code class=&quot;highlighter-rouge&quot;&gt;零宽度正预测先行断言&lt;/code&gt;，它断言自身出现的位置的后面能匹配表达式exp。比如&lt;code class=&quot;highlighter-rouge&quot;&gt;\b\w+(?=ing\b)&lt;/code&gt;，匹配以ing结尾的单词的前面部分(除了ing以外的部分)，如查找I’m singing while you’re dancing.时，它会匹配&lt;code class=&quot;highlighter-rouge&quot;&gt;sing&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;danc&lt;/code&gt;。&lt;/li&gt;
-  &lt;li&gt;负向零宽断言：确保某个字符没有出现，但并不想去匹配它&lt;/li&gt;
-  &lt;li&gt;贪婪与懒惰：当正则表达式中包含能接受重复的限定符时，通常的行为是（在使整个表达式能得到匹配的前提下）&lt;code class=&quot;highlighter-rouge&quot;&gt;匹配尽可能多的字符&lt;/code&gt;。有时，我们更需要懒惰匹配，也就是匹配尽可能少的字符。前面给出的限定符都可以被转化为懒惰匹配模式，只要在它后面加上一个问号&lt;code class=&quot;highlighter-rouge&quot;&gt;?&lt;/code&gt;。&lt;/li&gt;
-  &lt;li&gt;平衡组/递归匹配&lt;/li&gt;
-&lt;/ol&gt;
-
-</description>
-        <pubDate>Thu, 10 Aug 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/%E5%9F%BA%E7%A1%80/2017/08/10/regex.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E5%9F%BA%E7%A1%80/2017/08/10/regex.html</guid>
-        
-        <category>regex</category>
-        
-        
-        <category>基础</category>
         
       </item>
     
