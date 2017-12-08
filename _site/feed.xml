@@ -6,9 +6,374 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 07 Dec 2017 11:27:19 +0800</pubDate>
-    <lastBuildDate>Thu, 07 Dec 2017 11:27:19 +0800</lastBuildDate>
+    <pubDate>Fri, 08 Dec 2017 10:30:30 +0800</pubDate>
+    <lastBuildDate>Fri, 08 Dec 2017 10:30:30 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
+    
+      <item>
+        <title>理解并使用js回调函数|性感的js</title>
+        <description>&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;原文:http://javascriptissexy.com/understand-javascript-callback-functions-and-use-them
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;在 JavaScript 中，函数是第一类对象；这意味着，函数是Object类型并且可以像其他对象一样（比如String，Array，Number）以第一类的方式使用，因为他们本身都是对象。他们可以“被储存进变量中，作为参数传入一个函数，在函数中被创建，并在函数中被返回”。&lt;/p&gt;
+
+&lt;p&gt;因为函数是第一类对象，我们可以把函数作为参数传入另外一个函数并且之后可以执行传入的函数或者甚至把函数返回出来以供后面执行。这就是在 JavaScript 中使用回调函数的本质。在余下的文章中我们会学到 JavaScript 回调函数的方方面面。回调函数大概是在 JavaScript 中使用最为广泛的函数式编程技术了，你大概可以在任何JavaScript代码或者jQuery代码中看到它，然而它对许多JavaScript开发者来说还是保持神秘。当你读完这篇文章的时候，它将不再神秘了。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;回调函数&lt;/strong&gt;是由一个叫做&lt;strong&gt;函数式编程&lt;/strong&gt;的编程范式而来的。最基础来说，函数式编程具体规定了把函数作为参数来使用。函数式编程曾经是-当然现在也是，不过程度有所减少-被认为是一种编程大师的特殊技巧。&lt;/p&gt;
+
+&lt;p&gt;幸运的是，函数式编程这门技术已经被解释清楚，以至于像你我这样的普通人也可以轻而易举的理解和使用了。函数式编程中一个主要的技巧正好就是回调函数。很快你就会读到，实现一个回调函数就像传入一个普通变量作为参数那样简单。这个技巧如此简单以至于我总是惊奇它经常被放在高级JavaScript主题下。&lt;/p&gt;
+
+&lt;h2 id=&quot;什么是回调或者高阶函数&quot;&gt;什么是回调或者高阶函数&lt;/h2&gt;
+
+&lt;p&gt;回调函数，也被称作高阶函数，就是把一个函数作为参数传入“另一个函数”，然后回调函数在“另一个函数”中调用。回调函数本质上是一种模式（对一种问题的确定解决方案），因此使用回调函数我们也称之为回调模式。&lt;/p&gt;
+
+&lt;p&gt;思考下面这个在jQuery中回调函数的常见用法：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//注意传入click方法的参数是一个函数，不是一个变量。
+$(&quot;#btn_1&quot;).click(function() {
+  alert(&quot;Btn 1 Clicked&quot;);
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;在以上的例子中可以看到，我们把函数当做一个参数传给一个click方法。click方法则会调用我们传的那个回调函数。这个例子展示了一种典型的回调函数的使用，这是种在jQuery中广泛使用的方式。&lt;/p&gt;
+
+&lt;p&gt;思考下面另一个典型的回调函数的例子：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var friends = [&quot;Mike&quot;, &quot;Stacy&quot;, &quot;Andy&quot;, &quot;Rick&quot;];
+
+friends.forEach(function (eachName, index){
+console.log(index + 1 + &quot;. &quot; + eachName); // 1\. Mike, 2\. Stacy, 3\. Andy, 4\. Rick
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;和上面一样，注意我们把一个匿名函数作为参数给 forEach 方法的这种方式。&lt;/p&gt;
+
+&lt;p&gt;到此为止我们已经把匿名函数做为参数传给了另一个函数或方法。接下来在我们看更多具体的例子之前，让我们先来理解回调是如何工作的并开始创建我们自己的回调函数。&lt;/p&gt;
+
+&lt;h2 id=&quot;回调函数是怎么工作的&quot;&gt;回调函数是怎么工作的&lt;/h2&gt;
+
+&lt;p&gt;我们可以把函数像变量一样在函数中传递和返回，并在另一个函数中使用。当我们把函数作为参数传递给另一个函数，我们只是传递了函数的定义。我们没有在参数中调用函数。换句话来说，我们没有像执行函数一样带着一对括号那样传递函数。&lt;/p&gt;
+
+&lt;p&gt;并且因为包含函数有着作为函数定义的回调函数作为参数，它就可以在任何时候调用。&lt;/p&gt;
+
+&lt;p&gt;注意回调函数不是立即就执行。它是在包含的函数体中指定的地方“回头调用”。所以，即使第一个jQuery例子张的像这样：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//在参数中匿名函数并没有执行
+$(&quot;#btn_1&quot;).click(function() {
+  alert(&quot;Btn 1 Clicked&quot;);
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;那个匿名函数将会过一会在函数体中调用。即使没有命名，它也可以通过arguments对象在函数体中获得。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;回调函数是闭包&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;当我们把一个回调函数作为参数传入另一个函数，回调在包含函数体中某一个位置被调用，就好像回调是在包含函数体中被定义一样。这意味着回调是一个闭包。读我的另一个博文&lt;a href=&quot;http://javascriptissexy.com/understand-javascript-closures-with-ease/&quot;&gt;Understand JavaScript Closures With Ease&lt;/a&gt;，了解更多关于闭包的事情。众所周知，闭包可以获得包含函数的作用域，这样闭包就可以访问包含函数的内部的变量,甚至也能访问全局的变量。&lt;/p&gt;
+
+&lt;h2 id=&quot;实现回调函数的基本原则&quot;&gt;实现回调函数的基本原则&lt;/h2&gt;
+
+&lt;p&gt;在不复杂的情况下，回调有一些值得注意的原则在我们实现的时候需要熟悉的。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;使用命名过的或匿名函数作为回调&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;在先前的jQuery和forEach例子，我们使用定义在包含函数的参数中的匿名函数。这是一种经常使用模式之一。另一个流行的模式是声明一个命名函数然后将这个函数的名字作为参数。考虑以下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// 全局变量
+var allUserData = [];
+
+// 打印用logStuff函数 
+function logStuff (userData) {
+    if ( typeof userData === &quot;string&quot;)
+    {
+        console.log(userData);
+    }
+    else if ( typeof userData === &quot;object&quot;)
+    {
+        for (var item in userData) {
+            console.log(item + &quot;: &quot; + userData[item]);
+        }
+
+    }
+
+}
+
+// 一个有两个参数的函数，最后一个参数是回调函数
+function getInput (options, callback) {
+    allUserData.push (options);
+    callback (options);
+
+}
+
+// 当我们调用getInput函数的时候，我们传入logStuff作为参数
+// 所以logStuff函数将会在getInput函数内部回头调用（或者说执行）
+getInput ({name:&quot;Rich&quot;, speciality:&quot;JavaScript&quot;}, logStuff);
+//  name: Rich
+// speciality: JavaScript
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;传参给回调函数&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;因为回调函数在执行的时候就是一个正常的函数，那我们自然可以传参给它。我们可以传入任意的包含函数的内容（或者全局内容）作为参数传给回调函数。在之前的例子中，我们传options作为参数给回调函数。下面来传下全局变量和本地变量：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//全局变量
+var generalLastName = &quot;Clinton&quot;;
+
+function getInput (options, callback) {
+    allUserData.push (options);
+// 把全局变量generalLastName传给回调函数
+    callback (generalLastName, options);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;在执行回调的时候确保它是个函数&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;在调用传入的回调函数参数之前检查是否确实是一个函数总是明智的。同样，让这个回调函数可选，也是一个好的实践。&lt;/p&gt;
+
+&lt;p&gt;让我们来重构下之前的例子中的getInput函数来保证有适当的检查。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function getInput(options, callback) {
+    allUserData.push(options);
+
+    // 确认回调是一个函数
+    if (typeof callback === &quot;function&quot;) {
+    // 已确认是一个函数，就可以放心的调用了
+        callback(options);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;如果getInput函数在没有回调函数作为参数或用非函数代替函数传入的情况下调用的话，没有这些适当的检查，我们的代码将会报一个运行时错误。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;当使用带有this对象的方法作为回调的问题&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;当回调是一个使用this对象的方法时，我们要改变下调用回调函数的方式来保持this对象上下文。否则当回调传给一个全局函数的时候，this对象将会指向全局window对象。或者它会指向包含这个方法的对象。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// 定义一个有着一些属性和方法的对象
+// 过一会会把方法作为回调函数传给另一个函数
+var clientData = {
+    id: 094545,
+    fullName: &quot;Not Set&quot;,
+    // setUserName是一个在clientData对象上的方法
+    setUserName: function (firstName, lastName)  {
+      this.fullName = firstName + &quot; &quot; + lastName;
+    }
+}
+
+function getUserInput(firstName, lastName, callback)  {
+    // 在这里可以验证下firstName/lastName
+
+    // 在这里保存名字
+    callback (firstName, lastName);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;在下面的例子中，当clientData.setUserName执行的时候，this.fullName将会不在clientData对象上设置fullName属性。反而，它会在window对象上设置fullName属性，原因是getUserInput是一个全局函数。而在全局函数中，this对象指向window对象。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;getUserInput (&quot;Barack&quot;, &quot;Obama&quot;, clientData.setUserName);
+
+console.log (clientData.fullName);// Not Set
+
+// fullName属性在window对象上被初始化了
+console.log (window.fullName); // Barack Obama
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;使用Call或者Apply函数来保持this&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;我们可以通过使用_Call_或者_Apply_函数解决之前的问题 (我们将会在之后的一篇博客里讨论着两个方法)。暂时，你只需要知道在JavaScript中，每一个函数都有两个方法：Call和Apply。这两个方法用于设置函数中的_this_对象并且传入参数。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Call&lt;/strong&gt;把第一个参数的值用于函数内的_this_对象，然后剩下的参数独立地传给函数（通过逗号分隔）。&lt;strong&gt;Apply&lt;/strong&gt;函数也是把第一个参数的值用于函数内的_this_对象，然而最后一个参数是一个传给对象的数组（或者_arguments_对象）。&lt;/p&gt;
+
+&lt;p&gt;这听起来很复杂，但是让我们来看看使用Apply或Call是多么简单。想要解决先前例子中的问题，我们将会使用Apply函数：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//注意这里我们为回调对象多加了个参数，叫做callbackObj
+function getUserInput(firstName, lastName, callback, callbackObj)  {
+
+    // 用apply函数把this指向callbackObj
+    callback.apply (callbackObj, [firstName, lastName]);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;随着Apply函数正确地设置this对象，我们现在也在clientData对象上可以正确地执行回调并且正确地设置fullName属性了：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// 我们传入clientData.setUserName方法和clientData对象作为参数。clientData对象将用apply函数设置this对象
+getUserInput (&quot;Barack&quot;, &quot;Obama&quot;, clientData.setUserName, clientData);
+
+// clientData上的fullName属性被正确地设置。
+console.log (clientData.fullName); // Barack Obama
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;我们也可以使用Call函数，但是在这个例子中我们使用Apply函数。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;允许多个回调函数&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;我们可以传入不止一个回调函数作为函数的参数，就像我们可以传入不止一个参数。下面是一个典型jQuery AJAX函数：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function successCallback() {
+    // Do stuff before send
+}
+
+function successCallback() {
+    // Do stuff if success message received
+}
+
+function completeCallback() {
+    // Do stuff upon completion
+}
+
+function errorCallback() {
+    // Do stuff if error received
+}
+
+$.ajax({
+    url:&quot;http://fiddle.jshell.net/favicon.png&quot;,
+    success:successCallback,
+    complete:completeCallback,
+    error:errorCallback
+
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;回调地狱问题和解决方案&quot;&gt;“回调地狱”问题和解决方案&lt;/h2&gt;
+
+&lt;p&gt;进行任何顺序的异步代码执行的时候，经常会出现很多层的回调函数，在某种程度下，会像以下的代码这样。以下的这些凌乱的代码我们称之为回调地狱，因为太多层回调以至于难以理解代码。我从node-mongodb-native中找到下面的代码。&lt;strong&gt;以下的代码只是用于展示&lt;/strong&gt;：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var p_client = new Db('integration_tests_20', new Server(&quot;127.0.0.1&quot;, 27017, {}), {'pk':CustomPKFactory});
+p_client.open(function(err, p_client) {
+    p_client.dropDatabase(function(err, done) {
+        p_client.createCollection('test_custom_key', function(err, collection) {
+            collection.insert({'a':1}, function(err, docs) {
+                collection.find({'_id':new ObjectID(&quot;aaaaaaaaaaaa&quot;)}, function(err, cursor) {
+                    cursor.toArray(function(err, items) {
+                        test.assertEquals(1, items.length);
+
+                        // Let's close the db
+                        p_client.close();
+                    });
+                });
+            });
+        });
+    });
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;你可能不会经常在代码里遇到这样的问题，但你总会不时的遇见，这时候你有以下两种解决方案。&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;相比于在函数的参数中定义一个匿名函数，你可以显示的声明函数并命名，然后用传递函数名的方法代替回调。&lt;/li&gt;
+  &lt;li&gt;模块化：把你的代码模块化，你可以导出一部分代码做特定的事情。然后你在你更大的应用中导入这个模块。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;创建你自己的回调函数&quot;&gt;创建你自己的回调函数&lt;/h2&gt;
+
+&lt;p&gt;现在你已经完全掌握了JavaScript回调函数的方方面面了，并且你已知道使用回调函数非常简单而强大，所以现在你现在应该着眼于你自己的代码中使用回调函数的机会，因为它会让你：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;不重复代码&lt;/li&gt;
+  &lt;li&gt;更多通用的代码，实现更好的抽象&lt;/li&gt;
+  &lt;li&gt;更好的可维护性&lt;/li&gt;
+  &lt;li&gt;更好的可读性&lt;/li&gt;
+  &lt;li&gt;更多专业的函数&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;创建你自己的回调函数是相当简单的。在下面的例子中，我本可以创建一个函数去做所有的事情：获取用户数据，用数据创建一个通用的诗歌，并且致敬用户。这将会是一个有着众多if/else语句的混乱的函数，并且即使如此它也是非常有局限性，不能够胜任应用需要用用户的数据实现的其他功能。&lt;/p&gt;
+
+&lt;p&gt;相反，我把功能的执行交给回调函数，这样获得了数据的主函数就可以通过简单的传用户名和性别的参数给回调函数并执行回调来执行几乎任何任务。&lt;/p&gt;
+
+&lt;p&gt;简单来说，getUserInput函数是通用的：它可以执行各种功能的回调：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+// 首先，创建通用诗歌创作函数；它将会是下面的getUserInput函数的回调函数
+function genericPoemMaker(name, gender) {
+    console.log(name + &quot; is finer than fine wine.&quot;);
+    console.log(&quot;Altruistic and noble for the modern time.&quot;);
+    console.log(&quot;Always admirably adorned with the latest style.&quot;);
+    console.log(&quot;A &quot; + gender + &quot; of unfortunate tragedies who still manages a perpetual smile&quot;);
+}
+
+
+//最后一个参数就是回调函数，它将会是我们上面定义的genericPoemMaker
+function getUserInput(firstName, lastName, gender, callback) {
+    var fullName = firstName + &quot; &quot; + lastName;
+
+    // 确认回调是函数
+    if (typeof callback === &quot;function&quot;) {
+    // 执行回调函数并传入参数
+    callback(fullName, gender);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;调用getUserInput函数并传入genericPoemMaker函数作为回调：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;getUserInput(&quot;Michael&quot;, &quot;Fassbender&quot;, &quot;Man&quot;, genericPoemMaker);
+// Output
+/* Michael Fassbender is finer than fine wine.
+Altruistic and noble for the modern time.
+Always admirably adorned with the latest style.
+A Man of unfortunate tragedies who still manages a perpetual smile.
+*/
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;因为getUserInput函数只是处理获取数据，我们可传入任何的回调给它。比如，我们可以传入一个greetUser函数像下面这样：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function greetUser(customerName, sex)  {
+   var salutation  = sex &amp;amp;&amp;amp; sex === &quot;Man&quot; ? &quot;Mr.&quot; : &quot;Ms.&quot;;
+  console.log(&quot;Hello, &quot; + salutation + &quot; &quot; + customerName);
+}
+
+// 将greetUser函数作为回调传入getUserInput
+getUserInput(&quot;Bill&quot;, &quot;Gates&quot;, &quot;Man&quot;, greetUser);
+
+// 下面是输出
+Hello, Mr. Bill Gates
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;我们像原来那样调用getUserInput函数，但是这次它执行了一个完全不同的任务。&lt;/p&gt;
+
+&lt;p&gt;你可以看到，回调函数提供了更多的灵活。虽然先前的例子相对来说比较简单，但是想想看如果你开始使用回调函数你将会节省多少工作量，你代码的抽象程度将会多好。加油，马上用起你的回调函数。&lt;/p&gt;
+
+&lt;p&gt;注意以下几种我们经常在JavaScript中使用回调函数的方式，特别是在开发现代web应用程序，库，和框架的时候：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;用于异步执行&lt;/li&gt;
+  &lt;li&gt;在事件监听器/处理器中&lt;/li&gt;
+  &lt;li&gt;在setTimeout和setInterval方法中&lt;/li&gt;
+  &lt;li&gt;用于通用化：代码简洁&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;最后的话&quot;&gt;最后的话&lt;/h2&gt;
+
+&lt;p&gt;JavaScript回调函数好用而又强大，它为你的web应用和代码带来了很多好处。当你需要的时候你就应该用回调函数；看看能不能用回调函数来提高你的代码的抽象性，可维护性和可读性。&lt;/p&gt;
+
+&lt;h3 id=&quot;参考&quot;&gt;参考&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;http://c2.com/cgi/wiki?FirstClass&lt;/li&gt;
+  &lt;li&gt;https://github.com/mongodb/node-mongodb-native&lt;/li&gt;
+  &lt;li&gt;http://callbackhell.com/&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.amazon.com/gp/product/0596806752/ref=as_li_tf_tl?ie=UTF8&amp;amp;camp=1789&amp;amp;creative=9325&amp;amp;creativeASIN=0596806752&amp;amp;linkCode=as2&amp;amp;tag=interhaptic-20&quot;&gt;JavaScript Patterns&lt;/a&gt; by Stoyan Stefanov (Sep 28, 2010)&lt;/li&gt;
+&lt;/ol&gt;
+
+</description>
+        <pubDate>Tue, 07 Nov 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/js/2017/11/07/callback.html</link>
+        <guid isPermaLink="true">http://localhost:4000/js/2017/11/07/callback.html</guid>
+        
+        <category>callback</category>
+        
+        
+        <category>js</category>
+        
+      </item>
     
       <item>
         <title>《深入理解ES6》之块级作用域与字符串</title>
@@ -2062,179 +2427,6 @@ Router.navigate('/about');
         
         
         <category>基础</category>
-        
-      </item>
-    
-      <item>
-        <title>[译]在10分钟内解释JavaScript Async/Await</title>
-        <description>&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;原文:https://tutorialzine.com/2017/07/javascript-async-await-explained
-作者:Danny Markov
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;在很长的一段时间里，JavaScript开发者不得不依靠回调函数去处理异步代码。结果，我们大部分都经历过回调地狱和遇到&lt;a href=&quot;https://tutorialzine.com/media/2017/07/callback-hell.jpg&quot;&gt;这样&lt;/a&gt;功能的恐怖。&lt;/p&gt;
-
-&lt;p&gt;幸运的是，接下来（或者我们应该说 .then()）我们迎来了Promises. 他们提供了一个更组织化的回调方式，大多数社区迅速的转而使用它。&lt;/p&gt;
-
-&lt;p&gt;现在，随着最新版本的Async/Await出现，写JavaScript代码更爽了。&lt;/p&gt;
-
-&lt;h2 id=&quot;什么是asyncawait&quot;&gt;什么是Async/Await？&lt;/h2&gt;
-
-&lt;p&gt;Async/Await是一个很久就令人期待的JavaScript功能，它让使用异步函数更加愉快和容易理解。它是基于Promises的并且和现存的所有基于Promises的API相兼容。&lt;/p&gt;
-
-&lt;p&gt;从async和await这两个名字来的这两个关键字将会帮助我们整理我们的异步代码。&lt;/p&gt;
-
-&lt;p&gt;Async - 声明一个异步函数（async function someName(){…}）。&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;自动将一个常规函数转化为一个Promise。&lt;/li&gt;
-  &lt;li&gt;当调用async函数的时候，它用函数内返回的任何值来解决（resolve）。&lt;/li&gt;
-  &lt;li&gt;异步函数可以使用await&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Await-暂停执行async函数（var result = await someAsyncCall();）。&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;当放在一个Promise前面执行，await强制剩下的代码等待直到那个Promise结束并且返回一个结果&lt;/li&gt;
-  &lt;li&gt;Await只有和Promise一起使用才有用，和回调函数（普通函数）一起使用不会产生作用&lt;/li&gt;
-  &lt;li&gt;Await只可以在async函数内部使用&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;这里有一个简单的例子，希望能帮你把事情理清楚：&lt;/p&gt;
-
-&lt;p&gt;假设我们想从我们的服务器中得到一些JSON文件。我们将写一个函数用axios库发送一个http GET 请求到https://tutorialzine.com/misc/files/example.json。 我们不得不等待服务器响应，所以很自然这个HTTP 请求是异步的。&lt;/p&gt;
-
-&lt;p&gt;下面我们可以看到相同的功能实现了两次。首先是用Promises，然后第二次用Async / Await。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// Promise 实现方式
-function getJSON(){
-
-    // 为了让函数阻塞我们手动创建了一个Promise
-    return new Promise( function(resolve) {
-        axios.get('https://tutorialzine.com/misc/files/example.json')
-            .then( function(json) {
-                // 从请求来的数据可以从.then中得到
-                // 我们使用resolve返回结果
-                resolve(json);
-            });
-    });
-
-}
-
-// Async/Await 实现方式
-// async关键字将会自动创建一个新的Promise并返回。
-async function getJSONAsync(){
-    // await关键词使我们免于写一个.then()
-    let json = await axios.get('https://tutorialzine.com/misc/files/example.json');
-    // GET请求的结果可以从json变量中得到
-    // 我们把结果就像一个普通的同步函数一样返回
-    return json;
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;很明显Async/Await版本的代码更短并且可读性更强。除了使用的语法，两个函数完全相同-他们都返回Promises并且都从axios得到JSON返回。我们可以像这样调用我们的async函数：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;getJSONAsync().then( function(result) {
-    // Do something with result.
-});
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;h2 id=&quot;那么asyncawait-让-promises-过时了吗&quot;&gt;那么，Async/Await 让 Promises 过时了吗？&lt;/h2&gt;
-
-&lt;p&gt;一点也不，当我们使用Async/Await其实底层还是在使用Promises。对Promises的良好理解在长远考虑下是对你是十分有帮助的并且也是高度推荐的。&lt;/p&gt;
-
-&lt;p&gt;这里甚至有一些情况Async/Await不能解决而我们不得不重新去寻求Promises的帮助。一种这样的场景是我们需要去调用多个独立的异步函数并等待他们所有完成。&lt;/p&gt;
-
-&lt;p&gt;假如我们尝试用async and await，以下就会发生:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;async function getABC() {
-    let A = await getValueA(); // getValueA takes 2 second to finish
-    let B = await getValueB(); // getValueB takes 4 second to finish
-    let C = await getValueC(); // getValueC takes 3 second to finish
-    return A*B*C;
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;每一个await将会等待前一个返回一个结果。因为我们一次只执行一个调用那么整个函数从开始到结束将会花9秒的时间（2+4+3）。&lt;/p&gt;
-
-&lt;p&gt;这不是一个最佳的解决方案，因为A,B和C互相并不依赖。换句话来说我们在得到B的时候我们并不需要A的值。我们可以同时得到这些值以减去几秒钟的等待时间。&lt;/p&gt;
-
-&lt;p&gt;同时发送所有的requests我们需要Promise.all()。这将会保证我们在进行下一步的时候我们可以得到所有的结果，但是所有的异步函数将会平行的运行，而不是一个接一个。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;async function getABC() {
-  // Promise.all() allows us to send all requests at the same time. 
-  let results = await Promise.all([ getValueA, getValueB, getValueC ]); 
-
-  return results.reduce((total,value) =&amp;gt; total * value);
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;这种方式函数将会花费少的多的时间，在getValueB结束的时候getValueA和getValueC就已经结束了。我们将有效的减少执行的时间到最慢的请求而不是时间的总和。&lt;/p&gt;
-
-&lt;h2 id=&quot;处理asyncawait的错误&quot;&gt;处理Async/Await的错误&lt;/h2&gt;
-
-&lt;p&gt;另一个关于Async/Await很棒的事是它允许我们用很棒的老式try/catch块去catch任何意外的错误。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;async function doSomethingAsync(){
-    try {
-        // This async call may fail.
-        let result = await someAsyncCall();
-    }
-    catch(error) {
-        // If it does we will catch the error here.
-    }  
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;任何我们写在try块中的等待的异步调用或者其他任何错误代码，catch都能解决他们引起的错误（error）。&lt;/p&gt;
-
-&lt;p&gt;如果情况需要，我们也可以在执行async函数的时候抓取错误。由于所有异步函数返回Promises，所以我们可以在调用它们时简单地包含.catch()事件处理程序。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// 不包含try/catch块的async函数
-async function doSomethingAsync(){
-    // 这个async调用也许会失败
-    let result = await someAsyncCall();
-    return result;  
-}
-
-// 我们catch错误在调用async函数的时候
-doSomethingAsync().
-    .then(successHandler)
-    .catch(errorHandler);
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;重要的是选择一种你喜欢的错误处理的方式，并坚持使用它。同时使用try/catch和.catch(）将很有可能导致一些问题。&lt;/p&gt;
-
-&lt;h2 id=&quot;浏览器支持&quot;&gt;浏览器支持&lt;/h2&gt;
-
-&lt;p&gt;Async/Await已经支持大部分的主流浏览器。绝大多数的厂商将会识别你的async/await代码而不需要额外的库-除了IE11.&lt;/p&gt;
-
-&lt;p&gt;Node开发者只要node8或以上就可以享受到改进的异步流。它在今年晚些时候应该会变成LTS（ Long Term Support ）版本。&lt;/p&gt;
-
-&lt;p&gt;如果这兼容性不能满足你，也有许多像Babel和TypeScript和Nodejs库asyncawait这样的JS transpiler（源码转换器）提供他们自己的跨平台版本的功能。&lt;/p&gt;
-
-&lt;h2 id=&quot;结论&quot;&gt;结论&lt;/h2&gt;
-
-&lt;p&gt;随着Async/Await ，JavaScript语言在代码可读性和易用性上向前迈进了一大步。能够编写类似于常规同步功能的异步代码将会受到JavaScript初学者和经验丰富的编程人员的赞赏。&lt;/p&gt;
-
-</description>
-        <pubDate>Sat, 15 Jul 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/js/2017/07/15/AsyncAwaitTran.html</link>
-        <guid isPermaLink="true">http://localhost:4000/js/2017/07/15/AsyncAwaitTran.html</guid>
-        
-        <category>Async</category>
-        
-        <category>Await</category>
-        
-        <category>ES6</category>
-        
-        
-        <category>JS</category>
         
       </item>
     
