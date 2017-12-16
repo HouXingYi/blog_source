@@ -1,4 +1,6 @@
 var express = require("express");
 var app = express();
-app.use("/",express.static(__dirname + "/blog/_site"));
-app.listen(8081);
+var port = 8081;
+app.use("/",express.static(__dirname + "/blogContent/_site"));
+app.listen(port);
+console.log("app is runing on port"+port);
