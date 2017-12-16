@@ -3,6 +3,12 @@
 
 首先购买域名与服务器，这方面每个人都不同就不说了。
 
+## 整体思路
+
+从2-6从一个故事理解整个部署思路来理解。
+
+https://coding.imooc.com/lesson/95.html#mid=3093
+
 ## 远程登录服务器
 
 就我来说，我购买阿里云的域名与服务器。配置为1核1GB内存，操作系统为Ubuntu 14.04 64位。
@@ -59,8 +65,19 @@ https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
 
 ## 向服务器正式部署和发布上线Nodejs项目
 
+利用git来更新服务器上的代码，把服务器上的公匙给github就可以了。
 
 
+### dns解析，二级域名
+
+blog.houxingyi.site
+
+### pm2自动部署发布
+利用pm2进行自动部署上线
+
+### 数据库部署
+
+需要配置数据库密码等，那节跳过了，后面再说。
 
 
 
