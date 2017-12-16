@@ -4,10 +4,10 @@
     <title>侯星伊的个人博客</title>
     <description>A Simple Jekyll Blog Theme. # this means to ignore newlines until &quot;baseurl:&quot;
 </description>
-    <link>http://localhost:4000/</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 16 Dec 2017 20:59:34 +0800</pubDate>
-    <lastBuildDate>Sat, 16 Dec 2017 20:59:34 +0800</lastBuildDate>
+    <link>https://houxingyi.github.io//</link>
+    <atom:link href="https://houxingyi.github.io//feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Sat, 16 Dec 2017 21:06:51 +0800</pubDate>
+    <lastBuildDate>Sat, 16 Dec 2017 21:06:51 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
     
       <item>
@@ -131,8 +131,8 @@ c c
 
 </description>
         <pubDate>Thu, 09 Nov 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/js/2017/11/09/ES6-2.html</link>
-        <guid isPermaLink="true">http://localhost:4000/js/2017/11/09/ES6-2.html</guid>
+        <link>https://houxingyi.github.io//js/2017/11/09/ES6-2.html</link>
+        <guid isPermaLink="true">https://houxingyi.github.io//js/2017/11/09/ES6-2.html</guid>
         
         <category>function</category>
         
@@ -496,8 +496,8 @@ Hello, Mr. Bill Gates
 
 </description>
         <pubDate>Tue, 07 Nov 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/js/2017/11/07/callback.html</link>
-        <guid isPermaLink="true">http://localhost:4000/js/2017/11/07/callback.html</guid>
+        <link>https://houxingyi.github.io//js/2017/11/07/callback.html</link>
+        <guid isPermaLink="true">https://houxingyi.github.io//js/2017/11/07/callback.html</guid>
         
         <category>callback</category>
         
@@ -718,8 +718,8 @@ console.log(message);        //&quot;10 items cost $2.50.&quot;
 
 </description>
         <pubDate>Sun, 05 Nov 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/js/2017/11/05/ES6-1.html</link>
-        <guid isPermaLink="true">http://localhost:4000/js/2017/11/05/ES6-1.html</guid>
+        <link>https://houxingyi.github.io//js/2017/11/05/ES6-1.html</link>
+        <guid isPermaLink="true">https://houxingyi.github.io//js/2017/11/05/ES6-1.html</guid>
         
         <category>ES6</category>
         
@@ -921,8 +921,8 @@ hw.next()
 
 </description>
         <pubDate>Thu, 02 Nov 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/js/2017/11/02/async.html</link>
-        <guid isPermaLink="true">http://localhost:4000/js/2017/11/02/async.html</guid>
+        <link>https://houxingyi.github.io//js/2017/11/02/async.html</link>
+        <guid isPermaLink="true">https://houxingyi.github.io//js/2017/11/02/async.html</guid>
         
         <category>异步编程</category>
         
@@ -1195,8 +1195,8 @@ User.
 
 </description>
         <pubDate>Mon, 30 Oct 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/mongodb/2017/10/30/populate.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mongodb/2017/10/30/populate.html</guid>
+        <link>https://houxingyi.github.io//mongodb/2017/10/30/populate.html</link>
+        <guid isPermaLink="true">https://houxingyi.github.io//mongodb/2017/10/30/populate.html</guid>
         
         <category>mongoose</category>
         
@@ -1318,8 +1318,8 @@ new Vue({
 &lt;/div&gt;
 </description>
         <pubDate>Sun, 29 Oct 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/vue/2017/10/29/vuex.html</link>
-        <guid isPermaLink="true">http://localhost:4000/vue/2017/10/29/vuex.html</guid>
+        <link>https://houxingyi.github.io//vue/2017/10/29/vuex.html</link>
+        <guid isPermaLink="true">https://houxingyi.github.io//vue/2017/10/29/vuex.html</guid>
         
         <category>vuex</category>
         
@@ -1616,8 +1616,8 @@ new Vue({
 
 </description>
         <pubDate>Sat, 21 Oct 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/mongodb/2017/10/21/mongo.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mongodb/2017/10/21/mongo.html</guid>
+        <link>https://houxingyi.github.io//mongodb/2017/10/21/mongo.html</link>
+        <guid isPermaLink="true">https://houxingyi.github.io//mongodb/2017/10/21/mongo.html</guid>
         
         <category>mongo</category>
         
@@ -1912,8 +1912,8 @@ enum:  枚举匹配(只适用于字符串)
 &lt;a href=&quot;http://www.cnblogs.com/zhongweiv/p/mongoose.html&quot;&gt;Mongoose介绍和入门&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Fri, 20 Oct 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/mongodb/2017/10/20/mongoose.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mongodb/2017/10/20/mongoose.html</guid>
+        <link>https://houxingyi.github.io//mongodb/2017/10/20/mongoose.html</link>
+        <guid isPermaLink="true">https://houxingyi.github.io//mongodb/2017/10/20/mongoose.html</guid>
         
         <category>mongoose</category>
         
@@ -2051,8 +2051,8 @@ post支持标准字符集，可以正确传递中文字符&lt;/li&gt;
 
 </description>
         <pubDate>Wed, 11 Oct 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/net/2017/10/11/net.html</link>
-        <guid isPermaLink="true">http://localhost:4000/net/2017/10/11/net.html</guid>
+        <link>https://houxingyi.github.io//net/2017/10/11/net.html</link>
+        <guid isPermaLink="true">https://houxingyi.github.io//net/2017/10/11/net.html</guid>
         
         <category>HTTP</category>
         
@@ -2373,8 +2373,8 @@ Router.navigate('/about');
 &lt;p&gt;这个类是&lt;a href=&quot;http://absurdjs.com/&quot;&gt;AbsurdJS&lt;/a&gt;的一部分。在&lt;a href=&quot;http://absurdjs.com/pages/api/build-in-components/#router&quot;&gt;这里&lt;/a&gt;可以查看文档。&lt;/p&gt;
 </description>
         <pubDate>Tue, 10 Oct 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/js/2017/10/10/routes-in-100-line.html</link>
-        <guid isPermaLink="true">http://localhost:4000/js/2017/10/10/routes-in-100-line.html</guid>
+        <link>https://houxingyi.github.io//js/2017/10/10/routes-in-100-line.html</link>
+        <guid isPermaLink="true">https://houxingyi.github.io//js/2017/10/10/routes-in-100-line.html</guid>
         
         <category>routes</category>
         
