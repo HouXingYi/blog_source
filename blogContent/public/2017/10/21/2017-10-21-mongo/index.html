@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="mongo," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="一些mongoDB常用的操作 基本概念mongoDB中的一些基本概念与SQL的基本概念是不同的，这是我们学习mongoDB的时候需要注意与区分的。  下面一个表格带我们来理解下mongoDB中的一些概念。    SQL概念 mongoDB概念 说明     database database 数据库   table collection 数据库表/集合   row document 数据记录行/文">
+<meta name="keywords" content="mongo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mongoDB常用操作">
+<meta property="og:url" content="http://yoursite.com/2017/10/21/2017-10-21-mongo/index.html">
+<meta property="og:site_name" content="HouXingYi&#39;s blog">
+<meta property="og:description" content="一些mongoDB常用的操作 基本概念mongoDB中的一些基本概念与SQL的基本概念是不同的，这是我们学习mongoDB的时候需要注意与区分的。  下面一个表格带我们来理解下mongoDB中的一些概念。    SQL概念 mongoDB概念 说明     database database 数据库   table collection 数据库表/集合   row document 数据记录行/文">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/show.png">
+<meta property="og:updated_time" content="2018-01-28T06:35:10.412Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="mongoDB常用操作">
+<meta name="twitter:description" content="一些mongoDB常用的操作 基本概念mongoDB中的一些基本概念与SQL的基本概念是不同的，这是我们学习mongoDB的时候需要注意与区分的。  下面一个表格带我们来理解下mongoDB中的一些概念。    SQL概念 mongoDB概念 说明     database database 数据库   table collection 数据库表/集合   row document 数据记录行/文">
+<meta name="twitter:image" content="http://yoursite.com/images/show.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/10/21/2017-10-21-mongo/"/>
+
+
+
+
+
+  <title>mongoDB常用操作 | HouXingYi's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">HouXingYi's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">即使跑得再远，也逃不出自己本身</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/21/2017-10-21-mongo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="HouXingYi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/16967112?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HouXingYi's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">mongoDB常用操作</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-21T00:00:00+08:00">
+                2017-10-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mongoDB/" itemprop="url" rel="index">
+                    <span itemprop="name">mongoDB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>一些mongoDB常用的操作</p>
+<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>mongoDB中的一些基本概念与SQL的基本概念是不同的，这是我们学习mongoDB的时候需要注意与区分的。 <br></p>
+<p>下面一个表格带我们来理解下mongoDB中的一些概念。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">SQL概念</th>
+<th style="text-align:left">mongoDB概念</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">database</td>
+<td style="text-align:left">database</td>
+<td style="text-align:left">数据库</td>
+</tr>
+<tr>
+<td style="text-align:left">table</td>
+<td style="text-align:left">collection</td>
+<td style="text-align:left">数据库表/集合</td>
+</tr>
+<tr>
+<td style="text-align:left">row</td>
+<td style="text-align:left">document</td>
+<td style="text-align:left">数据记录行/文档</td>
+</tr>
+<tr>
+<td style="text-align:left">column</td>
+<td style="text-align:left">field</td>
+<td style="text-align:left">数据字段/域</td>
+</tr>
+<tr>
+<td style="text-align:left">index</td>
+<td style="text-align:left">index</td>
+<td style="text-align:left">索引</td>
+</tr>
+<tr>
+<td style="text-align:left">table joins</td>
+<td style="text-align:left"></td>
+<td style="text-align:left">表连接，mongoDB不支持</td>
+</tr>
+<tr>
+<td style="text-align:left">primary key</td>
+<td style="text-align:left">primary key</td>
+<td style="text-align:left">主键，mongoDB自动将_id字段设置为主键</td>
+</tr>
+</tbody>
+</table>
+<p>通过下图，更加直观的理解mongoDB的一些概念</p>
+<p><img src="/images/show.png" alt="展示"></p>
+<h3 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h3><p>一个mongoDB可以建立多个数据库</p>
+<p>通过命令show dbs来展现当前有多少数据库，名字分别叫什么</p>
+<h3 id="文档（document）"><a href="#文档（document）" class="headerlink" title="文档（document）"></a>文档（document）</h3><p>在mongoDB中文档就是一组键值对(key-value)。MongoDB 的文档不需要设置相同的字段，并且相同的字段不需要相同的数据类型，这与关系型数据库有很大的区别，也是 MongoDB 非常突出的特点。</p>
+<p>需要注意的点</p>
+<ol>
+<li>文档中的键/值对是有序的。</li>
+<li>文档中的值不仅可以是在双引号里面的字符串，还可以是其他几种数据类型（甚至可以是整个嵌入的文档)。</li>
+<li>MongoDB区分类型和大小写。</li>
+<li>MongoDB的文档不能有重复的键。</li>
+<li>文档的键是字符串。除了少数例外情况，键可以使用任意UTF-8字符。</li>
+</ol>
+<h3 id="集合（collection）"><a href="#集合（collection）" class="headerlink" title="集合（collection）"></a>集合（collection）</h3><p>集合就是mongoDB文档组，类似关系型数据库中的表。一个数据库中有多个集合，可以用命令show collections来查看。集合没有固定的结构，这意味着你在对集合可以插入不同格式和类型的数据，但通常情况下我们插入集合的数据都会有一定的关联性。</p>
+<h3 id="MongoDB-数据类型"><a href="#MongoDB-数据类型" class="headerlink" title="MongoDB 数据类型"></a>MongoDB 数据类型</h3><p>下表为MongoDB中常用的几种数据类型。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">SQL概念</th>
+<th style="text-align:left">mongoDB概念</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">String</td>
+<td style="text-align:left">字符串。存储数据常用的数据类型。在 MongoDB 中，UTF-8 编码的字符串才是合法的。</td>
+</tr>
+<tr>
+<td style="text-align:left">Integer</td>
+<td style="text-align:left">整型数值。用于存储数值。根据你所采用的服务器，可分为 32 位或 64 位。</td>
+</tr>
+<tr>
+<td style="text-align:left">Boolean</td>
+<td style="text-align:left">布尔值。用于存储布尔值（真/假）。</td>
+</tr>
+<tr>
+<td style="text-align:left">Double</td>
+<td style="text-align:left">双精度浮点值。用于存储浮点值。</td>
+</tr>
+<tr>
+<td style="text-align:left">Min/Max keys</td>
+<td style="text-align:left">将一个值与 BSON（二进制的 JSON）元素的最低值和最高值相对比。</td>
+</tr>
+<tr>
+<td style="text-align:left">Array</td>
+<td style="text-align:left">用于将数组或列表或多个值存储为一个键。</td>
+</tr>
+<tr>
+<td style="text-align:left">Timestamp</td>
+<td style="text-align:left">时间戳。记录文档修改或添加的具体时间。</td>
+</tr>
+<tr>
+<td style="text-align:left">Object</td>
+<td style="text-align:left">用于内嵌文档。</td>
+</tr>
+<tr>
+<td style="text-align:left">Null</td>
+<td style="text-align:left">用于创建空值。</td>
+</tr>
+<tr>
+<td style="text-align:left">Symbol</td>
+<td style="text-align:left">符号。该数据类型基本上等同于字符串类型，但不同的是，它一般用于采用特殊符号类型的语言。</td>
+</tr>
+<tr>
+<td style="text-align:left">Date</td>
+<td style="text-align:left">日期时间。用 UNIX 时间格式来存储当前日期或时间。你可以指定自己的日期时间：创建 Date 对象，传入年月日信息。</td>
+</tr>
+<tr>
+<td style="text-align:left">Object ID</td>
+<td style="text-align:left">对象 ID。用于创建文档的 ID。</td>
+</tr>
+<tr>
+<td style="text-align:left">Binary Data</td>
+<td style="text-align:left">二进制数据。用于存储二进制数据。</td>
+</tr>
+<tr>
+<td style="text-align:left">Code</td>
+<td style="text-align:left">代码类型。用于在文档中存储 JavaScript 代码。</td>
+</tr>
+<tr>
+<td style="text-align:left">Regular expression</td>
+<td style="text-align:left">正则表达式类型。用于存储正则表达式。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a>创建数据库</h2><p>直接使用use命令创建数据库。如果数据库不存在，则创建数据库，否则切换到指定数据库。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use DATABASE_NAME</span><br></pre></td></tr></table></figure>
+<p>使用show dbs展示当前已创建的数据库。</p>
+<p>use数据库之后db命令表示当前数据库</p>
+<h2 id="删除数据库"><a href="#删除数据库" class="headerlink" title="删除数据库"></a>删除数据库</h2><p>使用下列命令删除数据库<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.dropDatabase()</span><br></pre></td></tr></table></figure></p>
+<p>使用下列命令删除集合<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.drop()</span><br></pre></td></tr></table></figure></p>
+<h2 id="插入数据"><a href="#插入数据" class="headerlink" title="插入数据"></a>插入数据</h2><p>MongoDB 使用 insert() 或 save() 方法向集合中插入文档，语法如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.COLLECTION_NAME.insert(document)</span><br></pre></td></tr></table></figure></p>
+<p>document采用json语法</p>
+<p>3.2 版本后还有以下几种语法可用于插入文档:</p>
+<ul>
+<li>db.collection.insertOne():向指定集合中插入一条文档数据</li>
+<li>db.collection.insertMany():向指定集合中插入多条文档数据</li>
+</ul>
+<h2 id="更新文档"><a href="#更新文档" class="headerlink" title="更新文档"></a>更新文档</h2><p>update() 方法用于更新已存在的文档。语法格式如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">db.collection.update(</span><br><span class="line">   &lt;query&gt;,</span><br><span class="line">   &lt;update&gt;,</span><br><span class="line">   &#123;</span><br><span class="line">     upsert: &lt;boolean&gt;,</span><br><span class="line">     multi: &lt;boolean&gt;,</span><br><span class="line">     writeConcern: &lt;document&gt;</span><br><span class="line">   &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<p>参数说明：</p>
+<ul>
+<li>query : update的查询条件，类似sql update查询内where后面的。</li>
+<li>update : update的对象和一些更新的操作符（如$,$inc…）等，也可以理解为sql update查询内set后面的</li>
+<li>upsert : 可选，这个参数的意思是，如果不存在update的记录，是否插入objNew,true为插入，默认是false，不插入。</li>
+<li>multi : 可选，mongodb 默认是false,只更新找到的第一条记录，如果这个参数为true,就把按条件查出来多条记录全部更新。</li>
+<li>writeConcern :可选，抛出异常的级别。</li>
+</ul>
+<h2 id="删除文档"><a href="#删除文档" class="headerlink" title="删除文档"></a>删除文档</h2><p>remove() 方法的基本语法格式如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">db.collection.remove(</span><br><span class="line">   &lt;query&gt;,</span><br><span class="line">   &lt;justOne&gt;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>如果你的 MongoDB 是 2.6 版本以后的，语法格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">db.collection.remove(</span><br><span class="line">   &lt;query&gt;,</span><br><span class="line">   &#123;</span><br><span class="line">     justOne: &lt;boolean&gt;,</span><br><span class="line">     writeConcern: &lt;document&gt;</span><br><span class="line">   &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>参数说明：</p>
+<ul>
+<li>query :（可选）删除的文档的条件。</li>
+<li>justOne : （可选）如果设为 true 或 1，则只删除一个文档。</li>
+<li>writeConcern :（可选）抛出异常的级别。</li>
+</ul>
+<p>另：</p>
+<p>remove() 方法已经过时了，现在官方推荐使用 deleteOne() 和 deleteMany() 方法。</p>
+<h2 id="查询文档"><a href="#查询文档" class="headerlink" title="查询文档"></a>查询文档</h2><p>MongoDB 查询数据的语法格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.find(query, projection)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>query ：可选，使用查询操作符指定查询条件</li>
+<li>projection ：可选，使用投影操作符指定返回的键。查询时返回文档中所有键值， 只需省略该参数即可（默认省略）。</li>
+</ul>
+<p>如果你需要以易读的方式来读取数据，可以使用 pretty() 方法，语法格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;db.col.find().pretty()</span><br></pre></td></tr></table></figure>
+<p>pretty() 方法以格式化的方式来显示所有文档。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以上是一些最基本的mongoDB的常用操作，若想看一些详情的文档和功能可以看官方的文档和一些教程。</p>
+<p><strong>参考</strong></p>
+<p><a href="https://docs.mongodb.com/?_ga=2.76410965.1778730410.1511524353-1232494664.1511524353" target="_blank" rel="noopener">mongoDB官方文档</a></p>
+<p><a href="http://www.runoob.com/mongodb/mongodb-tutorial.html" target="_blank" rel="noopener">mongoDB教程</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/mongo/" rel="tag"># mongo</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/20/2017-10-20-mongoose/" rel="next" title="mongoose基础">
+                <i class="fa fa-chevron-left"></i> mongoose基础
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/29/2017-10-29-vuex/" rel="prev" title="用Vuex来做vue应用的状态管理">
+                用Vuex来做vue应用的状态管理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars1.githubusercontent.com/u/16967112?s=460&v=4"
+                alt="HouXingYi" />
+            
+              <p class="site-author-name" itemprop="name">HouXingYi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/HouXingYi" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本概念"><span class="nav-number">1.</span> <span class="nav-text">基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库"><span class="nav-number">1.1.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文档（document）"><span class="nav-number">1.2.</span> <span class="nav-text">文档（document）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集合（collection）"><span class="nav-number">1.3.</span> <span class="nav-text">集合（collection）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MongoDB-数据类型"><span class="nav-number">1.4.</span> <span class="nav-text">MongoDB 数据类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建数据库"><span class="nav-number">2.</span> <span class="nav-text">创建数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除数据库"><span class="nav-number">3.</span> <span class="nav-text">删除数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#插入数据"><span class="nav-number">4.</span> <span class="nav-text">插入数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更新文档"><span class="nav-number">5.</span> <span class="nav-text">更新文档</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除文档"><span class="nav-number">6.</span> <span class="nav-text">删除文档</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询文档"><span class="nav-number">7.</span> <span class="nav-text">查询文档</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">HouXingYi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

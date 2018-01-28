@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="mongoose," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在Nodejs开发中，我们一般使用mongoose来操作mongoDB数据库。下面我么来学习下mongoose常用的用法。 准备工作那要使用它，首先你得装上node.js和mongodb并启动mongodb数据库  Github地址：https://github.com/Automattic/mongoose API Docs：http://mongoosejs.com/docs/guide.ht">
+<meta name="keywords" content="mongoose">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mongoose基础">
+<meta property="og:url" content="http://yoursite.com/2017/10/20/2017-10-20-mongoose/index.html">
+<meta property="og:site_name" content="HouXingYi&#39;s blog">
+<meta property="og:description" content="在Nodejs开发中，我们一般使用mongoose来操作mongoDB数据库。下面我么来学习下mongoose常用的用法。 准备工作那要使用它，首先你得装上node.js和mongodb并启动mongodb数据库  Github地址：https://github.com/Automattic/mongoose API Docs：http://mongoosejs.com/docs/guide.ht">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-01-28T06:14:45.308Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="mongoose基础">
+<meta name="twitter:description" content="在Nodejs开发中，我们一般使用mongoose来操作mongoDB数据库。下面我么来学习下mongoose常用的用法。 准备工作那要使用它，首先你得装上node.js和mongodb并启动mongodb数据库  Github地址：https://github.com/Automattic/mongoose API Docs：http://mongoosejs.com/docs/guide.ht">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/10/20/2017-10-20-mongoose/"/>
+
+
+
+
+
+  <title>mongoose基础 | HouXingYi's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">HouXingYi's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">即使跑得再远，也逃不出自己本身</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/20/2017-10-20-mongoose/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="HouXingYi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/16967112?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HouXingYi's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">mongoose基础</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-20T00:00:00+08:00">
+                2017-10-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mongoDB/" itemprop="url" rel="index">
+                    <span itemprop="name">mongoDB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在Nodejs开发中，我们一般使用mongoose来操作mongoDB数据库。下面我么来学习下mongoose常用的用法。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>那要使用它，首先你得装上node.js和mongodb并启动mongodb数据库 <br></p>
+<p>Github地址：<a href="https://github.com/Automattic/mongoose" target="_blank" rel="noopener">https://github.com/Automattic/mongoose</a> <br><br>API Docs：<a href="http://mongoosejs.com/docs/guide.html" target="_blank" rel="noopener">http://mongoosejs.com/docs/guide.html</a></p>
+<h2 id="概念理解"><a href="#概念理解" class="headerlink" title="概念理解"></a>概念理解</h2><p>要学习mongoose首先要了解三个重要的概念，他们是Schema、Model、Document。它们的关系是Schema生成Model、Model创造Document。 <br></p>
+<p>Schema类似于定义表结构，但并不完全准确。它用于创建表时的数据定义(不仅仅可以定义文档的结构和属性，还可以定义文档的实例方法、静态模型方法、复合索引等)，每个Schema会映射到mongodb中的一个collection。Schema不具备操作数据库的能力，主要用于定义结构。 <br></p>
+<p>Model是由Schema编译而成的构造器，具有抽象属性和行为，可以对数据库进行增删查改。Model所能增删查改的具体值是由Schema定义的，Schema定义以外的值则没有效果。在mongoDB中一个数据库有多个collections（由Schema定义结构），而每个collections有多个document（类似js对象一般的键值对）。</p>
+<p>Model的每一个实例（instance）就是一个文档document。Document是由Model创建的实体，它的操作也会影响数据库。</p>
+<h2 id="连接数据库"><a href="#连接数据库" class="headerlink" title="连接数据库"></a>连接数据库</h2><p>在使用前首先连接数据库（若没有则创建之）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">var mongoose = require(&apos;mongoose&apos;);</span><br><span class="line"></span><br><span class="line">mongoose.connect(&apos;mongodb://localhost:27017/test&apos;); </span><br><span class="line">//已连接</span><br><span class="line">mongoose.connection.on(&apos;connected&apos;, function () &#123;    </span><br><span class="line">    console.log(&apos;已连接&apos;);  </span><br><span class="line">&#125;);    </span><br><span class="line">//连接错误</span><br><span class="line">mongoose.connection.on(&apos;error&apos;,function (err) &#123;    </span><br><span class="line">    console.log(&apos;出错&apos;);  </span><br><span class="line">&#125;);    </span><br><span class="line">//断开连接</span><br><span class="line">mongoose.connection.on(&apos;disconnected&apos;, function () &#123;    </span><br><span class="line">    console.log(&apos;断开连接&apos;);  </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>其它事件可以自行查看：<a href="http://mongoosejs.com/docs/api.html#connection_Connection" target="_blank" rel="noopener">http://mongoosejs.com/docs/api.html#connection_Connection</a></p>
+<h2 id="定义Schema"><a href="#定义Schema" class="headerlink" title="定义Schema"></a>定义Schema</h2><p>Schema是mongoose中需要事先定义的数据模式，类似于表结构，不过mongoDB中不叫表，叫collections。<br></p>
+<p>模型可以看作mysql中的数据表，属性可以看作是字段，当然这个类比并不十分正确。<br></p>
+<p>每个Schema对应当前连接的数据库的一个collection,若不存在则会自动创建。 <br></p>
+<p>Schema不具备操作数据库的能力。 <br></p>
+<p>下面我们来看下如何创建Schema</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">var mongoose = require(&apos;mongoose&apos;);</span><br><span class="line">Schema = mongoose.Schema;</span><br><span class="line"></span><br><span class="line">var blogSchema = new Schema(&#123;</span><br><span class="line">  title:  String,</span><br><span class="line">  author: String,</span><br><span class="line">  body:   String,</span><br><span class="line">  comments: [&#123; body: String, date: Date &#125;],</span><br><span class="line">  date: &#123; type: Date, default: Date.now &#125;,</span><br><span class="line">  hidden: Boolean,</span><br><span class="line">  meta: &#123;</span><br><span class="line">    votes: Number,</span><br><span class="line">    favs:  Number</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>type有下面这些，<code>String</code>、<code>Number</code>、<code>Boolean</code>、<code>Array</code>、<code>Buffer</code>、<code>Date</code>、<code>ObjectId</code>、<code>Mixed</code>类型</p>
+<h2 id="生成Model"><a href="#生成Model" class="headerlink" title="生成Model"></a>生成Model</h2><p>模型Model是根据Schema编译出的构造器，或者称为类，通过Model可以实例化出文档对象document。 <br><br>下面根据Schema构建一个Model<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var Blog = mongoose.model(&apos;Blog&apos;, blogSchema);</span><br></pre></td></tr></table></figure></p>
+<p>Model实例化之后为document。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var blogInstance = new Blog(&#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h2 id="常用数据库操作"><a href="#常用数据库操作" class="headerlink" title="常用数据库操作"></a>常用数据库操作</h2><h3 id="新增"><a href="#新增" class="headerlink" title="新增"></a>新增</h3><p><strong>document.save()</strong></p>
+<p>model实例化后的document可用save新增文档<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//实例化model</span><br><span class="line">var blogInstance = new Blog(&#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;);</span><br><span class="line">//调用save方法即插入一个新的document</span><br><span class="line">user.save(function (err, res) &#123;</span><br><span class="line">    if (err) &#123;</span><br><span class="line">        console.log(&quot;Error:&quot; + err);</span><br><span class="line">    &#125;</span><br><span class="line">    else &#123;</span><br><span class="line">        console.log(&quot;Res:&quot; + res);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p><strong>model.create()</strong></p>
+<p>使用save()方法，需要先实例化为文档，再使用save()方法保存文档。而create()方法，则直接在模型Model上操作，并且可以同时新增多个文档</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Blog.create(&#123;name:&quot;xiaowang&quot;&#125;,&#123;name:&quot;xiaoli&quot;&#125;,function(err,doc1,doc2)&#123;</span><br><span class="line">  console.log(doc1);</span><br><span class="line">  console.log(doc2);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="查询"><a href="#查询" class="headerlink" title="查询"></a>查询</h3><p>查询文档有以下三种方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">find()</span><br><span class="line">findById()</span><br><span class="line">findOne()</span><br></pre></td></tr></table></figure></p>
+<p><strong>find()</strong><br>第一个参数表示查询条件，第二个参数用于控制返回的字段，第三个参数用于配置查询参数，第四个参数是回调函数，回调函数的形式为function(err,docs){}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Model.find(conditions, [projection], [options], [callback])</span><br></pre></td></tr></table></figure></p>
+<p><strong>findById()</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Model.findById(id, [projection], [options], [callback])</span><br></pre></td></tr></table></figure></p>
+<p><strong>findOne()</strong><br>该方法返回查找到的所有实例的第一个<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Model.findOne([conditions], [projection], [options], [callback])</span><br></pre></td></tr></table></figure></p>
+<h3 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h3><p>更新文档有以下两种方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">update()</span><br><span class="line">updateMany()</span><br></pre></td></tr></table></figure></p>
+<p><strong>update()</strong><br>第一个参数conditions为查询条件，第二个参数doc为需要修改的数据，第三个参数options为控制选项，第四个参数是回调函数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Model.update(conditions, doc, [options], [callback])</span><br></pre></td></tr></table></figure></p>
+<p><strong>updateMany()</strong><br>updateMany()与update()方法唯一的区别就是默认更新多个文档，即使设置{multi:false}也无法只更新第一个文档<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Model.updateMany(conditions, doc, [options], [callback])</span><br></pre></td></tr></table></figure></p>
+<h3 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h3><p>更新文档有以下三种方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">remove()</span><br><span class="line">findOneAndRemove()</span><br><span class="line">findByIdAndRemove()</span><br></pre></td></tr></table></figure></p>
+<p><strong>remove()</strong></p>
+<p>remove有两种形式，一种是文档的remove()方法，一种是Model的remove()方法。<br></p>
+<p>下面介绍Model的remove()方法，该方法的第一个参数conditions为查询条件，第二个参数回调函数的形式如下function(err){}。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model.remove(conditions, [callback])</span><br></pre></td></tr></table></figure>
+<p>下面介绍文档的remove()方法，该方法的参数回调函数的形式如下function(err,doc){}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">document.remove([callback])</span><br></pre></td></tr></table></figure></p>
+<p><strong>findOneAndRemove()</strong><br>model的remove()会删除符合条件的所有数据，如果只删除符合条件的第一条数据，则可以使用model的findOneAndRemove()方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Model.findOneAndRemove(conditions, [options], [callback])</span><br></pre></td></tr></table></figure></p>
+<p><strong>findByIdAndRemove()</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Model.findByIdAndRemove(id, [options], [callback])</span><br></pre></td></tr></table></figure></p>
+<h3 id="前后钩子"><a href="#前后钩子" class="headerlink" title="前后钩子"></a>前后钩子</h3><p>前后钩子即pre()和post()方法，又称为中间件，是在执行某些操作时可以执行的函数。中间件在schema上指定，类似于静态方法或实例方法等</p>
+<p>可以在数据库执行下列操作时，设置前后钩子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">init</span><br><span class="line">validate</span><br><span class="line">save</span><br><span class="line">remove</span><br><span class="line">count</span><br><span class="line">find</span><br><span class="line">findOne</span><br><span class="line">findOneAndRemove</span><br><span class="line">findOneAndUpdate</span><br><span class="line">insertMany</span><br><span class="line">update</span><br></pre></td></tr></table></figure></p>
+<p><strong>pre()</strong><br>以find()方法为例，在执行find()方法之前，执行pre()方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">var schema = new mongoose.Schema(&#123; age:Number, name: String,x:Number,y:Number&#125;);  </span><br><span class="line">schema.pre(&apos;find&apos;,function(next)&#123;</span><br><span class="line">    console.log(&apos;我是pre方法1&apos;);</span><br><span class="line">    next();</span><br><span class="line">&#125;);</span><br><span class="line">schema.pre(&apos;find&apos;,function(next)&#123;</span><br><span class="line">    console.log(&apos;我是pre方法2&apos;);</span><br><span class="line">    next();</span><br><span class="line">&#125;);  </span><br><span class="line">var temp = mongoose.model(&apos;temp&apos;, schema);</span><br><span class="line">temp.find(function(err,docs)&#123;</span><br><span class="line">    console.log(docs[0]);</span><br><span class="line">&#125;)    </span><br><span class="line">/*</span><br><span class="line">我是pre方法1</span><br><span class="line">我是pre方法2</span><br><span class="line">&#123; _id: 5972ed35e6f98ec60e3dc886,name: &apos;huochai&apos;,age: 27,x: 1,y: 2 &#125;</span><br><span class="line">*/</span><br></pre></td></tr></table></figure></p>
+<h3 id="查询后处理"><a href="#查询后处理" class="headerlink" title="查询后处理"></a>查询后处理</h3><p>常用的查询后处理的方法如下所示<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sort     排序</span><br><span class="line">skip     跳过</span><br><span class="line">limit    限制</span><br><span class="line">select   显示字段</span><br><span class="line">exect    执行</span><br><span class="line">count    计数</span><br><span class="line">distinct 去重</span><br></pre></td></tr></table></figure></p>
+<p>例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//按照age从小到大排列</span><br><span class="line">temp.find().sort(&quot;age&quot;).exec(function(err,docs)&#123;</span><br><span class="line">    console.log(docs);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h3 id="文档验证"><a href="#文档验证" class="headerlink" title="文档验证"></a>文档验证</h3><p>如果不进行文档验证，保存文档时，就可以不按照Schema设置的字段进行设置，分为以下几种情况</p>
+<ol>
+<li>缺少字段的文档可以保存成功</li>
+<li>包含未设置的字段的文档也可以保存成功，未设置的字段不被保存</li>
+<li>包含字段类型与设置不同的字段的文档也可以保存成功，不同字段类型的字段被保存为设置的字段类型</li>
+</ol>
+<p>而通过文档验证，就可以避免以上几种情况发生 <br><br>文档验证在SchemaType中定义，格式如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; name: &#123;type:String, validator:value&#125; &#125;</span><br></pre></td></tr></table></figure>
+<p>常用验证包括以下几种<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">required: 数据必须填写</span><br><span class="line">default: 默认值</span><br><span class="line">validate: 自定义匹配</span><br><span class="line">min: 最小值(只适用于数字)</span><br><span class="line">max: 最大值(只适用于数字)</span><br><span class="line">match: 正则匹配(只适用于字符串)</span><br><span class="line">enum:  枚举匹配(只适用于字符串)</span><br></pre></td></tr></table></figure></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.cnblogs.com/xiaohuochai/p/7215067.html?utm_source=itdadao&amp;utm_medium=referral" target="_blank" rel="noopener">Mongoose基础入门</a> <br><br><a href="http://www.cnblogs.com/zhongweiv/p/mongoose.html" target="_blank" rel="noopener">Mongoose介绍和入门</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/mongoose/" rel="tag"># mongoose</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/11/2017-10-11-net/" rel="next" title="HTTP与TCP/IP网络协议基础知识与重点">
+                <i class="fa fa-chevron-left"></i> HTTP与TCP/IP网络协议基础知识与重点
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/21/2017-10-21-mongo/" rel="prev" title="mongoDB常用操作">
+                mongoDB常用操作 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars1.githubusercontent.com/u/16967112?s=460&v=4"
+                alt="HouXingYi" />
+            
+              <p class="site-author-name" itemprop="name">HouXingYi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/HouXingYi" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备工作"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#概念理解"><span class="nav-number">2.</span> <span class="nav-text">概念理解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#连接数据库"><span class="nav-number">3.</span> <span class="nav-text">连接数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定义Schema"><span class="nav-number">4.</span> <span class="nav-text">定义Schema</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生成Model"><span class="nav-number">5.</span> <span class="nav-text">生成Model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用数据库操作"><span class="nav-number">6.</span> <span class="nav-text">常用数据库操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#新增"><span class="nav-number">6.1.</span> <span class="nav-text">新增</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询"><span class="nav-number">6.2.</span> <span class="nav-text">查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#更新"><span class="nav-number">6.3.</span> <span class="nav-text">更新</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除"><span class="nav-number">6.4.</span> <span class="nav-text">删除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前后钩子"><span class="nav-number">6.5.</span> <span class="nav-text">前后钩子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询后处理"><span class="nav-number">6.6.</span> <span class="nav-text">查询后处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文档验证"><span class="nav-number">6.7.</span> <span class="nav-text">文档验证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">HouXingYi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

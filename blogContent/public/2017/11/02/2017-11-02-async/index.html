@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="异步编程," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在JavaScript中，函数作为一等公民，使用上非常自由，无论调用，或者作为参数，或者作为返回值均可。 于是在无论是前端的事件驱动回调函数中，还是在nodejs中的异步IO，我们可以看见大量的回调函数。所谓的回调函数，就是把函数作为参数传入，并在将来的某个时候”回头调用”。 回调函数通常作为异步编程的一个解决方案，但是回调函数有许多问题 回调函数的问题问题一：回调地狱1234567var fs">
+<meta name="keywords" content="异步编程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="js异步编程解决方案">
+<meta property="og:url" content="http://yoursite.com/2017/11/02/2017-11-02-async/index.html">
+<meta property="og:site_name" content="HouXingYi&#39;s blog">
+<meta property="og:description" content="在JavaScript中，函数作为一等公民，使用上非常自由，无论调用，或者作为参数，或者作为返回值均可。 于是在无论是前端的事件驱动回调函数中，还是在nodejs中的异步IO，我们可以看见大量的回调函数。所谓的回调函数，就是把函数作为参数传入，并在将来的某个时候”回头调用”。 回调函数通常作为异步编程的一个解决方案，但是回调函数有许多问题 回调函数的问题问题一：回调地狱1234567var fs">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-01-28T06:14:45.311Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="js异步编程解决方案">
+<meta name="twitter:description" content="在JavaScript中，函数作为一等公民，使用上非常自由，无论调用，或者作为参数，或者作为返回值均可。 于是在无论是前端的事件驱动回调函数中，还是在nodejs中的异步IO，我们可以看见大量的回调函数。所谓的回调函数，就是把函数作为参数传入，并在将来的某个时候”回头调用”。 回调函数通常作为异步编程的一个解决方案，但是回调函数有许多问题 回调函数的问题问题一：回调地狱1234567var fs">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/11/02/2017-11-02-async/"/>
+
+
+
+
+
+  <title>js异步编程解决方案 | HouXingYi's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">HouXingYi's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">即使跑得再远，也逃不出自己本身</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/02/2017-11-02-async/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="HouXingYi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/16967112?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HouXingYi's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">js异步编程解决方案</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-02T00:00:00+08:00">
+                2017-11-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/js/" itemprop="url" rel="index">
+                    <span itemprop="name">js</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在JavaScript中，函数作为一等公民，使用上非常自由，无论调用，或者作为参数，或者作为返回值均可。</p>
+<p>于是在无论是前端的事件驱动回调函数中，还是在nodejs中的异步IO，我们可以看见大量的回调函数。所谓的回调函数，就是把函数作为参数传入，并在将来的某个时候”回头调用”。</p>
+<p>回调函数通常作为异步编程的一个解决方案，但是回调函数有许多问题</p>
+<h2 id="回调函数的问题"><a href="#回调函数的问题" class="headerlink" title="回调函数的问题"></a>回调函数的问题</h2><h3 id="问题一：回调地狱"><a href="#问题一：回调地狱" class="headerlink" title="问题一：回调地狱"></a>问题一：回调地狱</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">var fs = require(&apos;fs&apos;);</span><br><span class="line">fs.readFile(&apos;./text1.txt&apos;, &apos;utf8&apos;, function(err, data)&#123;</span><br><span class="line">    console.log(&quot;text1 file content: &quot; + data);</span><br><span class="line">    fs.readFile(&apos;./text2.txt&apos;, &apos;utf8&apos;, function(err, data)&#123;</span><br><span class="line">        console.log(&quot;text2 file content: &quot; + data);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>上面是我们在进行nodejs编程的时候经常会遇见的场景。前端进行异步请求的时候也经常会遇见这样的场景。当回调嵌套过深的时候，就会出现以下场景。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">doSomethingAsync1(function()&#123;</span><br><span class="line">    doSomethingAsync2(function()&#123;</span><br><span class="line">        doSomethingAsync3(function()&#123;</span><br><span class="line">            doSomethingAsync4(function()&#123;</span><br><span class="line">               doSomethingAsync5(function()&#123;</span><br><span class="line">                    // code...</span><br><span class="line">                &#125;);</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>所以这种嵌套过深的情况有时候是不可忍受的，我们称之为“回调地狱”或“回调金字塔”</p>
+<h3 id="问题二：异步编程的理解"><a href="#问题二：异步编程的理解" class="headerlink" title="问题二：异步编程的理解"></a>问题二：异步编程的理解</h3><p>我们的大脑习惯顺序思考问题，当要做一件事情的时候，我们会思考先做A再做B然后做C…。然而用回调函数写的异步代码则违反了我们天生的思考原则。</p>
+<p>你能够很快的说出以下代码的执行顺序吗。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">doA(function()&#123;</span><br><span class="line">    doC();</span><br><span class="line"></span><br><span class="line">    doD(function()&#123;</span><br><span class="line">        doF();</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    doE();</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">doB();</span><br></pre></td></tr></table></figure>
+<p>对于这样的代码，我们需要很大的努力才可以理解。也就是说，可读性很差。</p>
+<h2 id="回调函数的代替解决方案"><a href="#回调函数的代替解决方案" class="headerlink" title="回调函数的代替解决方案"></a>回调函数的代替解决方案</h2><h3 id="拆解function"><a href="#拆解function" class="headerlink" title="拆解function"></a>拆解function</h3><p>我们可以通过将各部分的任务拆解为单个函数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">function getData(count) &#123;</span><br><span class="line">    get(`/sampleget?count=$&#123;count&#125;`, data =&gt; &#123;</span><br><span class="line">        console.log(data);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function queryDB(kw) &#123;</span><br><span class="line">    db.find(`select * from sample where kw = $&#123;kw&#125;`, (err, res) =&gt; &#123;</span><br><span class="line">        getData(res.length);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function readFile(filepath) &#123;</span><br><span class="line">    fs.readFile(filepath, &apos;utf-8&apos;, (err, content) =&gt; &#123;</span><br><span class="line">        let keyword = content.substring(0, 5);</span><br><span class="line">        queryDB(keyword);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="事件发布-订阅模式"><a href="#事件发布-订阅模式" class="headerlink" title="事件发布/订阅模式"></a>事件发布/订阅模式</h3><p>采用发布订阅模式进行解耦</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">const events = require(&apos;events&apos;);</span><br><span class="line">const eventEmitter = new events.EventEmitter();</span><br><span class="line"></span><br><span class="line">eventEmitter.on(&apos;db&apos;, (err, kw) =&gt; &#123;</span><br><span class="line">    db.find(`select * from sample where kw = $&#123;kw&#125;`, (err, res) =&gt; &#123;</span><br><span class="line">        eventEmitter(&apos;get&apos;, res.length);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">eventEmitter.on(&apos;get&apos;, (err, count) =&gt; &#123;</span><br><span class="line">    get(`/sampleget?count=$&#123;count&#125;`, data =&gt; &#123;</span><br><span class="line">        console.log(data);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">fs.readFile(&apos;./sample.txt&apos;, &apos;utf-8&apos;, (err, content) =&gt; &#123;</span><br><span class="line">    let keyword = content.substring(0, 5);</span><br><span class="line">    eventEmitter. emit(&apos;db&apos;, keyword);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>以上两种解决方案确实可以解决一定问题，但终究没有摆脱回调函数的模式。</p>
+<h3 id="Promise"><a href="#Promise" class="headerlink" title="Promise"></a>Promise</h3><p>ES 6中原生提供了Promise对象，Promise对象代表了某个未来才会知道结果的事件(一般是一个异步操作)，并且这个事件对外提供了统一的API，可供进一步处理。</p>
+<p>使用Promise对象可以用同步操作的流程写法来表达异步操作，避免了层层嵌套的异步回调，代码也更加清晰易懂，方便维护。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">var fs = require(&apos;fs&apos;)</span><br><span class="line">var read = function (filename)&#123;</span><br><span class="line">    var promise = new Promise(function(resolve, reject)&#123;</span><br><span class="line">        fs.readFile(filename, &apos;utf8&apos;, function(err, data)&#123;</span><br><span class="line">            if (err)&#123;</span><br><span class="line">                reject(err);</span><br><span class="line">            &#125;</span><br><span class="line">            resolve(data);</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;);</span><br><span class="line">    return promise;</span><br><span class="line">&#125;</span><br><span class="line">read(&apos;./text1.txt&apos;)</span><br><span class="line">.then(function(data)&#123;</span><br><span class="line">    console.log(data);</span><br><span class="line">return read(&apos;./text2.txt&apos;);</span><br><span class="line">&#125;)</span><br><span class="line">.then(function(data)&#123;</span><br><span class="line">    console.log(data);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="Generator"><a href="#Generator" class="headerlink" title="Generator"></a>Generator</h3><p>Generator 函数有多种理解角度。语法上，首先可以把它理解成，Generator 函数是一个状态机，封装了多个内部状态。</p>
+<p>执行 Generator 函数会返回一个遍历器对象，也就是说，Generator 函数除了状态机，还是一个遍历器对象生成函数。返回的遍历器对象，可以依次遍历 Generator 函数内部的每一个状态。</p>
+<p>形式上，Generator 函数是一个普通函数，但是有两个特征。一是，function关键字与函数名之间有一个星号；二是，函数体内部使用yield表达式，定义不同的内部状态（yield在英语里的意思就是“产出”）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">function* helloWorldGenerator() &#123;</span><br><span class="line">  yield &apos;hello&apos;;</span><br><span class="line">  yield &apos;world&apos;;</span><br><span class="line">  yield &apos;end&apos;;</span><br><span class="line">  return &apos;ending&apos;;</span><br><span class="line">&#125;</span><br><span class="line">hw.next()</span><br><span class="line">// &#123; value: &apos;hello&apos;, done: false &#125;</span><br><span class="line"></span><br><span class="line">hw.next()</span><br><span class="line">// &#123; value: &apos;world&apos;, done: false &#125;</span><br><span class="line"></span><br><span class="line">hw.next()</span><br><span class="line">// &#123; value: &apos;end&apos;, done: true &#125;</span><br><span class="line"></span><br><span class="line">hw.next()</span><br><span class="line">// &#123; value: undefined, done: true &#125;</span><br></pre></td></tr></table></figure>
+<p>上面代码定义了一个 Generator 函数helloWorldGenerator，它内部有三个yield表达式（hello和world、end），即该函数有三个状态：hello，world，end 和 return 语句（结束执行）。</p>
+<p>然后，Generator 函数的调用方法与普通函数一样，也是在函数名后面加上一对圆括号。不同的是，调用 Generator 函数后，该<code>函数并不执行</code>，返回的也不是函数运行结果，而是一个指向内部状态的指针对象，也就是遍历器对象（Iterator Object）。</p>
+<p>下一步，必须调用遍历器对象的next方法，使得指针移向下一个状态。也就是说，每次调用next方法，内部指针就从函数头部或上一次停下来的地方开始执行，直到遇到下一个yield表达式（或return语句）为止。换言之，Generator 函数是分段执行的，yield表达式是暂停执行的标记，而next方法可以恢复执行。</p>
+<h2 id="async-await"><a href="#async-await" class="headerlink" title="async/await"></a>async/await</h2><p>async/await是ES7中的异步解决方案，可以看我的这篇博文。</p>
+<p><a href="https://houxingyi.github.io/js/2017/07/15/AsyncAwaitTran.html" target="_blank" rel="noopener">[译]在10分钟内解释JavaScript Async/Await</a></p>
+<h2 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h2><p>结合以上，我们可以有五种方法来解决回调地狱的问题</p>
+<ul>
+<li>拆解function</li>
+<li>事件发布/订阅模式</li>
+<li>Promise</li>
+<li>Generator</li>
+<li>async/await</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/异步编程/" rel="tag"># 异步编程</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/30/2017-10-30-populate/" rel="next" title="mongoose之Population">
+                <i class="fa fa-chevron-left"></i> mongoose之Population
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/05/2017-11-05-ES6-1/" rel="prev" title="《深入理解ES6》之块级作用域与字符串">
+                《深入理解ES6》之块级作用域与字符串 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars1.githubusercontent.com/u/16967112?s=460&v=4"
+                alt="HouXingYi" />
+            
+              <p class="site-author-name" itemprop="name">HouXingYi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/HouXingYi" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#回调函数的问题"><span class="nav-number">1.</span> <span class="nav-text">回调函数的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题一：回调地狱"><span class="nav-number">1.1.</span> <span class="nav-text">问题一：回调地狱</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题二：异步编程的理解"><span class="nav-number">1.2.</span> <span class="nav-text">问题二：异步编程的理解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#回调函数的代替解决方案"><span class="nav-number">2.</span> <span class="nav-text">回调函数的代替解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#拆解function"><span class="nav-number">2.1.</span> <span class="nav-text">拆解function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事件发布-订阅模式"><span class="nav-number">2.2.</span> <span class="nav-text">事件发布/订阅模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Promise"><span class="nav-number">2.3.</span> <span class="nav-text">Promise</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Generator"><span class="nav-number">2.4.</span> <span class="nav-text">Generator</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#async-await"><span class="nav-number">3.</span> <span class="nav-text">async/await</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结尾"><span class="nav-number">4.</span> <span class="nav-text">结尾</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">HouXingYi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

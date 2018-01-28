@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="regex," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="资料正则表达式30分钟入门教程《JavaScript 闯关记》之正则表达式    正则表达式是什么在编写处理字符串的程序或网页时，经常会有查找符合某些复杂规则的字符串的需要。正则表达式就是用于描述这些规则的工具。换句话说，正则表达式就是记录文本规则的代码。 为什么要用正则表达式 密码、账号等验证。 看源码需要，写框架，后端编程，路由都离不开正则  元字符常用的正则表达式元字符 例子加深理解 例子一">
+<meta name="keywords" content="regex">
+<meta property="og:type" content="article">
+<meta property="og:title" content="入门正则表达式">
+<meta property="og:url" content="http://yoursite.com/2017/08/10/2017-8-10-regex/index.html">
+<meta property="og:site_name" content="HouXingYi&#39;s blog">
+<meta property="og:description" content="资料正则表达式30分钟入门教程《JavaScript 闯关记》之正则表达式    正则表达式是什么在编写处理字符串的程序或网页时，经常会有查找符合某些复杂规则的字符串的需要。正则表达式就是用于描述这些规则的工具。换句话说，正则表达式就是记录文本规则的代码。 为什么要用正则表达式 密码、账号等验证。 看源码需要，写框架，后端编程，路由都离不开正则  元字符常用的正则表达式元字符 例子加深理解 例子一">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-01-28T06:14:45.314Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="入门正则表达式">
+<meta name="twitter:description" content="资料正则表达式30分钟入门教程《JavaScript 闯关记》之正则表达式    正则表达式是什么在编写处理字符串的程序或网页时，经常会有查找符合某些复杂规则的字符串的需要。正则表达式就是用于描述这些规则的工具。换句话说，正则表达式就是记录文本规则的代码。 为什么要用正则表达式 密码、账号等验证。 看源码需要，写框架，后端编程，路由都离不开正则  元字符常用的正则表达式元字符 例子加深理解 例子一">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/10/2017-8-10-regex/"/>
+
+
+
+
+
+  <title>入门正则表达式 | HouXingYi's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">HouXingYi's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">即使跑得再远，也逃不出自己本身</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/10/2017-8-10-regex/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="HouXingYi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/16967112?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HouXingYi's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">入门正则表达式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-10T00:00:00+08:00">
+                2017-08-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/基础/" itemprop="url" rel="index">
+                    <span itemprop="name">基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="资料"><a href="#资料" class="headerlink" title="资料"></a>资料</h2><p><a href="http://deerchao.net/tutorials/regex/regex.htm" target="_blank" rel="noopener">正则表达式30分钟入门教程</a><br><a href="https://juejin.im/post/582455e467f3560058c6641e" target="_blank" rel="noopener">《JavaScript 闯关记》之正则表达式</a>   </p>
+<h2 id="正则表达式是什么"><a href="#正则表达式是什么" class="headerlink" title="正则表达式是什么"></a>正则表达式是什么</h2><p>在编写处理字符串的程序或网页时，经常会有查找符合某些复杂规则的字符串的需要。正则表达式就是用于描述这些规则的工具。换句话说，正则表达式就是记录文本规则的代码。</p>
+<h2 id="为什么要用正则表达式"><a href="#为什么要用正则表达式" class="headerlink" title="为什么要用正则表达式"></a>为什么要用正则表达式</h2><ul>
+<li>密码、账号等验证。</li>
+<li>看源码需要，写框架，后端编程，路由都离不开正则</li>
+</ul>
+<h2 id="元字符"><a href="#元字符" class="headerlink" title="元字符"></a>元字符</h2><p><a href="http://www.runoob.com/regexp/regexp-metachar.html" target="_blank" rel="noopener">常用的正则表达式元字符</a></p>
+<h2 id="例子加深理解"><a href="#例子加深理解" class="headerlink" title="例子加深理解"></a>例子加深理解</h2><ol>
+<li>例子一 <br></li>
+</ol>
+<ul>
+<li>正则表达式:<code>\bhi\b.*\bLucy\b</code></li>
+<li>含义:先是一个单词hi,然后是任意个任意字符(但不能是换行)，最后是Lucy这个单词</li>
+<li>知识点:  <ol>
+<li><code>\b</code>:代表着<em>单词的开头或结尾，也就是单词的分界处</em> </li>
+<li><code>.</code>:匹配<em>除了换行符以外的任意字符</em></li>
+<li><code>*</code>:它指定<em>前边的内容可以连续重复使用任意次以使整个表达式得到匹配</em></li>
+</ol>
+</li>
+</ul>
+<ol>
+<li>例子二     </li>
+</ol>
+<ul>
+<li>正则表达式:<code>0\d\d-\d\d\d\d\d\d\d\d</code> 或 <code>0\d{2}-\d{8}</code></li>
+<li>含义:以0开头，然后是两个数字，然后是一个连字号“-”，最后是8个数字</li>
+<li>知识点:<ol>
+<li><code>\d</code>:匹配<em>一位数字</em> </li>
+<li><code>{n}</code>:匹配<em>必须连续重复匹配2次</em></li>
+</ol>
+</li>
+</ul>
+<ol>
+<li>例子三     </li>
+</ol>
+<ul>
+<li>正则表达式:<code>\ba\w*\b</code></li>
+<li>含义:a开头的单词——先是某个单词开始处(\b)，然后是字母a,然后是任意数量的字母或数字(\w*)，最后是单词结束处(\b)</li>
+<li>知识点:<ol>
+<li><code>\w</code>:匹配<em>字母或数字或下划线或汉字等</em> </li>
+<li><code>\s</code>:匹配<em>任意的空白符，包括空格，制表符(Tab)，换行符，中文全角空格等</em>（虽然这里没有）</li>
+</ol>
+</li>
+</ul>
+<h2 id="还有一些元字符"><a href="#还有一些元字符" class="headerlink" title="还有一些元字符"></a>还有一些元字符</h2><ol>
+<li><code>^</code>:匹配<em>匹配字符串的开始</em> </li>
+<li><code>$</code>:匹配<em>匹配字符串的结束</em></li>
+<li><code>{n,m}</code>:重复的次数不能少于n次，不能多于m次</li>
+<li><code>\</code>:标记为一个元字符、或一个原义字符、或一个 向后引用、或一个八进制转义符</li>
+<li><p>重复：</p>
+<p> 代码/语法 | 说明 </p>
+<ul>
+<li>| -</li>
+</ul>
+<ul>
+<li>| 重复零次或更多次</li>
+</ul>
+<ul>
+<li>| 重复一次或更多次<br>? | 重复零次或一次<br>{n} | 重复n次<br>{n,} | 重复n次或更多次<br>{n,m} | 重复n到m次</li>
+</ul>
+</li>
+<li><p>字符类</p>
+<p> 匹配没有预定义元字符的字符集合 : 只需要在方括号里列出它们就行了 <br><br> 如：<code>[aeiou]</code>就匹配任何一个英文元音字母</p>
+</li>
+</ol>
+<h2 id="一些稍微高级的话题"><a href="#一些稍微高级的话题" class="headerlink" title="一些稍微高级的话题"></a>一些稍微高级的话题</h2><ol>
+<li>分枝条件：<code>|</code>类似于编程中的<em>或</em>，指的是有几种规则，如果满足其中任意一种规则都应该当成匹配</li>
+<li>分组：用小括号来指定<em>子表达式</em></li>
+<li><p>反义：</p>
+<p> 代码/语法 | 说明 </p>
+<ul>
+<li>| -<br>\W | 匹配任意不是字母，数字，下划线，汉字的字符<br>\S | 匹配任意不是空白符的字符<br>\D | 匹配任意非数字的字符<br>\B | 匹配不是单词开头或结束的位置<br>[^x] | 匹配除了x以外的任意字符<br>[^aeiou] | 匹配除了aeiou这几个字母以外的任意字符</li>
+</ul>
+</li>
+<li><p>后向引用：使用小括号指定一个子表达式后，匹配这个子表达式的文本(也就是此分组捕获的内容)可以在表达式或其它程序中作进一步的处理。默认情况下，每个分组会自动拥有一个组号。<br> <code>后向引用</code>用于重复搜索前面某个分组匹配的文本。例如，<code>\1</code>代表分组1匹配的文本。</p>
+</li>
+<li>零宽断言：查找在某些内容(但并不包括这些内容)之前或之后的东西。<br><code>(?=exp)</code>也叫<code>零宽度正预测先行断言</code>，它断言自身出现的位置的后面能匹配表达式exp。比如<code>\b\w+(?=ing\b)</code>，匹配以ing结尾的单词的前面部分(除了ing以外的部分)，如查找I’m singing while you’re dancing.时，它会匹配<code>sing</code>和<code>danc</code>。</li>
+<li>负向零宽断言：确保某个字符没有出现，但并不想去匹配它</li>
+<li>贪婪与懒惰：当正则表达式中包含能接受重复的限定符时，通常的行为是（在使整个表达式能得到匹配的前提下）<code>匹配尽可能多的字符</code>。有时，我们更需要懒惰匹配，也就是匹配尽可能少的字符。前面给出的限定符都可以被转化为懒惰匹配模式，只要在它后面加上一个问号<code>?</code>。</li>
+<li>平衡组/递归匹配</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/regex/" rel="tag"># regex</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/15/2017-7-15-AsyncAwaitTran/" rel="next" title="[译]在10分钟内解释JavaScript Async/Await">
+                <i class="fa fa-chevron-left"></i> [译]在10分钟内解释JavaScript Async/Await
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/10/2017-10-10-routes-in-100-line/" rel="prev" title="[译]一个100行内的现代js路由">
+                [译]一个100行内的现代js路由 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars1.githubusercontent.com/u/16967112?s=460&v=4"
+                alt="HouXingYi" />
+            
+              <p class="site-author-name" itemprop="name">HouXingYi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/HouXingYi" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#资料"><span class="nav-number">1.</span> <span class="nav-text">资料</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正则表达式是什么"><span class="nav-number">2.</span> <span class="nav-text">正则表达式是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么要用正则表达式"><span class="nav-number">3.</span> <span class="nav-text">为什么要用正则表达式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#元字符"><span class="nav-number">4.</span> <span class="nav-text">元字符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例子加深理解"><span class="nav-number">5.</span> <span class="nav-text">例子加深理解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#还有一些元字符"><span class="nav-number">6.</span> <span class="nav-text">还有一些元字符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一些稍微高级的话题"><span class="nav-number">7.</span> <span class="nav-text">一些稍微高级的话题</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">HouXingYi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
