@@ -11,6 +11,8 @@
 
 `pm2 deploy ecosystem.config.js production`
 
+由于没有上传public，需要手动在服务器上hexo g和上传静态文件到GitHub pages上
+
 
 
 
