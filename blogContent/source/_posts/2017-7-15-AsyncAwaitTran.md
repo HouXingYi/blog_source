@@ -4,7 +4,7 @@ title: "[译]在10分钟内解释JavaScript Async/Await"
 subtitle: ""
 date: 2017-07-15
 author: HouXingYi
-category: JS
+category: 翻译
 tags: Async Await ES6
 finished: true
 ---
