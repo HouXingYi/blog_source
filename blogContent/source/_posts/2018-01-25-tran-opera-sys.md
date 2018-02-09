@@ -67,6 +67,6 @@ finished: true
 * `Waiting`：当进程需要等待一个资源，比如等待用户输入，或者等待文件可访问，这时候进程进入waiting状态。
 * `Terminated or Exit`：一旦进程完成执行，或者被操作系统终止，进程转入terminated状态，这个状态进程等待被从主内存中移除。
 
-一个`进程控制块（Process Control Block）`是一个由操作系统为每个进程维护的数据结构。PCB由一个整型的进程ID（PID）标识。
+一个`进程控制块（Process Control Block）`是一个由操作系统为每个进程维护的数据结构。PCB由一个整型的进程ID（PID）标识。PCB
 
 
