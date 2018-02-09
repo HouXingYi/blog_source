@@ -46,7 +46,27 @@ finished: true
 
 ## 1：进程和进程管理
 
-一个进程基本上就是一个执行的程序。
+一个进程基本上就是一个执行的程序。进程的执行必需按顺序进行。简单来说，我们写了一个文本文件的电脑程序，当我们执行这个程序，它变成了一个进程执行我们程序中所有的任务。
 
+当一个程序加载进内存成为一个进程，它会变成四个部分-堆，栈，文本和数据。下面的图片展现了一个内存中的进程简化的结构。
+
+![pic](https://cdn-images-1.medium.com/max/1600/1*pplsGMeRKFcc0IHr1j3YwA.jpeg)
+
+* `堆`：进程堆包括了临时数据，比如方法的参数，返回值和本地变量。
+* `栈`：在进程运行的时候动态的分配内存
+* `text`This includes the current activity represented by the value of Program Counter and the contents of the processor’s registers.
+* `Data`：这个部分包括全局和静态的变量
+
+当一个进程运行的时候，它在不同的阶段变化。这些阶段可能根据不同的操作系统有所不同，命名的方式也没有标准。总体来说，一个进程在某个时刻会是下面五个进程中的某一个：
+
+![pic](https://cdn-images-1.medium.com/max/1600/1*KTbvb5KA501gYqsfv39k6Q.jpeg)
+
+* `start`：当一个进程第一次创建的最初状态
+* `Ready`：进程等待被分配给一个处理器。准备好的进程等待操作系统分配处理器给他们，这样他们才可以运行。一个进程有可能在start状态之后进入这个状态，或者是正在运行中，但被打断，因为调度程序把CPU分配给其他程序。
+* `Running`：一旦进程被OS调度器分配给一个处理器，进程的状态设为running并且处理器执行它的指令。
+* `Waiting`：当进程需要等待一个资源，比如等待用户输入，或者等待文件可访问，这时候进程进入waiting状态。
+* `Terminated or Exit`：一旦进程完成执行，或者被操作系统终止，进程转入terminated状态，这个状态进程等待被从主内存中移除。
+
+一个`进程控制块（Process Control Block）`是一个由操作系统为每个进程维护的数据结构。PCB由一个整型的进程ID（PID）标识。
 
 
