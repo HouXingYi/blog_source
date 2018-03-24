@@ -25,7 +25,7 @@ finished: true
 
 #### 安装项目
 
-为了将我们从配置地狱中拯救出来，我们使用绝妙的（但比较慢:P）`create-react-app`
+为了将我们从配置地狱中拯救出来，我们使用绝妙（但比较慢:P）的`create-react-app`
 
 ```
 $ yarn global add create-react-app
