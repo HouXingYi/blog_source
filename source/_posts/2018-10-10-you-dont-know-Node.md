@@ -147,6 +147,32 @@ Hello Python->Hello Node->data1->data2
 
 ## Global
 
+当从浏览器JavaScript或者其他编程语言转到Node，会有下面几个问题：
+
+* 哪里去存储密码？
+* 如何创建全局变量（在Node中没有window）
+* 如何获得命令行输入，操作系统，平台，内存使用，版本等等？
+
+有一个全局对象，它有一些属性。部分如下：
+
+* `global.process`: 进程，系统，环境信息（你可以获得命令行输入，环境变量比如密码，内存等）
+* `global.__filename`: 文件名和当前运行脚本的路径
+* `global.__dirname`: 当前运行脚本的绝对路径
+* `global.module`: 对象用于导出代码，使这个文件变为一个模块
+* `global.require()`: 导入模块，JSON文件，和文件夹的方法
+
+接下来就是我们熟悉的来自浏览器JavaScript的方法：
+
+* global.console()
+* global.setInterval()
+* global.setTimeout()
+
+每一个全局属性都可以通过大写的`GLOBAL`或者干脆没有命名空间比如`process`代替`global.process`
+
+
+## Process
+
+
 
 
 
