@@ -172,7 +172,19 @@ Hello Python->Hello Node->data1->data2
 
 ## Process
 
+Process对象有许多信息，理应做成一个部分。我列出其中的一些属性：
 
+* process.pid：这个Node实例的进程ID
+* process.versions：Node，V8和其他组件的各种版本
+* process.arch：系统的架构
+* process.argv：命令行参数
+* process.env：环境变量
+
+一些方法如下：
+
+* process.uptime()：获取uptime
+* process.memoryUsage()：获取内存使用
+* process.cwd()：获取当前工作目录。
 
 
 
