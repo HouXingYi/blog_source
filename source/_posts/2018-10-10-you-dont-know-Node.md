@@ -184,7 +184,288 @@ Process对象有许多信息，理应做成一个部分。我列出其中的一�
 
 * process.uptime()：获取uptime
 * process.memoryUsage()：获取内存使用
-* process.cwd()：获取当前工作目录。
+* process.cwd()：获取当前工作目录。Not to be confused with __dirname which doesn’t depend on the location from which the process has been started.
+* process.exit()：退出当前进程。你可以传入1或0。
+* process.on()：添加一个事件监听器比如'on(‘uncaughtException’)'
+
+棘手的问题：谁会喜欢并且理解回调？？
+
+一些人太喜欢回调了，于是他们创建了[http://callbackhell.com](http://callbackhell.com)。如果你还不熟悉这个术语，以下是展示：
+
+```
+fs.readdir(source, function (err, files) {
+  if (err) {
+    console.log('Error finding files: ' + err)
+  } else {
+    files.forEach(function (filename, fileIndex) {
+      console.log(filename)
+      gm(source + filename).size(function (err, values) {
+        if (err) {
+          console.log('Error identifying file size: ' + err)
+        } else {
+          console.log(filename + ' : ' + values)
+          aspect = (values.width / values.height)
+          widths.forEach(function (width, widthIndex) {
+            height = Math.round(width / aspect)
+            console.log('resizing ' + filename + 'to ' + height + 'x' + height)
+            this.resize(width, height).write(dest + 'w' + width + '_' + filename, function(err) {
+              if (err) console.log('Error writing file: ' + err)
+            })
+          }.bind(this))
+        }
+      })
+    })
+  }
+})
+```
+
+回调地狱难以阅读，并且容易出错。除此之外回调并不能很好的扩展，这样我们改如何模块化和管理异步代码？
+
+## Event Emitters
+
+为了解决回调地狱，或者说末日金字塔，我们有了[Event Emitters](https://nodejs.org/api/events.html)。他们允许你用事件的方式执行异步代码。
+
+简单来说，event Emitters就是你触发了一个事件，所有有监听这个事件的都可以听到。在Node中，一个事件可以描述为一个字符串和一个响应的回调。
+
+Event Emitters为了以下目的：
+
+* 用观察者模式处理Node中的事件处理
+* 一个事件追溯所有与之相关联的函数
+* 这些相关联的函数，我们称之为观察者，当对应事件被触发的时候执行
+
+为了使用Event Emitters，导入模块并实例化对象：
+
+```
+var events  = require('events')
+var emitter = new events.EventEmitter()
+```
+
+之后，我们添加事件监听器然后触发事件：
+
+```
+emitter.on('knock', function() {
+  console.log('Who\'s there?')
+})
+
+emitter.on('knock', function() {
+  console.log('Go away!')
+})
+
+emitter.emit('knock')
+```
+
+让我们通过继承`EventEmitter`来实现一些更有用的。想象你的任务是实现一个类来完成每月，每周和每日的邮件工作。这个类需要足够灵活能够让开发者去自定义最终的输出。换句话说，任何人消费这个类需要在工作结束的时候做一些自定义的逻辑。
+
+下面这个图解解释了我们继承`events`模块去创建`Job`，然后我们使用`done`事件监听器去自定义`Job`类的行为：
+
+![pic4](/images/youDontKnowNode/pic5.png)
+
+Node.js Event Emitters: Observer Patterns
+
+类`Job`将会保持它的属性，但也会得到`events`。我们需要做的只是在结束的时候触发`done`即可：
+
+```
+// job.js
+var util = require('util')
+var Job = function Job() {
+  var job = this 
+  // ...
+  job.process = function() {
+    // ...
+    job.emit('done', { completedOn: new Date() })
+  }
+}
+
+util.inherits(Job, require('events').EventEmitter)
+module.exports = Job
+```
+
+现在，我们的目标是自定义`Job`任务结束后的行为：
+
+```
+// weekly.js
+var Job = require('./job.js')
+var job = new Job()
+
+job.on('done', function(details){
+  console.log('Job was completed at', details.completedOn)
+  job.removeAllListeners()
+})
+
+job.process()
+```
+
+还有一些`emitters`的其他功能：
+
+* emitter.listeners(eventName)：列出相应事件的对应的所有事件监听器
+* emitter.once(eventName, listener)：添加一个只触发一次的事件监听器
+* emitter.removeListener(eventName, listener)：移除一个事件监听器
+
+事件模式在Node中广泛应用，特别是在核心模块。所以，掌握事件将会给你一个很大的提升。
+
+## Streams
+
+当Node中处理大的数据的时候有一些问题。速度可能会很慢并且`buffer`的限制是1Gb。并且，如果资源是持续的，没有设置尽头的，你改如何处理？为了解决这些问题，使用streams（流）。
+
+Node流是持续的数据块的抽象。换句话说，不需要等待整个资源被加载。看下下面的图解展示了标准的buffer的处理方式：
+
+![pic4](/images/youDontKnowNode/pic6.png)
+
+Node.js Buffer Approach
+
+我们必须等到全部的buffer加载之后，才可以处理输出的数据。接下来，对比下一个描绘流的图解。这下，我们可以马上处理数据从收到的第一个数据块开始：
+
+![pic4](/images/youDontKnowNode/pic7.png)
+
+Node.js Stream Approach
+
+在Node中有四种类型的Streams：
+
+* Readable：可读
+* Writable：可写
+* Duplex：即可读也可写
+* Transform：你可以转换数据
+
+事实上在Node中Streams到处都是。最常见的stream实现是：
+
+* HTTP请求和响应
+* 标准输入/输出
+* 文件读取和写入
+
+Streams继承自Event Emitter，使其提供观察者模式，比如`events`，还记得吗？我们可以用它来实现流。
+
+## Readable Stream Example
+
+一个可读流的例子可以是标准输入流`process.stdin`。它包含了进入应用的数据。典型的输入是从键盘用来开始进程。
+
+为了读取从`stdin`读取数据，使用`data`和`end`事件。`data`事件的回调将会把数据块作为参数传入：
+
+```
+process.stdin.resume()
+process.stdin.setEncoding('utf8')
+
+process.stdin.on('data', function (chunk) {
+  console.log('chunk: ', chunk)
+})
+
+process.stdin.on('end', function () {
+  console.log('--- END ---')
+})
+```
+
+然后数据块便输入至程序。根据输入的大小，事件可能会触发多次。`end`事件是用于输入流最后的信号。
+
+提示：`stdin`默认是停止的，所以在读数据之前要`resume`（恢复）。
+
+可读流有一个同步的`read()`接口。当流结束的时候，它返回数据块或者`null`。于是我们可以利用这种特性把`null !== (chunk = readable.read())`放入`while`的条件中：
+
+```
+var readable = getReadableStreamSomehow()
+readable.on('readable', () => {
+  var chunk
+  while (null !== (chunk = readable.read())) {
+    console.log('got %d bytes of data', chunk.length)
+  }
+})
+```
+
+理想情况下，我们想尽量在Node中多写异步代码，为了避免阻塞主线程。然而，数据块很小，所以不必担心同步的`readable.read()`阻塞线程。
+
+## Pipe
+
+Node为开发者提供了一个事件的替代方案。我们可以使用`pipe()`方法。下面的例子为读一个文件，用GZip压缩，然后把压缩的数据写入文件：
+
+```
+var r = fs.createReadStream('file.txt')
+var z = zlib.createGzip()
+var w = fs.createWriteStream('file.txt.gz')
+r.pipe(z).pipe(w)
+```
+
+`Readable.pipe()`接受一个可写流然后返回一个终点。这样我们就可以把`pipe()`方法一个一个串联起来。
+
+所以你使用流的时候在events和pipes之间就可以选择了。
+
+## HTTP Streams
+
+我们大部分使用Node构建传统或者RESTful Api的web应用。所以我们可以把HTTP请求变为流吗？答案是一个响亮的yes。
+
+请求和响应都是可读可写的流并且都继承`event emitters`。我们可以添加一个`data`事件监听器。在回调中我们接收数据块，我们马上转化数据块而无需等到全部的响应。在下面的例子中，我拼接`body`并在`end`事件的回调中解析：
+
+```
+const http = require('http')
+var server = http.createServer( (req, res) => {
+  var body = ''
+  req.setEncoding('utf8')
+  req.on('data', (chunk) => {
+    body += chunk
+  })
+  req.on('end', () => {  
+    var data = JSON.parse(body)
+    res.write(typeof data)
+    res.end()
+  })
+})
+
+server.listen(1337)
+```
+
+接下来我们使用`Express.js`让我们的服务更加接近真实情况。在下一个例子中，我有一个巨大的图片(~8Mb)并且有两组路由：`/stream`和`/non-stream`。
+
+server-stream.js:
+
+```
+app.get('/non-stream', function(req, res) {
+  var file = fs.readFile(largeImagePath, function(error, data){
+    res.end(data)
+  })
+})
+
+app.get('/non-stream2', function(req, res) {
+  var file = fs.readFileSync(largeImagePath)
+  res.end(file)
+})
+
+app.get('/stream', function(req, res) {
+  var stream = fs.createReadStream(largeImagePath)
+  stream.pipe(res)
+})
+
+
+app.get('/stream2', function(req, res) {
+  var stream = fs.createReadStream(largeImagePath)
+  stream.on('data', function(data) {
+    res.write(data)
+  })
+  stream.on('end', function() {
+    res.end()
+  })
+})
+```
+
+我在`/stream2`中也有一个替代事件的实现并且在`/non-stream2`中有一个替代同步的实现。他们做的事是一样的，只不过是用了不同的语法和风格。在这个例子中同步方法性能表现会更好，因为我们只发送了一个请求，而不是同时多个。
+
+为了启动例子，在命令行中输入：
+
+```
+$ node server-stream
+```
+
+接下来在chrome中打开[http://localhost:3000/stream](http://localhost:3000/stream)和[http://localhost:3000/non-stream](http://localhost:3000/non-stream)。在开发者工具中的`Network`标签页中将会向你展示headers。对比`X-Response-Time`。在我的例子中，是数量级的差距， /stream vs. /stream2:300ms vs. 3–5s。
+
+你的结果可能不一样，但我想表达的意思是使用流，用户可以更早的得到数据。Node的流确实很强大。这里有一些好的关于流的资源，掌握了它们然后在你的团队中成为一个流的专家。
+
+[Stream Handbook](https://github.com/substack/stream-handbook)和`stream-adventure`你可以通过npm安装:
+
+```
+$ sudo npm install -g stream-adventure
+$ stream-adventure
+```
+
+## Buffers
+
+TODO
+
 
 
 
