@@ -464,8 +464,59 @@ $ stream-adventure
 
 ## Buffers
 
-TODO
+对于二进制数据我们使用什么类型？如果你记得的话，浏览器JavaScript没有二进制类型，但是Node有。我们称之为buffer。是一个全局对象，所以我们不用把他当作模块导入。
 
+创建二进制类型，使用下面的声明之一：
+
+* Buffer.alloc(size)
+* Buffer.from(array)
+* Buffer.from(buffer)
+* Buffer.from(str[, encoding])
+
+官方[Buffer文档]列出所有的方法和编码。最流行的编码是`utf8`。
+
+一个典型的`buffer`看起来像是乱码，所以我们必须用`toString()`把它转化为人类可读的格式。下面的`for`循环创建一个字母表的buffer：
+
+```
+let buf = Buffer.alloc(26)
+for (var i = 0 ; i < 26 ; i++) {
+  buf[i] = i + 97 // 97 is ASCII a
+}
+```
+
+如果我们不把它转化为字符串，这个buffer看起来就像一个数字的数组。
+
+```
+console.log(buf) // <Buffer 61 62 63 64 65 66 67 68 69 6a 6b 6c 6d 6e 6f 70 71 72 73 74 75 76 77 78 79 7a>
+```
+
+如果我们用`toString`把它转化为字符串
+
+```
+buf.toString('utf8') // outputs: abcdefghijklmnopqrstuvwxyz
+buf.toString('ascii') // outputs: abcdefghijklmnopqrstuvwxyz
+```
+
+如果我们只是需要部分的字符串，这个方法接收开始数字和结束位置：
+
+```
+buf.toString('ascii', 0, 5) // outputs: abcde
+buf.toString('utf8', 0, 5) // outputs: abcde
+buf.toString(undefined, 0, 5) // encoding defaults to 'utf8', outputs abcde
+```
+
+还记得fs吗？默认情况下`data`的值也是buffer：
+
+```
+fs.readFile('/etc/passwd', function (err, data) {
+  if (err) return console.error(err)
+  console.log(data)
+});
+```
+
+## Clusters
+
+你可能经常从Node怀疑者那听到说Node是单线程的，所以它没法规模化。
 
 
 
