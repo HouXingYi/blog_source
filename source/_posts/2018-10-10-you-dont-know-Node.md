@@ -516,7 +516,75 @@ fs.readFile('/etc/passwd', function (err, data) {
 
 ## Clusters
 
-你可能经常从Node怀疑者那听到说Node是单线程的，所以它没法规模化。
+你可能经常从Node怀疑者那听到说Node是单线程的，所以它没法规模化。有一个核心模块cluster（核心模块意味着你不用安装，它是平台的一部分）允许你利用每个机器的所有CPU能力。这允许你垂直的扩展你的Node程序。
+
+代码是很简单的。我们需要引入模块，创建一个master，和多个worker。典型的我们有多少个CPU核心就创建多少个进程。但这不是硬性规定。你可创建任意数量的进程，但到某一个点，收益递减规律介入，你不会有任何性能提高。
+
+master和worker的代码在同一个文件。worker可以监听同一个端口并且发送消息（通过事件）给master。master可以监听事件并且在需要的时候重启cluster。为master写代码的方式是使用`cluster.isMaster()`，对worker来说就是`cluster.isWorker()`。大部分服务器代码都放在worker（isWorker()）。
+
+```
+// cluster.js
+var cluster = require('cluster')
+if (cluster.isMaster) {
+  for (var i = 0; i < numCPUs; i++) {
+    cluster.fork()
+  }
+} else if (cluster.isWorker) {
+  // your server code
+})
+```
+
+在`cluster.js`例子中，我的服务器输出进程ID，因此你可以看到不同的worker处理不同的请求。这就像负载均衡，但这不是真正的负载均衡，因为负载没有平均的分散。你可能看到大量的请求在同一个进程中（PID会一样）。
+
+为了看到不同的worker服务不同的请求，使用`loadtest`，一个基于Node的压力测试工具：
+
+1. 通过npm安装`loadtest`：$ npm install -g loadtest
+2. 使用node运行`code/cluster.js`（$ node cluster.js）；让server运行
+3. 运行负载测试：`$ loadtest http://localhost:3000 -t 20 -c 10`在一个新的窗口
+4. 同时在服务终端和loadtest终端分析结果
+5. 当测试结束的时候在终端按下control+c。你应该看到不同的PID。写下请求服务的数字。
+
+`-t 20 -c 10`负载测试命令意味着将会有10并发请求，最大时间为20秒。
+
+自带的集群唯一的优势就是核心的一部分。当你准备发布到生产，你应该想要更先进的进程管理工具：
+
+* `strong-cluster-control`(https://github.com/strongloop/strong-cluster-control) 
+* `pm2`(https://github.com/Unitech/pm2)
+
+## pm2
+
+来谈谈`pm2`，被认为是一种横向扩展你的Node应用的方式（最好的方式之一），并且有着生产级别的性能和特性。
+
+总的来说，pm2有以下几种优势：
+
+* 负载均衡和其他特性
+* 系统宕机重启
+* 好的测试覆盖
+
+pm2的文档在这 https://github.com/Unitech/pm2 和 http://pm2.keymetrics.io。
+
+看一下下面的这个作为pm2例子的Express服务。这里没有样板代码`isMaster()`，这样很好，因为你不用改变你的源码，就像我们在`cluster`中做的那样。我们只需要打印`pid`并且观察他们。
+
+```
+var express = require('express')
+var port = 3000
+global.stats = {}
+console.log('worker (%s) is now listening to http://localhost:%s',
+ process.pid, port)
+var app = express()
+app.get('*', function(req, res) {
+  if (!global.stats[process.pid]) global.stats[process.pid] = 1
+  else global.stats[process.pid] += 1;
+  var l ='cluser '
+    + process.pid
+    + ' responded \n';
+  console.log(l, global.stats)
+  res.status(200).send(l)
+})
+app.listen(port)
+```
+
+
 
 
 
