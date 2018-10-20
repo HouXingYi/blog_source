@@ -584,6 +584,197 @@ app.get('*', function(req, res) {
 app.listen(port)
 ```
 
+使用pm2启动server.js来使用这个pm2例子。你可以传入需要复制的进程数（-i 0 意味着CPU的数量，在我的例子中是4个）并且将日志放入一个文件中（-l log.txt）：
+
+```
+$ pm2 start server.js -i 0 -l ./log.txt
+```
+
+另一个pm2的优点是前台。想看当前运行，执行：
+
+```
+$ pm2 list
+```
+
+接下来，就像我们在`cluster`例子中做的那样使用`loadtest`。在一个新窗口，运行命令：
+
+```
+$ loadtest  http://localhost:3000 -t 20 -c 10
+```
+
+你的结果也许和我的不一样，但是我在`log.txt`中差不多得到了平均分散的结果：
+
+```
+cluser 67415 responded
+ { '67415': 4078 }
+cluser 67430 responded
+ { '67430': 4155 }
+cluser 67404 responded
+ { '67404': 4075 }
+cluser 67403 responded
+ { '67403': 4054 }
+```
+
+## Spawn vs Fork vs Exec
+
+既然我们在cluster.js的例子中使用fork()来创建Node服务的新实例，那就有必要来提下在Node中的三种方式来启动一个外部的进程。他们是`spawn()`, `fork()` 和 `exec()`并且他们三个都来自核心模块`child_process`。他们之间的区别总结如下：
+
+* `require('child_process').spawn()`：用于大的数据，支持流，可以用于任何命令，并且不创建新的V8实例
+* `require('child_process').fork()`：创建一个V8实例，实例化多个worker，只能用于Node.js脚本（node命令）
+* `require('child_process').exec()`：使用buffer，让其不适合大的数据或者流，以异步的方式让你在回调中一下获取全部的数据，并且可以用于所有命令
+
+看下下面这个例子，我们执行`node program.js`，但我们也可以执行bash，Python，Ruby或任意其他的命令或脚本。如果你需要给命令传入额外的参数，只需要把需要参数作为数组传入`spawn()`。数据作为流在`data`事件传入：
+
+```
+var fs = require('fs')
+var process = require('child_process')
+var p = process.spawn('node', 'program.js')
+p.stdout.on('data', function(data)) {
+  console.log('stdout: ' + data)
+})
+```
+
+从`node program.js`命令的角度来看，`data`是它的标准输出，比如，`node program.js`的终端输出。
+
+`fork()`的语法和`spawn()`相似，除了没有命令，因为`fork()`假定所有的进程都是Node.js：
+
+```
+var fs = require('fs')
+var process = require('child_process')
+var p = process.fork('program.js')
+p.stdout.on('data', function(data)) {
+  console.log('stdout: ' + data)
+})
+```
+
+最后一项是`exec()`。这个有点不同，因为它没有使用事件模式，只是一个简单的回调。在回调中，你有错误，标准输出和标准错误参数：
+
+```
+var fs = require('fs')
+var process = require('child_process')
+var p = process.exec('node program.js', function (error, stdout, stderr) {
+  if (error) console.log(error.code)
+})
+```
+
+`error`and`stderr`的不同之处在于前者来自`exec()`,而后者来自你运行着的命令的错误。
+
+## Handling Async Errors
+
+说到报错，在Node.js和其他几乎所有编程语言中，我们使用try/catch处理错误。对于同步错误，try/catch处理的不错：
+
+```
+try {
+  throw new Error('Fail!')
+} catch (e) {
+  console.log('Custom Error: ' + e.message)
+}
+```
+
+模块或者函数抛出错误，而后我们catch。这种对Java或者同步Node有效果。但是，Node的最佳实践是写异步代码，所以我们不阻塞线程。
+
+事件循环让系统调度，使得昂贵的输入/输出任务结束的时候，执行相应的代码。但是伴随着异步错误，系统丢失了错误的上下文。
+
+比如，setTimeout()异步使得回调在未来被调用。这有点像，HTTP请求，数据库读取或者写文件的异步函数：
+
+```
+try {
+  setTimeout(function () {
+    throw new Error('Fail!')
+  }, Math.round(Math.random()*100))
+} catch (e) {
+  console.log('Custom Error: ' + e.message)
+}
+```
+
+当回调被执行的时候，没有catch到，接下来应用崩溃。当然如果你在回调中放一个try/catch，会catch到错误，但这不是一个好的解决方案。这些讨厌的异步错误难于调试和处理。try/catch不足以处理异步错误。
+
+那么异步报错无法catch。我们该怎么处理？？你已经见过大部分的回调会有一个error参数。开发者需要去检查错误，并在回调中冒泡上去：
+
+```
+if (error) return callback(error)
+//  or
+if (error) return console.error(error)
+```
+
+其他处理异步错误的最佳实践如下：
+
+* 监听所有“on error”事件
+* 监听`uncaughtException`
+* Use domain (soft deprecated) or AsyncWrap
+* Log, log, log & Trace
+* Notify (optional)
+* Exit & Restart the process
+
+## on(‘error’)
+
+监听所有on(‘error’)事件，这些事件大部分由核心Node对象特别是http触发的。并且，任何继承http或者Express.js, LoopBack, Sails, Hapi等实例都会触发error事件，因为这些框架继承自http：
+
+```
+// js
+server.on('error', function (err) {
+  console.error(err)
+  console.error(err)
+  process.exit(1)
+})
+```
+
+## uncaughtException
+
+一定要在process对象上监听uncaughtException事件。uncaughtException是一个非常原始的异常处理机制。一个未处理的异常意味着你的应用-包括你的Node本身-是一个异常状态。盲目的恢复意味着什么都有可能发生。
+
+```
+process.on('uncaughtException', function (err) {
+  console.error('uncaughtException: ', err.message)
+  console.error(err.stack)
+  process.exit(1)
+})
+```
+
+或者
+
+```
+process.addListener('uncaughtException', function (err) {
+  console.error('uncaughtException: ', err.message)
+  console.error(err.stack)
+  process.exit(1)
+})
+```
+
+## Domain
+
+Domain和浏览器上的web域没有关系。`domain`是一个Node核心模块，可以通过保存异步代码执行的上下文来处理异步错误。一个`domain`基本的用法是实例化它然后把你的报错代码放入run()的回调中:
+
+```
+var domain = require('domain').create()
+domain.on('error', function(error){
+  console.log(error)
+})
+domain.run(function(){
+  throw new Error('Failed!')
+})
+```
+
+`domain`在4.0版本被软弃用了，意味着Node核心团队将会把`domain`同平台分离，但是现在核心还暂时没有`domain`的替代品。并且，因为`domain`有着很好的支持和使用，它会继续独立作为npm模块的一份子，这样你可以轻易的从核心转移到npm模块，意味着`domain`还生存的很好。
+
+让我们用setTimeout再创建一个异步错误：
+
+```
+// domain-async.js:
+var d = require('domain').create()
+d.on('error', function(e) {
+   console.log('Custom Error: ' + e)
+})
+d.run(function() {
+  setTimeout(function () {
+    throw new Error('Failed!')
+  }, Math.round(Math.random()*100))
+});
+```
+
+代码不会崩溃！我们将会得到一个很好的错误信息，从domain的错误事件处理函数得到的“Custom Error”错误，而不是典型的Node堆栈跟踪。
+
+## C++ Addons
 
 
 
