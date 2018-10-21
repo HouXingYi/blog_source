@@ -776,6 +776,112 @@ d.run(function() {
 
 ## C++ Addons
 
+Node在硬件，IoT和机器人流行的原因是Node可以很好的适应底层的C/C++代码。那么我们该如何为你的IoT，硬件，机器人，智能设备写C/C++ binding代码？
+
+这是这篇文章的最终章节。大部分的Node初学者甚至认为你不能够写自己的C++扩展！事实上，这很简单，我们从头开始来。
+
+首先，创建hello.cc文件，这个文件在开头有着一些样板引用。接下来我们定义一个方法，这个方法返回一个字符串并导出这个方法。
+
+```
+#include <node.h>
+
+namespace demo {
+
+using v8::FunctionCallbackInfo;
+using v8::HandleScope;
+using v8::Isolate;
+using v8::Local;
+using v8::Object;
+using v8::String;
+using v8::Value;
+
+void Method(const FunctionCallbackInfo<Value>& args) {
+  Isolate* isolate = args.GetIsolate();
+  args.GetReturnValue().Set(String::NewFromUtf8(isolate, "capital one")); // String
+}
+
+void init(Local<Object> exports) {
+  NODE_SET_METHOD(exports, "hello", Method); // Exporting
+}
+
+NODE_MODULE(addon, init)
+
+}
+```
+
+即使你不是C的专家，也很容易看出发生了是吗，因为这和JavaScript的语法也不是天壤之别。字符串是`capital one`：
+
+```
+args.GetReturnValue().Set(String::NewFromUtf8(isolate, "capital one"));`
+```
+
+导出的名字是`hello`：
+
+```
+void init(Local<Object> exports) {
+  NODE_SET_METHOD(exports, "hello", Method);
+}
+```
+
+一旦`hello.cc`准备好了，我们还需要做一些事。其中一件是创建`binding.gyp`，包含着源代码文件名和扩展的名称：
+
+```
+{
+  "targets": [
+    {
+      "target_name": "addon",
+      "sources": [ "hello.cc" ]
+    }
+  ]
+}
+```
+
+把binding.gyp保存在hello.cc相同的文件夹下并在安装node-gyp:
+
+```
+$ npm install -g node-gyp
+```
+
+安装完`node-gyp`之后，在hello.cc和binding.gyp的同级文件夹下运行配置和构建命令
+
+```
+$ node-gyp configure
+$ node-gyp build
+```
+
+这些命令将会创建build文件夹。检查下在build/Release/下编译好的.node文件。
+
+最后，创建一个Node脚本hello.js然后将你的C++扩展引入：
+
+```
+var addon = require('./build/Release/addon')
+console.log(addon.hello()) // 'capital one'
+``` 
+
+运行脚本然后将会看见我们的字符串capital one：
+
+```
+$ node hello.js
+```
+
+## Summary
+
+上面的实例代码都在[github](https://github.com/azat-co/you-dont-know-node)。如果你对Node的模式比如观察者模式，回调和Node惯例感兴趣，看下我的这篇[Node Patterns: From Callbacks to Observer](https://webapplog.com/node-patterns-from-callbacks-to-observer/)。
+
+我知道这是一篇长阅读，所以来个30秒的总结：
+
+1. 事件循环：Node非阻塞I/O背后的原理
+2. Global和process：全局对象和系统信息
+3. Event Emitters：Node的观察者模式
+4. 流：大体积数据的模式
+5. Buffers：二进制数据类型
+6. Clusters：垂直扩展
+7. Domain：异步错误处理
+8. C++扩展：底层扩展
+
+Node的大部分就是JavaScript，除了一些核心特性大部分用于处理系统访问、全局变量、外部进程和底层代码。如果你理解了这些概念，你就踏上了掌握Node的快车道。
+
+
 
 
 
