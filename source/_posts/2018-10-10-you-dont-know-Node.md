@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "[译]你不知道的Node（未完成，未上传）"
-subtitle: "10 Languages That Compile to JavaScript"
-date: 2018-10-10
+title: "[译]你不知道的Node"
+subtitle: "You Don’t Know Node: Quick Intro to Core Features"
+date: 2018-10-20
 author: HouXingYi
 category: 翻译
 tags: JS
@@ -14,6 +14,7 @@ finished: true
 ```
 
 # 你不知道的Node：核心特性的快速介绍
+
 
 ![dog](/images/youDontKnowNode/pic1.png)
 
@@ -514,7 +515,7 @@ fs.readFile('/etc/passwd', function (err, data) {
 });
 ```
 
-## Clusters
+## Clusters（集群）
 
 你可能经常从Node怀疑者那听到说Node是单线程的，所以它没法规模化。有一个核心模块cluster（核心模块意味着你不用安装，它是平台的一部分）允许你利用每个机器的所有CPU能力。这允许你垂直的扩展你的Node程序。
 
@@ -701,10 +702,10 @@ if (error) return console.error(error)
 
 * 监听所有“on error”事件
 * 监听`uncaughtException`
-* Use domain (soft deprecated) or AsyncWrap
-* Log, log, log & Trace
-* Notify (optional)
-* Exit & Restart the process
+* 使用domain或者AsyncWrap
+* 打印与跟踪
+* 提示（可选）
+* 退出或重启
 
 ## on(‘error’)
 
@@ -774,7 +775,7 @@ d.run(function() {
 
 代码不会崩溃！我们将会得到一个很好的错误信息，从domain的错误事件处理函数得到的“Custom Error”错误，而不是典型的Node堆栈跟踪。
 
-## C++ Addons
+## C++ Addons（C++扩展）
 
 Node在硬件，IoT和机器人流行的原因是Node可以很好的适应底层的C/C++代码。那么我们该如何为你的IoT，硬件，机器人，智能设备写C/C++ binding代码？
 
@@ -864,7 +865,7 @@ console.log(addon.hello()) // 'capital one'
 $ node hello.js
 ```
 
-## Summary
+## Summary（总结）
 
 上面的实例代码都在[github](https://github.com/azat-co/you-dont-know-node)。如果你对Node的模式比如观察者模式，回调和Node惯例感兴趣，看下我的这篇[Node Patterns: From Callbacks to Observer](https://webapplog.com/node-patterns-from-callbacks-to-observer/)。
 
