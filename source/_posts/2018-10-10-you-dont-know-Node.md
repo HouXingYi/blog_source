@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "[译]你不知道Node（未完成，未上传）"
+title: "[译]你不知道的Node（未完成，未上传）"
 subtitle: "10 Languages That Compile to JavaScript"
 date: 2018-10-10
 author: HouXingYi
@@ -13,25 +13,25 @@ finished: true
 原文:https://webapplog.com/you-dont-know-node/
 ```
 
-# 你不知道Node：核心特性的快速介绍
+# 你不知道的Node：核心特性的快速介绍
 
 ![dog](/images/youDontKnowNode/pic1.png)
 
-这篇文章是由Kyle Simpson的系列书籍，[You-Dont-Know-JS](https://github.com/getify/You-Dont-Know-JS)。它们是好的JavaScript基础入门书籍。除了一些我将会在文章中强调的不同，Node基本上就是JavaScript。代码在[you-dont-know-node](https://github.com/azat-co/you-dont-know-node)github仓库下的`code`文件夹下。
+这篇文章是由Kyle Simpson的系列书籍[You-Dont-Know-JS](https://github.com/getify/You-Dont-Know-JS)所启发。它们是很好的JavaScript基础入门书籍。除了一些我将会在文章中强调的不同，Node基本上就是JavaScript。代码在[you-dont-know-node](https://github.com/azat-co/you-dont-know-node) github仓库下的`code`文件夹下。
 
 为什么在意Node？Node是JavaScript而JavaScript几乎要占领世界了。如果更多开发者掌握Node这个世界岂不是变得更好？更好的应用等于更好的人生！
 
-这是一个主观的最有趣的核心特性大合集。这篇文章的重点如下：
+这是一个主观的最有趣核心特性大合集。这篇文章的重点如下：
 
 1. Event loop（事件循环）：温习下使非阻塞I/O成为可能的核心概念
 2. Global（全局变量） 和 process（进程）：如何获得更多信息
 3. Event emitters（事件发射器）：基于事件模式的速成课
 4. Streams（流） 和 buffers（缓冲区）：处理数据的高效方式
-5. Clusters（集群）:像一个专家一样fork进程
-6. Handling async errors: AsyncWrap, Domain and uncaughtException
-7. C++ addons: Contributing to the core and writing your own C++ addons
+5. Clusters（集群）：像一个专家一样fork进程
+6. 处理异步错误：AsyncWrap，Domain和uncaughtException
+7. C++扩展：给核心做贡献并写你自己的C++扩展
 
-## Event Loop
+## Event Loop（事件循环）
 
 我们可以从Node的核心事件循环开始
 
@@ -39,9 +39,9 @@ finished: true
 
 Node.js Non-Blocking I/O
 
-它允许在处理IO调用的过程中处理其他任务。想想看Nginx vs. Apache。它让Node更快更有效率因为阻塞式I/O十分昂贵！
+它允许在处理IO调用的过程中处理其他任务。想想看Nginx vs. Apache。它让Node更快更有效率，因为阻塞式I/O十分昂贵！
 
-看下这个在 java 中基础的延迟`println`函数的例子：
+看下这个在 java 中基础的延迟 `println` 函数的例子：
 
 ```
 System.out.println("Step: 1");
@@ -50,7 +50,7 @@ Thread.sleep(1000);
 System.out.println("Step: 3");
 ```
 
-和Node代码是可比较的（实际上不行）：
+和Node代码是可比较的（实际上不可比较）：
 
 ```
 console.log('Step: 1')
@@ -60,7 +60,7 @@ setTimeout(function () {
 console.log('Step: 2')
 ```
 
-实际并不相同。你需要开始用异步的方式思考。Node脚本输出是1，2，3，但如果我们在“Step 2”后放更多语句，它们将会在`setTimeout`回调之前运行。看看以下片段：
+实际并不太相同。你需要开始用异步的方式思考。Node脚本输出是1，2，3，但如果我们在“Step 2”后放更多语句，它们将会在`setTimeout`回调之前运行。看看以下片段：
 
 ```
 console.log('Step: 1')
@@ -72,7 +72,7 @@ console.log('Step: 2')
 console.log('Step 4')
 ```
 
-最终产出1，2，4，3，5。这是因为setTimeout把它的回调放入事件循环的未来循环中了。
+最终产出1，2，4，3，5。这是因为setTimeout把它的回调放入事件循环的未来周期中了。
 
 把事件循环想象成一个永远旋转的循环就像`for`循环或者`while`循环。它只有在现在或者未来没有东西去执行的时候才会停止。
 
@@ -101,7 +101,7 @@ console.log('Step: 2')
 console.log(end-start)
 ```
 
-当然，一般情况下，我们不会在我们的代码中写空循环。Spotting synchronous and thus blocking code might be harder when using other people’s modules.（未翻译）比如，核心的`fs`模块就有两组方法。每组执行相同的功能但用不同的方式。阻塞的`fs`Node方法在名字上带有`Sync`:
+当然，一般情况下，我们不会在我们的代码中写空循环。指出同步因此当我们使用他人的模块的时候，阻塞式代码可能更难。比如，核心的`fs`模块就有两组方法。每组执行相同的功能但用不同的方式。阻塞的`fs`Node方法在名字上带有`Sync`:
 
 ```
 var fs = require('fs')
@@ -115,7 +115,7 @@ console.log(contents)
 console.log('Hello Node!')
 ```
 
-结果对Node/JavaScript新手来说也很容易猜出
+结果即使Node/JavaScript新手来说也很容易猜出
 
 ```
 data1->Hello Ruby->data2->Hello NODE!
@@ -143,9 +143,9 @@ console.log("Hello Node!");
 Hello Python->Hello Node->data1->data2
 ```
 
-所以事件循环和非阻塞I/O非常强大，但你需要写异步代码，大部分在学校都不是学习这种代码。
+所以事件循环和非阻塞I/O非常强大，但你需要写异步代码，然而我们大部分在学校都不是学习这种代码。
 
-## Global
+## Global（全局）
 
 当从浏览器JavaScript或者其他编程语言转到Node，会有下面几个问题：
 
@@ -170,7 +170,7 @@ Hello Python->Hello Node->data1->data2
 每一个全局属性都可以通过大写的`GLOBAL`或者干脆没有命名空间比如`process`代替`global.process`
 
 
-## Process
+## Process（进程）
 
 Process对象有许多信息，理应做成一个部分。我列出其中的一些属性：
 
@@ -184,7 +184,7 @@ Process对象有许多信息，理应做成一个部分。我列出其中的一�
 
 * process.uptime()：获取uptime
 * process.memoryUsage()：获取内存使用
-* process.cwd()：获取当前工作目录。Not to be confused with __dirname which doesn’t depend on the location from which the process has been started.
+* process.cwd()：获取当前工作目录。不要与`__dirname`混淆，后者不依赖于启动进程的位置。
 * process.exit()：退出当前进程。你可以传入1或0。
 * process.on()：添加一个事件监听器比如'on(‘uncaughtException’)'
 
@@ -219,9 +219,9 @@ fs.readdir(source, function (err, files) {
 })
 ```
 
-回调地狱难以阅读，并且容易出错。除此之外回调并不能很好的扩展，这样我们改如何模块化和管理异步代码？
+回调地狱难以阅读，并且容易出错。除此之外回调并不能很好的扩展，那么我们该如何模块化和管理异步代码？
 
-## Event Emitters
+## Event Emitters（事件发射器）
 
 为了解决回调地狱，或者说末日金字塔，我们有了[Event Emitters](https://nodejs.org/api/events.html)。他们允许你用事件的方式执行异步代码。
 
@@ -303,7 +303,7 @@ job.process()
 
 事件模式在Node中广泛应用，特别是在核心模块。所以，掌握事件将会给你一个很大的提升。
 
-## Streams
+## Streams（流）
 
 当Node中处理大的数据的时候有一些问题。速度可能会很慢并且`buffer`的限制是1Gb。并且，如果资源是持续的，没有设置尽头的，你改如何处理？为了解决这些问题，使用streams（流）。
 
@@ -313,7 +313,7 @@ Node流是持续的数据块的抽象。换句话说，不需要等待整个资�
 
 Node.js Buffer Approach
 
-我们必须等到全部的buffer加载之后，才可以处理输出的数据。接下来，对比下一个描绘流的图解。这下，我们可以马上处理数据从收到的第一个数据块开始：
+我们必须等到全部的buffer加载之后，才可以处理输出的数据。接下来，对比下一个描绘流的图解。这下，我们可以从收到的第一个数据块开始马上处理数据：
 
 ![pic4](/images/youDontKnowNode/pic7.png)
 
@@ -334,7 +334,7 @@ Node.js Stream Approach
 
 Streams继承自Event Emitter，使其提供观察者模式，比如`events`，还记得吗？我们可以用它来实现流。
 
-## Readable Stream Example
+## 可读流例子
 
 一个可读流的例子可以是标准输入流`process.stdin`。它包含了进入应用的数据。典型的输入是从键盘用来开始进程。
 
@@ -371,7 +371,7 @@ readable.on('readable', () => {
 
 理想情况下，我们想尽量在Node中多写异步代码，为了避免阻塞主线程。然而，数据块很小，所以不必担心同步的`readable.read()`阻塞线程。
 
-## Pipe
+## Pipe（管道）
 
 Node为开发者提供了一个事件的替代方案。我们可以使用`pipe()`方法。下面的例子为读一个文件，用GZip压缩，然后把压缩的数据写入文件：
 
@@ -386,7 +386,7 @@ r.pipe(z).pipe(w)
 
 所以你使用流的时候在events和pipes之间就可以选择了。
 
-## HTTP Streams
+## HTTP Streams（HTTP流）
 
 我们大部分使用Node构建传统或者RESTful Api的web应用。所以我们可以把HTTP请求变为流吗？答案是一个响亮的yes。
 
