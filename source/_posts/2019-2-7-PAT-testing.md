@@ -436,8 +436,315 @@ int main() {
 }
 ```
 
+## 1010 一元多项式求导 （25 分）
 
+https://pintia.cn/problem-sets/994805260223102976/problems/994805313708867584
 
+注意点：零多项式特殊处理，使用EOF的方式比使用数组存储的方式简洁高效。
+
+答案：
+
+```
+#include<cstdio>
+
+main () {
+	
+	int x, n;
+	
+	bool isZero = true; // 是否是零多项式 
+	 
+	while (scanf("%d%d", &x, &n) != EOF) {
+		if (n > 0) { // 次数大于零 
+			if (isZero == true) { // 第一项 
+				isZero = false;
+				printf("%d %d", x * n, n - 1); 
+			} else {
+				printf(" %d %d", x * n, n - 1);	
+			}
+		}
+	}
+	
+	if (isZero == true) {
+		printf("0 0");
+	}
+	
+	return 0;
+}
+```
+
+## 1011 A+B 和 C （15 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805312417021952
+
+注意点：注意输入输出与取值范围。
+
+答案：
+
+```
+#include<cstdio>
+
+main () {
+	
+	long long a, b, c;
+	int n;
+	scanf("%d", &n);
+	for (int i = 0; i < n; i++) {
+		scanf("%lld %lld %lld", &a, &b, &c);
+		if (a + b > c) {
+			printf("Case #%d: true\n", i + 1);
+		} else {
+			printf("Case #%d: false\n", i + 1);
+		}
+	}
+
+	return 0;
+
+}
+```
+
+## 1012 数字分类 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805311146147840
+
+答案：
+
+```
+#include<cstdio>
+#include<vector>
+
+using namespace std;
+
+main () {
+	
+	int n;
+	
+	int A1 = 0;
+	vector<int> A2List;
+	int A3 = 0;
+	vector<int> A4List;
+	int A5 = 0; 
+	
+	scanf("%d", &n);
+	
+	for (int i = 0; i < n; i++) {
+		
+		int tempNum;
+		
+		scanf("%d", &tempNum);
+		
+		int remain = tempNum % 5;
+		
+		if (remain == 0) {
+			if (tempNum % 2 == 0) {
+				A1 += tempNum;
+			}
+		}
+		if (remain == 1) {
+			A2List.push_back(tempNum);
+		}
+		if (remain == 2) {
+			A3++;
+		}
+		if (remain == 3) {
+			A4List.push_back(tempNum);
+		}
+		if (remain == 4) {
+			if (A5) {
+				A5 = A5 > tempNum ? A5 : tempNum;
+			} else {
+				A5 = tempNum;
+			}
+		}
+		
+	}
+	
+	// A1
+	if (A1 == 0) {
+		printf("N");
+	} else {
+		printf("%d", A1);
+	}
+	
+	// A2
+	if (A2List.size() == 0) {
+		printf(" N");
+	} else {
+		int A2sum = 0;
+		for (int j = 0; j < A2List.size(); j++) {
+			if (j %2 == 0) {
+				A2sum += A2List[j];
+			} else {
+				A2sum -= A2List[j];
+			}
+		}
+		printf(" %d", A2sum);
+	}
+	
+	// A3
+	if (A3 == 0) {
+		printf(" N");
+	} else {
+		printf(" %d", A3);
+	}
+	
+	// A4
+	if (A4List.size() == 0) {
+		printf(" N");
+	} else {
+		int A4sum = 0;
+		float average;
+		for (int k = 0; k < A4List.size(); k++) {
+			A4sum += A4List[k];
+		}
+		printf(" %.1f", A4sum * 1.0 / A4List.size());
+	}
+	
+	// A5
+	if (A5 == 0) {
+		printf(" N");
+	} else {
+		printf(" %d", A5);
+	}
+	
+	return 0;
+}
+```
+
+## 1013 数素数 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805309963354112
+
+答案：
+
+```
+#include<cstdio>
+#include<vector>
+#include<math.h>
+
+using namespace std;
+
+// 判断是否是素数 
+bool isPrime (int n) {
+	if (n <= 1) {
+		return false;
+	}
+	int sqr = (int)sqrt(1.0 * n);
+	for (int i = 2; i <= sqr; i++) {
+		if (n % i == 0) {
+			return false;
+		}
+	}
+	return true;
+}
+
+main () {
+	
+	int n, m;
+	vector<int> primeList;
+	int temp = 2;
+	
+	scanf("%d %d", &n, &m);
+	
+	while (1) {
+		bool res = isPrime(temp);
+		if (res) {
+			primeList.push_back(temp);
+		}
+		temp++;
+		if (primeList.size() >= m) {
+			break;
+		}
+	}
+	
+	int row = 0;
+	for (int j = n - 1; j < m; j++) {
+		
+		if (row == 0) {
+			printf("%d", primeList[j]);
+			row++;	
+		} else if (row > 0 && row < 9) {
+			printf(" %d", primeList[j]);
+			row++;
+		} else if (row == 9) {
+			printf(" %d\n", primeList[j]);
+			row = 0;
+		}
+		
+	}
+	
+	return 0;
+}
+```
+
+## 1014 福尔摩斯的约会 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805308755394560
+
+注意点：字符串的输入输出，字符范围的边界问题（A-G，A-N，A-Z）。
+
+答案：
+
+```
+#include<cstdio>
+#include<map>
+#include<string>
+#include<iostream>
+
+using namespace std;
+
+main () {
+	
+	map<int, string> DAY;
+	DAY[1] = "MON";DAY[2] = "TUE";DAY[3] = "WED";DAY[4] = "THU";DAY[5] = "FRI";DAY[6] = "SAT";DAY[7] = "SUN";
+	
+	string str1, str2, str3, str4;
+	
+	cin >> str1 >> str2 >> str3 >> str4;
+	
+	bool isFindDay = false;
+	
+	for (int i = 0; i < str1.size(); i++) {
+		if (str1[i] == str2[i]) {
+			
+			if (isFindDay) { // 已找到星期几
+				
+				if (str1[i] >= 'A' && str1[i] <= 'N') { // A到N（1-14） 
+					cout << str1[i] - 'A' + 10 << ':';
+					break; 
+				} else if (str1[i] >= '0' && str1[i] <= '9') { // 是数字 
+					cout << '0' << str1[i] << ':';
+					break;
+				} 
+				
+			} else {
+				
+				if (str1[i] >= 'A' && str1[i] <= 'G') { // A到G（1-7） 
+					cout << DAY[str1[i] - 'A' + 1] << ' ';// 输出星期几
+					isFindDay = true;
+				}
+				
+			}
+			
+		}
+	}
+	
+	for (int j = 0; j < str3.size(); j++) {
+		if (str3[j] == str4[j]) {
+			if (str3[j] >= 'a' && str3[j] <= 'z' || str3[j] >= 'A' && str3[j] <= 'Z') { // 英文字母，大小写均可 
+				if (j < 10) {
+					cout << '0' << j;
+				} else {
+					cout << j;
+				}
+				break;
+			}
+			
+		}
+	}
+	
+	return 0;
+}
+```
 
 
 
