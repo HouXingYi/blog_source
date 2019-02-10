@@ -746,10 +746,436 @@ main () {
 }
 ```
 
+## 1015 德才论 （25 分）
 
+https://pintia.cn/problem-sets/994805260223102976/problems/994805307551629312
 
+注意点：主要考察sort中的cmp函数，注意审题，注意边界条件。
 
+```
+#include<cstdio>
+#include<vector>
+#include<algorithm>
 
+using namespace std;
+
+struct Stu {
+	int number; // 学号 
+	int moralNum; // 德分 
+	int talentNum; // 才分 
+};
+
+bool cmp (Stu a, Stu b) {
+	if (a.moralNum + a.talentNum == b.moralNum + b.talentNum) {
+		if (a.moralNum == b.moralNum) {
+			return a.number < b.number;
+		} else {
+			return a.moralNum > b.moralNum;
+		}
+	} else {
+		return (a.moralNum + a.talentNum) > (b.moralNum + b.talentNum);	
+	}
+}
+
+void printAll (vector<Stu> list) {
+	for (int i = 0; i < list.size(); i++) {
+		printf("%d %d %d\n", list[i].number, list[i].moralNum, list[i].talentNum);
+	}
+}
+
+main () {
+	
+	int N, // 考生总数 
+		L, // 录取最低分数线 
+		H; // 优先录取线 
+	
+	scanf("%d %d %d", &N, &L, &H);
+	
+	vector<Stu> group1; // 才德全尽 
+	vector<Stu> group2; // 德胜才 
+	vector<Stu> group3; // 才德兼亡 
+	vector<Stu> group4; // 德胜才 
+	
+	for (int i = 0; i < N; i++) {
+		
+		int number, moralNum, talentNum;
+		Stu tempStu;
+		
+		scanf("%d %d %d", &number, &moralNum, &talentNum);
+		
+		tempStu.number = number;
+		tempStu.moralNum = moralNum;
+		tempStu.talentNum = talentNum;
+		
+		if (tempStu.moralNum >= L && tempStu.talentNum >= L) {
+			
+			if (tempStu.moralNum >= H && tempStu.talentNum >= H) {// 才德全尽
+				group1.push_back(tempStu);
+			} else if (tempStu.moralNum >= H && tempStu.talentNum < H) {// 德胜才
+				group2.push_back(tempStu);
+			} else if (tempStu.moralNum < H && tempStu.talentNum < H && tempStu.moralNum >= tempStu.talentNum) {// 才德兼亡,但德胜才 
+				group3.push_back(tempStu);
+			} else {// // 才德兼亡,但才胜德
+				group4.push_back(tempStu);
+			}
+			
+		}
+		
+	}
+	
+	sort(group1.begin(), group1.end(), cmp);
+	sort(group2.begin(), group2.end(), cmp);
+	sort(group3.begin(), group3.end(), cmp);
+	sort(group4.begin(), group4.end(), cmp);
+	
+	printf("%d\n", group1.size() + group2.size() + group3.size() + group4.size());
+	
+	printAll(group1);
+	printAll(group2);
+	printAll(group3);
+	printAll(group4);
+	
+	return 0;
+}
+```
+
+## 1016 部分A+B （15 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805306310115328
+
+注意点：考察字符与数字的转化。
+
+答案：
+
+```
+#include<cstdio>
+#include<string>
+#include<iostream>
+#include<math.h>
+
+using namespace std;
+
+long long getP (string A, char Da) {
+	
+	long long p = 0;
+	int count = 0;
+	int tempNum = Da - '0';
+	
+	for (int i = 0; i < A.size(); i++) {
+		if (A[i] == Da) {
+			count++;
+		}
+	}
+	
+	for (int j = 0; j < count; j++) {
+		p += tempNum * pow(10, j);
+	}
+	
+	return p;
+} 
+
+main () {
+	string A, B;
+	char Da, Db;
+	long long Asum, Bsum;
+	
+	cin >> A >> Da >> B >> Db;
+	
+	Asum = getP(A, Da);
+	Bsum = getP(B, Db);
+	
+	printf("%lld", Asum + Bsum);
+	
+	return 0;
+}
+```
+
+## 1017 A除以B （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805305181847552
+
+注意点：考察大整数运算，需掌握大整数的加减乘除。
+
+答案：
+
+```
+#include<cstdio>
+#include<cstring>
+#include<string>
+#include<iostream>
+
+using namespace std;
+
+// 大整数结构 
+struct bign {
+	int n[1010];
+	int len;
+	bign () {
+		memset(n, 0, sizeof(n));
+		len = 0;
+	}
+};
+
+// 将整数转化为大整数
+
+bign convert (string n) {
+	bign a;
+	a.len = n.size();
+	for (int i = 0; i < a.len; i++) {
+		a.n[i] = n[a.len - 1 - i] - '0'; // 转化为int，并倒序摆放。 
+	}
+	return a;
+}
+
+// 大整数除法
+
+bign divide (bign a, int b, int& r) {
+	bign c;
+	c.len = a.len;
+	// 做除法，结果保留在c 
+	for (int i = a.len -1; i >= 0; i--) {
+		r = r*10 + a.n[i];
+		if (r < b) { // 不够除 
+			c.n[i] = 0;
+		} else {
+			c.n[i] = r / b;
+			r = r % b;
+		}
+	} 
+	// 处理c，去除高位的0，同时至少保留一位最低位 
+	while (c.len - 1 >= 1 && c.n[c.len - 1] == 0) {
+		c.len--;
+	}
+	return c;
+}
+
+// 打印大整数 
+void printBign(bign a) {
+	for (int i = a.len -1; i >= 0; i--) {
+		printf("%d", a.n[i]);
+	}
+} 
+
+main () {
+	
+	int b, r = 0; // 被除数，余数
+	string number;
+	bign c; // 商 
+	
+	cin >> number >> b;
+	
+	bign bigNumber = convert(number);
+	c = divide(bigNumber, b, r);
+	printBign(c); // 打印商 
+	printf(" %d", r); // 打印余数 
+
+	return 0;
+}
+```
+
+## 1018 锤子剪刀布 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805304020025344
+
+注意点：注意最后一个条件，“如果解不唯一，则输出按字母序最小的解”，即当获胜次数最多的手势相同的时候的策略，影响到数据的摆放。
+
+答案：
+
+```
+#include<cstdio>
+#include<iostream>
+
+using namespace std; 
+
+void compare (char a, char b, int aRes[], int bRes[], int aResCount[], int bResCount[]) {
+	
+	//	胜、平、负
+	// J,C,B
+	
+	// 平局 
+	if (a == b) {
+		aRes[1]++;
+		bRes[1]++;
+	} 
+	
+	// 甲C胜 
+	if (a == 'C' && b == 'J') {
+		aRes[0]++;
+		bRes[2]++;
+		aResCount[1]++;
+	}
+	// 乙B胜
+	if (a == 'C' && b == 'B') {
+		aRes[2]++;
+		bRes[0]++;
+		bResCount[2]++;
+	}
+	// 乙C胜 
+	if (a == 'J' && b == 'C') {
+		aRes[2]++;
+		bRes[0]++;
+		bResCount[1]++;
+	}
+	// 甲J胜
+	if (a == 'J' && b == 'B') {
+		aRes[0]++;
+		bRes[2]++;
+		aResCount[0]++;
+	}
+	// 乙J胜
+	if (a == 'B' && b == 'J') {
+		aRes[2]++;
+		bRes[0]++;
+		bResCount[0]++;
+	}
+	// 甲B胜 
+	if (a == 'B' && b == 'C') {
+		aRes[0]++;
+		bRes[2]++;
+		aResCount[2]++;
+	}
+	
+}
+
+void printBest (int a[], bool flag) {
+	
+	int count = 0;
+	int temp = 0;
+	
+	for (int i = 0; i < 3; i++) {
+		
+		if (a[i] >= temp) { // 注意，若相同的情况需要按字典顺序优先，即为BCJ顺序，故要">=" 
+			count = i;
+			temp = a[i];
+		}
+		
+	}
+	
+	if (count == 0) {
+		if (flag) {
+			printf("J");	
+		} else {
+			printf(" J");
+		}
+	}
+	if (count == 1) {
+		if (flag) {
+			printf("C");	
+		} else {
+			printf(" C");
+		}
+	}
+	if (count == 2) {
+		if (flag) {
+			printf("B");	
+		} else {
+			printf(" B");
+		}
+	}
+	
+}
+
+main () {
+	
+	int n;
+	
+	char a, b;
+	
+	// 结果记录 
+	int aRes[3] = {0, 0, 0};
+	int bRes[3] = {0, 0, 0};
+	
+	// 获胜次数手势 
+	int aResCount[3] = {0, 0, 0};
+	int bResCount[3] = {0, 0, 0};
+	
+	scanf("%d", &n);
+	
+	for (int i = 0; i < n; i++) {
+		
+		getchar();
+		
+		scanf("%c %c", &a, &b);
+		
+		compare(a, b, aRes, bRes, aResCount, bResCount);
+		
+	} 
+	
+	printf("%d %d %d\n", aRes[0], aRes[1], aRes[2]); 
+	printf("%d %d %d\n", bRes[0], bRes[1], bRes[2]);
+	
+	printBest(aResCount, true);
+	printBest(bResCount, false);
+	
+	return 0;
+}
+```
+
+## 1019 数字黑洞 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805302786899968
+
+注意点：主要在于数字与数字的数组的相互转化，注意printf技巧的使用。
+
+答案：
+
+```
+#include<cstdio>
+#include<algorithm>
+
+using namespace std;
+
+bool cmp (int a, int b) {
+	return a > b;
+}
+
+void to_array (int n, int num[]) {
+	for (int i = 0; i < 4; i++) {
+		num[i] = n % 10;
+		n = n / 10;
+	}
+} 
+
+int to_number (int num[]) { 
+	int n = 0;
+	for (int i = 0; i < 4; i++) {
+		n = n * 10 + num[i];
+	}
+	return n;
+}
+
+main () {
+	int n;
+	int MAX, MIN;
+	int num[4];
+	scanf("%d", &n);
+	while (1) {
+		to_array(n, num);
+		sort(num, num + 4, cmp);
+		MAX = to_number(num);
+		sort(num, num + 4);
+		MIN = to_number(num);
+		n = MAX - MIN;
+		printf("%04d - %04d = %04d\n", MAX, MIN, n);
+		if (n == 6174 || n == 0) {
+			break;
+		}		
+	}	
+	return 0;
+}
+```
+
+## 1020 月饼 （25 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805301562163200
+
+注意点：
+
+答案：
+
+```
+
+```
 
 
 
