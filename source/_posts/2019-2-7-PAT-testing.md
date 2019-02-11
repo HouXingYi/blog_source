@@ -1169,6 +1169,504 @@ main () {
 
 https://pintia.cn/problem-sets/994805260223102976/problems/994805301562163200
 
+注意点：理解题意，策略为首先卖出单价最高的，最高的卖完了再依次补充。
+
+答案：
+
+```
+#include<cstdio>
+#include<algorithm>
+
+using namespace std;
+
+struct Mooncake {	
+	double store; // 库存
+	double totalSell; // 总售价
+	double price; // 库存
+};
+
+bool cmp (Mooncake a, Mooncake b) {
+	return a.price > b.price;
+}
+
+main () {
+	
+	int n; // 月饼种类数
+	
+	double D; // 市场最大需求量
+	
+	scanf("%d %lf", &n, &D);
+	
+	Mooncake cakeList[1010];
+	
+	for (int i = 0; i < n; i++) {
+		scanf("%lf", &cakeList[i].store);
+	}
+	
+	for (int i = 0; i < n; i++) {
+		scanf("%lf", &cakeList[i].totalSell);
+		cakeList[i].price = cakeList[i].totalSell / cakeList[i].store;
+	}
+	
+	sort(cakeList, cakeList + n, cmp); // 从大到小排列，先买大的 
+	
+	double allIncome = 0;
+	for (int i = 0; i < n; i++) {
+		
+		if (cakeList[i].store < D) {
+			D = D - cakeList[i].store; // 当前全部卖掉
+			allIncome = allIncome + cakeList[i].totalSell;	 
+		} else {
+			allIncome = allIncome + cakeList[i].price * D;
+			break;
+		}
+	}
+	
+	printf("%.2lf", allIncome);
+	
+	return 0;
+}
+```
+
+## 1021 个位数统计 （15 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805300404535296
+
+注意点：需要用大整数方式处理数据。
+
+答案：
+
+```
+#include<cstdio>
+#include<cstring>
+#include<string>
+#include<iostream>
+
+using namespace std;
+
+struct bign {
+	int n[1010];
+	int len;
+	bign () {
+		memset(n, 0, sizeof(n));
+		len = 0;
+	}
+};
+
+bign change (string str) {
+	bign a;
+	a.len = str.size();
+	for (int i = 0; i < a.len; i++) {
+		a.n[i] = str[i] - '0';
+	}
+	return a;
+}
+
+main () {
+	string str;
+	int countList[10];
+	memset(countList, 0, sizeof(countList)); 
+	cin >> str;
+	bign num = change(str);
+	for (int i = 0; i < num.len; i++) {
+		countList[num.n[i]]++;
+	}
+	for (int i = 0; i < 10; i++) {
+		if (countList[i] > 0) {
+			printf("%d:%d\n", i, countList[i]);
+		}
+	}
+	return 0;	
+}
+```
+
+## 1022 D进制的A+B （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805299301433344
+
+注意点：进制转换的问题，需要掌握P进制转化为10进制，与10进制转化为P进制，其他可以以十进制作为中介。
+
+答案：
+
+```
+#include<cstdio>
+
+main () {
+	
+	int A, B, D;
+	scanf("%d %d %d", &A, &B, &D);
+	int sum = A + B;
+	int ans[100], len = 0;
+	while (1) {
+		ans[len++] = sum % D; // 取余
+		sum = sum / D; // 除基
+		if (sum == 0) {
+			break;
+		}
+	}
+	
+	for (int i = len -1; i >= 0; i--) {
+		printf("%d", ans[i]);
+	}
+	
+	return 0;
+}
+```
+
+## 1023 组个最小数 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805298269634560
+
+注意点：策略为最高位打印除0以外最小的，其余的顺序从小到大按数量打印。
+
+答案：
+
+```
+#include<cstdio>
+
+main () {
+	int list[10];
+	for (int i = 0; i < 10; i++) {
+		scanf("%d", &list[i]);
+	}
+	for (int i = 1; i < 10; i++) {
+		if (list[i] > 0) {
+			printf("%d", i);
+			list[i]--;
+			break;
+		}
+	}
+	int pos = 0;
+	while (1) {
+		if (list[pos] > 0 && pos < 10) {
+			printf("%d", pos);
+			list[pos]--;
+		} else {
+			pos++;
+		}
+		if (pos >= 10) {
+			break;
+		}
+	}
+	return 0;
+}
+```
+
+## 1024 科学计数法 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805297229447168
+
+注意点：以处理字符串作为思路。
+
+答案：
+
+```
+#include<cstdio>
+#include<iostream>
+
+using namespace std;
+
+main () {
+	string str;
+	cin >> str;
+	int len = str.size(); 
+	int Epos; // E的位置
+	int exp = 0; // 指数
+	if (str[0] == '-') {
+		printf("-");
+	}
+	// 找出E的位置 
+	for (int i = 0; i < len; i++) {
+		if (str[i] == 'E') {
+			Epos = i;
+		}
+	}
+	// 计算指数
+	for (int i = Epos + 2; i < len; i++) {
+		exp = exp * 10 + (str[i] - '0'); 
+	}
+	// 指数为0特判 
+	if (exp == 0) {
+		for (int i = 1; i < Epos; i++) {
+			printf("%d", str[i]);
+		}
+	}
+	if (str[Epos + 1] == '-') { // 指数为负	
+		printf("0.");
+		for(int i = 0; i < exp - 1; i++) {
+			printf("0");
+		}
+        for(int i = 1;i < Epos; i++) {
+        	if (str[i] == '.') continue;
+            printf("%c", str[i]);
+        }
+	} else { // 指数为正 
+		for (int i = 1; i < Epos; i++) {
+			if (str[i] == '.') continue;
+			printf("%c", str[i]);
+			if (i == exp + 2 && exp + 3 != Epos) {
+				printf(".");
+			}
+		}
+		// 需补零 
+		if (exp + 3 > Epos) {
+			for (int i = 0; i < exp + 3 - Epos; i++) {
+				printf("0");
+			} 
+		}
+	}
+	return 0;
+}
+```
+
+## 1025 反转链表 （25 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805296180871168
+
+注意点：根据《算法笔记》里的代码，没通过，直接超时了。后面再想办法。
+
+答案：
+
+```
+#include<cstdio>
+#include<algorithm>
+
+using namespace std;
+
+const int maxn = 100010;
+
+struct Node { // 定义静态链表 
+	int address, data, next;
+	int order; // 节点在链表上的序号，无效节点记为maxn 
+} node[maxn];
+
+bool cmp (Node a, Node b) {
+	return a.order < b.order;
+} 
+
+main () {
+	
+	for (int i = 0; i < maxn; i++) {
+		node[i].order = maxn;
+	}
+	
+	int begin, n, K, address;
+	
+	scanf("%d%d%d", &begin, &n, &K);	// 起始地址，节点个数，步长
+	
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &address);
+		scanf("%d", &node[address].data, &node[address].next);
+		node[address].address = address;
+	}
+	
+	// 所有有效节点，按照next加入order 
+	int p = begin, count = 0;
+	while (p != -1) {
+		node[p].order = count++;
+		p = node[p].next;
+	}
+	
+	sort(node, node + maxn, cmp); // 排序，按order 
+	
+	// 有效节点为前count个节点 
+	n = count;
+	
+	// 分为n / K块 
+	for (int i = 0; i < n / K; i++) {
+		
+		// 完整的一块倒序输出 
+		for (int j = (i + 1) * K - 1; j > 1 * K; j--) {
+			printf("%05d %d %05d\n", node[j].address, node[j].data, node[j - 1].address);
+		}
+		
+		// 每一块的最后一个结点的next地址的处理
+		printf("%05d %d ", node[i * K].address, node[i * K].data); // 先输出每一块最后一个结点的address和data 
+		
+		if (i < n / K - 1) { // 如果不是最后一块，就指向下一块的最后一个结点 
+			printf("%05d\n", node[(i + 2) * K - 1].address);
+		} else {
+			if (n % K == 0) {
+				printf("-1\n"); // 恰好是最后一个结点，输出-1 
+			} else { // 剩下不完整的块按原先的顺序输出 
+				printf("%05d\n", node[(i + 1) * K].address);
+				for (int i = n / K * K; i < n; i++) {
+					printf("%05d %d", node[i].address, node[i].data);
+					if (i < n - 1) {
+						printf("%05d\n", node[i + 1].address);
+					} else {
+						printf("-1\n");
+					}
+				}
+			}
+		}
+		
+	}
+	
+	return 0; 
+	
+}
+```
+
+## 1026 程序运行时间 （15 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805295203598336
+
+注意点：注意四舍五入。
+
+答案：
+
+```
+#include<cstdio>
+#include<math.h>
+
+main () {
+	int C1, C2;
+	scanf("%d %d", &C1, &C2);
+	int time = (int)round((C2 - C1) / 100.0);
+	int hh, mm, ss;
+	int r;
+	hh = time / 3600;
+	r = time % 3600;
+	mm = r / 60;
+	ss = r % 60;
+	printf("%02d:%02d:%02d", hh, mm, ss);
+	return 0;
+}
+```
+
+## 1027 打印沙漏 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805294251491328
+
+注意点：***注意格式问题，沙漏后面的空格不要打印，十分坑。
+
+答案：
+
+```
+#include<cstdio>
+
+int main () {
+	int n, prev = 0, i = 0, res;
+	
+	char tempStr;
+	
+	scanf("%d %c", &n, &tempStr);
+	
+	while (1) {
+		int now;
+		if (i == 0) {
+			now = 1;
+		} else {
+			now = prev + 2 * ( 2 * i + 1 );
+		}
+		if (now > n) {
+			res = n - prev;
+			break;
+		} else {
+			prev = now;
+			i++;	
+		}
+	}
+	
+	i = i - 1;
+	
+	int countLine = 0; 
+	for (int k = 0; k < 2 * i + 1; k++) {
+		int r = k < (2 * i + 1) / 2 ? k : 2 * i - k; // 当前行数打印空白的对半数量
+		for (int j = 0; j < r; j++) {
+			countLine++;
+			printf(" ");
+		}
+		for (int j = 0; j < (2 * i + 1) - (2 * r); j++) {
+			countLine++;
+			printf("%c", tempStr);
+		}
+		countLine = 0;
+		printf("\n");
+	}
+	
+	printf("%d", res);
+	
+	return 0;
+}
+```
+
+## 1028 人口普查 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805293282607104
+
+注意点：关注下这个读取数据的方式。
+
+答案：
+
+```
+#include<cstdio>
+
+
+struct Birth {
+	
+	char name[6];
+	int year;
+	int month;
+	int day;
+	
+};
+
+bool isValid (Birth a) {
+	if (a.year < 1814 || ( a.year == 1814 && a.month < 9) || ( a.year == 1814 && a.month == 9 && a.day < 6) ) {
+		return false;
+	}
+	if (a.year > 2014 || ( a.year == 2014 && a.month > 9 ) || ( a.year == 2014 && a.month == 9 && a.day > 6)) {
+		return false;
+	}
+	return true;
+}
+
+main () {
+	
+	int n;
+	
+	Birth MIN, MAX;
+	int count = 0;
+	
+	scanf("%d", &n);
+	
+	Birth list[n];
+	
+	MAX.year = 2014;MAX.month = 9;MAX.day = 6;
+	MIN.year = 1814;MIN.month = 9;MIN.day = 6;
+	
+	for (int i = 0; i < n; i++) {
+		
+		scanf("%s %d/%d/%d", list[i].name, &list[i].year, &list[i].month, &list[i].day);
+		
+		bool valid = isValid(list[i]);
+		if (valid) {
+			count++;
+			if ( (list[i].year > MIN.year) || (list[i].year == MIN.year && list[i].month > MIN.month) || (list[i].year == MIN.year && list[i].month == MIN.month && list[i].day > MIN.day) ) {
+				MIN = list[i];
+			}
+			if ( (list[i].year < MAX.year) || (list[i].year == MAX.year && list[i].month < MAX.month) || (list[i].year == MAX.year && list[i].month == MAX.month && list[i].day < MAX.day) ) {
+				MAX = list[i];
+			}
+		}
+	}
+
+	if (count > 0) {
+		printf("%d %s %s", count, MAX.name, MIN.name);
+	} else {
+		printf("0");
+	}
+	
+	return 0;
+} 
+```
+
+## 1029 旧键盘 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805292322111488
+
 注意点：
 
 答案：
@@ -1176,7 +1674,5 @@ https://pintia.cn/problem-sets/994805260223102976/problems/994805301562163200
 ```
 
 ```
-
-
 
 
