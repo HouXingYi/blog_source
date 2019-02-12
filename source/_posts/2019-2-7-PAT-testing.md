@@ -1667,6 +1667,232 @@ main () {
 
 https://pintia.cn/problem-sets/994805260223102976/problems/994805292322111488
 
+注意点：字符串处理。
+
+答案：
+
+```
+#include<cstdio>
+#include<string>
+#include<iostream>
+#include<vector>
+
+using namespace std; 
+
+main () {
+	
+	string str1, str2;
+	vector<char> list;
+	cin >> str1 >> str2;
+	int offset = 0;
+	for (int i = 0; i < str1.size(); i++) {
+		if (str1[i] != str2[i - offset]) {
+			offset++;
+		}
+		if (i - offset < 0 && i == 0) { // 第0个特判 	
+			if (str1[i] >= 'a' && str1[i] <= 'z') {
+				str1[i] = str1[i] - 32; // 转化为大写 
+			}
+			list.push_back(str1[i]);
+		} else {
+			if (str1[i] != str2[i - offset]) {
+				if (str1[i] >= 'a' && str1[i] <= 'z') {
+					str1[i] = str1[i] - 32; // 转化为大写 
+				}
+				int isRepeat = false;
+				for(int j = 0; j < list.size(); j++) {
+					if (str1[i] == list[j]) {
+						isRepeat = true;
+					} 
+				}
+				if (!isRepeat) {
+					list.push_back(str1[i]);					
+				}
+			} 
+		}
+	}
+	
+	for (int k = 0; k < list.size(); k++) {
+		printf("%c", list[k]);
+	}
+	
+	return 0;
+	
+}
+```
+
+## 1030 完美数列 （25 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805291311284224
+
+注意点：没理解透。采用二分查找防止超时，还有一种two pointers的方式。
+
+答案：
+
+```
+// 二分查找解法
+#include<cstdio>
+#include<algorithm>
+
+using namespace std;
+
+const int maxn = 100010;
+
+int n, p, a[maxn];
+
+main () {
+	scanf("%d%d", &n, &p);
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &a[i]);
+	}
+	// 递增排序 
+	sort(a, a + n);
+	int ans = 1;
+	for (int i = 0; i < n; i++) {
+		int j = upper_bound(a + i + 1, a + n, (long long)a[i] * p) - a;
+		ans = max(ans, j - i);
+	}
+	printf("%d\n", ans);
+	return 0;
+}
+```
+
+```
+// two pointers解法
+#include<cstdio>
+#include<algorithm>
+
+using namespace std;
+
+main () {
+	const int maxn = 100010;
+	int n, p, a[maxn];
+	
+	scanf("%d%d", &n, &p);
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &a[i]);
+	}
+	
+	sort(a, a + n);
+	
+	int i = 0, j = 0, count = 1;
+	while (i < n && j < n) {
+		// j不断右移，直到恰好不满足条件
+		while (j < n && a[j] <= (long long)a[i] * p) {
+			count = max(count, j - i + 1);
+			j++;
+		}
+		i++;
+	}
+	printf("%d\n", count);
+	return 0;
+}
+```
+
+## 1031 查验身份证 （15 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805290334011392
+
+注意点：
+
+答案：
+
+```
+#include<cstdio>
+
+using namespace std;
+
+main () {
+	
+	char m[11] = {'1','0','X','9','8','7','6','5','4','3','2'};
+	
+	int wList[18] = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2};
+	int n;
+	scanf("%d", &n);
+	
+	char str[20];
+	bool flag = true;
+	for (int i = 0; i < n; i++) {
+		int sum = 0;
+		bool isAllNum = true;
+		scanf("%s", str);
+		for (int j = 0; j < 17; j++) {
+			if (str[j] >= '0' && str[j] <= '9') {
+				sum += (str[j] - '0') * wList[j];
+			} else {
+				isAllNum = false;
+				break;
+			}
+		}
+		int r = sum % 11;	
+		char M = m[r]; // 校验码
+		if (str[17] != M || isAllNum == false) {
+			flag = false;
+			printf("%s\n", str);
+		}
+	}
+	if (flag) {
+		printf("All passed");
+	}
+	
+	return 0;
+	
+}
+```
+
+## 1032 挖掘机技术哪家强 （20 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805289432236032
+
+注意点：注意这题把字符当做数字使用的方式，以及getline与cin的区别，这题我原来用了cin，死活有一个点过不去，后来改了getline才可以。
+
+答案：
+
+```
+#include<stdio.h>
+#include<string>
+#include<iostream>
+
+using namespace std;
+
+bool hashTable[128]= { 0 };//元素自己做下表
+
+int main() {
+	
+	string str1, str2;
+	
+	getline(cin, str1);
+	getline(cin, str2);
+	
+	for (int i = 0; i < str1.size(); i++) {
+		hashTable[(int)str1[i]] = true;
+		if (str1[i] >= 'A' && str1[i] <= 'Z') {
+			hashTable[((int)str1[i]) + 32] = true;
+		}
+		if (str1[i] == '+') {
+			for (int j = 'A'; j <= 'Z'; j++) {
+				hashTable[(int)j] = true;
+			}	
+		}	
+	}
+	int count = 0;
+	for (int k = 0; k < str2.size(); k++) {
+		if (!hashTable[(int)str2[k]]) {
+			printf("%c", str2[k]);
+			count++;
+		}
+	}
+	if (count == 0) {
+		printf("\n");
+	}
+  return  0;
+}
+```
+
+## 1034 有理数四则运算 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805287624491008
+
 注意点：
 
 答案：
@@ -1674,5 +1900,4 @@ https://pintia.cn/problem-sets/994805260223102976/problems/994805292322111488
 ```
 
 ```
-
 
