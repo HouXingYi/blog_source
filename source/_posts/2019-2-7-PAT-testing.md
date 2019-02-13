@@ -1889,15 +1889,242 @@ int main() {
 }
 ```
 
-## 1034 有理数四则运算 （20 分）
+## 1034 有理数四则运算 （20 分）***
 
 https://pintia.cn/problem-sets/994805260223102976/problems/994805287624491008
 
-注意点：
+注意点：分数的四则运算，有套路，背下来。
 
 答案：
 
 ```
+#include<cstdio>
+#include<algorithm>
 
+using namespace std;
+
+typedef long long ll;
+
+struct Fraction {
+	ll up, down;
+};
+
+ll gcd (ll a, ll b) {
+	// 辗转相除法
+	if (b == 0) { // 被除尽了 
+		return a; // 返回公约数 
+	} else {
+		return gcd(b, a % b);
+	}
+}
+
+// 化简 
+Fraction reduction (Fraction result) {
+	// 若分母为负 
+	if (result.down < 0) {
+		result.up = - result.up;
+		result.down = - result.down;
+	}
+	// 若分子为0
+	if (result.up == 0) {
+		result.down = 1;
+	} else {
+		int d = gcd(abs(result.up), abs(result.down)); // 分子分母的最大公约数
+		result.up /= d;
+		result.down /= d; 
+	}
+	return result;
+	
+}
+// 加法 
+Fraction add (Fraction f1, Fraction f2) {
+	Fraction result;
+	result.up = f1.up * f2.down + f2.up * f1.down;
+	result.down = f1.down * f2.down;
+	return reduction(result);
+}
+
+// 减法
+Fraction minu (Fraction f1, Fraction f2) {
+	Fraction result;
+	result.up = f1.up * f2.down - f2.up * f1.down;
+	result.down = f1.down * f2.down;
+	return reduction(result);
+}
+
+// 乘法
+Fraction multi (Fraction f1, Fraction f2) {
+	Fraction result;
+	result.up = f1.up * f2.up;
+	result.down = f1.down * f2.down;
+	return reduction(result);
+} 
+
+//除法
+Fraction divide (Fraction f1, Fraction f2) {
+	Fraction result;
+	result.up = f1.up * f2.down;
+	result.down = f1.down * f2.up;
+	return reduction(result);
+}
+
+// 输出
+void showResult (Fraction r) {
+	r = reduction(r);
+	if (r.up < 0) printf("(");
+	if (r.down == 1) {
+		printf("%lld", r.up); // 整数	
+	} else if (abs(r.up) / r.down) {
+		printf("%lld %lld/%lld", r.up / r.down, abs(r.up) % r.down, r.down);
+	} else {
+		printf("%lld/%lld", r.up, r.down);
+	}
+	if (r.up < 0) printf(")");
+}
+
+int main () {
+	
+	Fraction a, b;
+	
+	scanf("%lld/%lld %lld/%lld", &a.up, &a.down, &b.up, &b.down);
+	// 加法
+	showResult(a);
+	printf(" + ");
+	showResult(b);
+	printf(" = ");
+	showResult(add(a, b));
+	printf("\n");
+	// 减法
+	showResult(a);
+	printf(" - ");
+	showResult(b);
+	printf(" = ");
+	showResult(minu(a, b));
+	printf("\n");
+	// 乘法
+	showResult(a);
+	printf(" * ");
+	showResult(b);
+	printf(" = ");
+	showResult(multi(a, b));
+	printf("\n");
+	// 除法 
+	showResult(a);
+	printf(" / ");
+	showResult(b);
+	printf(" = ");
+	if (b.up == 0) {
+		printf("Inf");
+	} else {
+		showResult(divide(a, b));	
+	}
+	
+	return 0;
+}
+```
+
+## 1035 插入与归并 （25 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805287624491008
+
+注意点：插入排序与归并排序的应用。
+
+```
+PAT乙级需要掌握的排序算法：
+一、基本排序算法：1. 冒泡排序 2. 选择排序	3. 插入排序
+二、高级排序算法：2. 归并排序（two pointer）2. 快速排序（two pointer）
+```
+
+答案：
+
+```
+#include<cstdio>
+#include<algorithm>
+
+using namespace std;
+
+const int N = 111;
+int origin[N], tempOri[N], changed[N]; // 原始数组，原始数组备份，目标数组
+int n;
+
+// 判断数组是否相同 
+bool isSame (int A[], int B[]) {
+	for (int i = 0; i < n; i++) {
+		if (A[i] != B[i]) return false;
+	}
+	return true;
+}
+
+// 输出数组 
+bool showArray(int A[]) {
+	for (int i = 0; i < n; i++) {
+		printf("%d", A[i]);
+		if (i < n - 1) {
+			printf(" ");
+		}
+	}
+	printf("\n");
+}
+
+// 插入排序
+bool insertSort () {
+	bool flag = false; // 是否有与目标数组相同
+	for (int i = 1; i < n; i++) {
+		if (i != 1 && isSame(tempOri, changed))	{
+			flag = true; // 与目标相同且不是初始状态 
+		}
+		// 插入排序过程
+		int temp = tempOri[i], j = i;
+		while (j > 0 && tempOri[j - 1] > temp) {
+			tempOri[j] = tempOri[j - 1];
+			j--;
+		}
+		tempOri[j] = temp;
+		if (flag == true) {
+			return true;	// 如果flag为true，则说明已达到目标数组，返回true 
+		}
+	}
+	return false;	// 无相同目标数组 
+}
+
+// 归并排序
+void mergeSort () {
+	bool flag = false;
+	for (int step = 2; step / 2 <= n; step *= 2) {
+		if (step != 2 && isSame(tempOri, changed)) {
+			flag = true;
+		}
+		for(int i = 0; i < n; i += step) {
+			sort(tempOri + i, tempOri + min(i + step, n));
+		}
+		if (flag == true) {
+			showArray(tempOri);
+			return;
+		}
+	}
+} 
+
+main () {
+	scanf("%d", &n);
+	// 备份 
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &origin[i]);
+		tempOri[i] = origin[i];
+	}
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &changed[i]); // 目标数组 
+	}
+	if (insertSort()) {
+		printf("Insertion Sort\n");
+		showArray(tempOri);
+	} else {
+		printf("Merge Sort\n");
+		for (int i = 0; i < n; i++) {
+			tempOri[i] = origin[i];
+		}
+		mergeSort();
+	}
+	return 0;
+}
 ```
 
