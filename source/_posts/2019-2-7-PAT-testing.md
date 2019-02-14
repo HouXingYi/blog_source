@@ -2127,4 +2127,502 @@ main () {
 	return 0;
 }
 ```
+## 1036 跟奥巴马一起编程 （15 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805285812551680
+
+答案：
+
+```
+#include<cstdio>
+#include<math.h>
+
+main () {
+	int n;
+	char str;
+	
+	scanf("%d %c", &n, &str);
+	int row = round(n / 2.0);
+	int column = n;
+	for (int i = 0; i < row; i++) {
+		for (int j = 0; j < column; j++) {
+			if (i == 0 || i == row - 1) {
+				if (j == column - 1) {
+					printf("%c\n", str);	
+				} else {
+					printf("%c", str);
+				}
+			} else {
+				if (j == column - 1) {
+					printf("%c\n", str);	
+				} else if (j == 0){
+					printf("%c", str);
+				} else {
+					printf(" ");
+				}
+			}
+		}
+	}
+	
+	return 0;
+}
+```
+
+## 1037 在霍格沃茨找零钱 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805284923359232
+
+注意点：进制转换。
+
+答案：
+
+```
+#include<cstdio>
+#include<math.h>
+
+main () {
+	
+	int Galleon1, Sickle2, Knut3;
+	int Galleon4, Sickle5, Knut6;
+	
+	scanf("%d.%d.%d", &Galleon1, &Sickle2, &Knut3);
+	scanf("%d.%d.%d", &Galleon4, &Sickle5, &Knut6);
+	
+	int sum1;
+	int sum2;
+	int sum3;
+	
+	sum1 = Knut3 + Sickle2 * 29 + Galleon1 * 29 * 17;
+	sum2 = Knut6 + Sickle5 * 29 + Galleon4 * 29 * 17;
+	
+	sum3 = sum2 - sum1;
+	
+	int plus;
+	
+	if (sum3 < 0) {
+		plus = -1;
+	} else {
+		plus = 1;
+	}
+	
+	sum3 = abs(sum3);
+	
+	printf("%d.%d.%d", plus * (sum3 / 493), sum3 / 29 % 17, sum3 % 29);
+	return 0;
+} 
+```
+
+## 1038 统计同成绩学生 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805284092887040
+
+注意点：利用map的思想，不然会超时。
+
+答案：
+
+```
+#include<cstdio>
+
+int map[100010] = { 0 };
+main () {
+	int n;
+	scanf("%d", &n);
+	
+	for (int i = 0; i < n; i++) {
+		int temp;
+		scanf("%d", &temp);
+		map[temp]++;
+	}
+	
+	int m;
+	scanf("%d", &m);
+	
+	for (int j = 0; j < m; j++) {
+		
+		int temp2;
+		scanf("%d", &temp2);
+	
+		if (j == 0) {
+			printf("%d", map[temp2]);
+		} else {
+			printf(" %d", map[temp2]);
+		}
+		
+	}
+	return 0;
+} 
+```
+
+
+## 1039 到底买不买 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805283241443328
+
+
+注意点：利用hashTable的思想，把字符的ASCII码作为hash值。
+
+答案：
+
+```
+#include<cstdio>
+#include<iostream>
+#include<string>
+
+using namespace std;
+
+main () {
+	
+	int hashTable1[128] = { 0 };
+	
+	string str1, str2;
+	
+	getline(cin, str1);
+	getline(cin, str2);
+	
+	int len = str1.size();
+	
+	for (int i = 0; i < str1.size(); i++) {
+		hashTable1[str1[i]]++;
+	}
+	
+	int lessCount = 0;
+	
+	for (int i = 0; i < str2.size(); i++) {
+		
+		if (hashTable1[str2[i]] > 0) {
+			len--;			
+			hashTable1[str2[i]]--;
+		} else {
+			lessCount++;
+		}
+	}
+	
+	if (lessCount > 0) {
+		printf("No %d", lessCount);
+	} else {
+		printf("Yes %d", len);
+	}
+	
+	return 0;
+}
+```
+
+## 1040 有几个PAT （25 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805282389999616
+
+注意点：原理，累加每个A左边P的个数与右边T的个数的乘积，注意结果取模要在过程中，否则会溢出。B1045的思想类似。
+
+答案：
+
+```
+#include<iostream>
+#include<string>
+
+using namespace std;
+
+const int MAXN = 100010;
+
+int main () {
+	
+	int leftPNum[MAXN] = { 0 };
+	
+	string str;
+	
+	cin >> str; 
+	
+	// 统计每一位从左往右数的P的数量 
+	for (int i = 0; i < str.size(); i++) {
+		if (i > 0) {
+			leftPNum[i] = leftPNum[i - 1]; // 继承上一位的数目 
+		}
+		if (str[i] == 'P') {
+			leftPNum[i]++;
+		}
+	}
+	
+	int count = 0;
+	int rightTnum = 0;
+	
+	for (int i = str.size() - 1; i >= 0; i--) {
+		
+		if (str[i] == 'T') {
+			rightTnum++;
+		} else if (str[i] == 'A') {
+			count = (count + leftPNum[i] * rightTnum ) % 1000000007; // 必须在这里取模，否则会在还没输出之前溢出 
+		}
+		
+	}
+	
+	printf("%d", count);
+	
+	return 0;
+}
+```
+
+
+## 1041 考试座位号 （15 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805281567916032
+
+答案：
+
+```
+#include<cstdio>
+#include<vector>
+
+using namespace std;
+
+struct Stu {
+	char n[15];
+	int testSeat;
+	int seat;
+}; 
+
+main () {
+	int n;
+	vector<Stu> list;
+	scanf("%d", &n);
+	for (int i = 0; i < n; i++) {
+		Stu stu;
+		scanf("%s %d %d", &stu.n, &stu.testSeat, &stu.seat);
+		list.push_back(stu);
+	}
+	int m;
+	scanf("%d", &m);
+	for (int j = 0; j < m; j++) {
+		int num;
+		scanf("%d", &num);
+		for (int k = 0; k < list.size(); k++) {
+			if (list[k].testSeat == num) {
+				printf("%s %d\n", list[k].n, list[k].seat);		
+			}
+		}	
+	}
+	
+	return 0;
+}
+```
+
+## 1042 字符统计 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805280817135616
+
+注意点：同样是字符处理问题，注意ASCII字符与数字的转化，还有哈希表的思想。
+
+答案：
+
+```
+#include<cstdio>
+#include<iostream>
+#include<string>
+
+using namespace std;
+
+main () {
+	
+	string str;
+	int hashTable[128] = { 0 };
+	
+	getline(cin, str);
+	
+	for (int i = 0; i < str.size(); i++) {
+		int code;
+		if (str[i] >= 'A' && str[i] <= 'Z') {
+			code = str[i] + 32;
+			hashTable[code]++;
+		} else if (str[i] >= 'a' && str[i] <= 'z') {
+			code = str[i];
+			hashTable[code]++;
+		}
+	}
+	
+	int maxN = 0;
+	int c;
+	
+	for(int i = 'a'; i <= 'z'; i++)
+    {
+        if(hashTable[i] > maxN) {
+            maxN = hashTable[i];
+            c = i;
+        }
+    }
+	
+	printf("%c %d", c, maxN);
+	
+	return 0;
+}
+```
+## 1043 输出PATest （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805280074743808
+
+注意点：直接暴力输出。
+
+答案：
+
+```
+#include <iostream>
+#include <string>
+
+using namespace std;
+ 
+int main()
+{
+	string s;
+	cin >> s;
+	int length = s.length();
+	int a[6] = { 0 };
+	for (int  i = 0; i < length; i++)
+	{
+		if (s[i] == 'P')
+		{
+			a[0] ++;
+		}
+		else if (s[i] == 'A')
+		{
+			a[1] ++;
+		}
+		else if (s[i] == 'T')
+		{
+			a[2] ++;
+		}
+		else if (s[i] == 'e')
+		{
+			a[3] ++;
+		}
+		else if (s[i] == 's')
+		{
+			a[4] ++;
+		}
+		else if (s[i] == 't')
+		{
+			a[5] ++;
+		}
+	}
+	for (int i = 0; i < length; i++)
+	{
+		if (a[0] != 0)
+		{
+			cout << "P";
+			a[0]--;
+		}
+		if (a[1] != 0)
+		{
+			cout << "A";
+			a[1]--;
+		}
+		if (a[2] != 0)
+		{
+			cout << "T";
+			a[2]--;
+		}
+		if (a[3] != 0)
+		{
+			cout << "e";
+			a[3]--;
+		}
+		if (a[4] != 0)
+		{
+			cout << "s";
+			a[4]--;
+		}
+		if (a[5] != 0)
+		{
+			cout << "t";
+			a[5]--;
+		}
+	}
+	
+	return 0;
+}
+```
+## 1044 火星数字 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805279328157696
+
+注意点：本质上是进制转化问题。
+
+答案：
+
+```
+
+```
+
+## 1045 快速排序 （25 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805278589960192
+
+注意点：暴力会超时。思路原理与B1040一样，都是关注一个元素左边所有与右边所有的情况。
+
+答案：
+
+```
+#include<cstdio>
+#include<vector>
+
+using namespace std;
+
+const int MAXN = 100010;
+
+main () {
+	
+	int n;
+	
+	int a[MAXN], leftMax[MAXN], rightMin[MAXN];
+	
+	vector<int> ans;
+	
+	scanf("%d", &n);
+	
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &a[i]);
+	}
+	
+	leftMax[0] = 0;
+	
+	// 找出i之前最大的 
+	for (int i = 1; i < n; i++) {
+		if (leftMax[i - 1] > a[i - 1]) {
+			leftMax[i] = leftMax[i - 1];
+		} else {
+			leftMax[i] = a[i - 1];
+		}
+	}
+	
+	rightMin[n -1] = 1000000000; // 一个很大的数字 
+	// 找出i之后最小的
+	for (int i = n - 2; i >= 0; i--) {
+		if (rightMin[i + 1] < a[i + 1]) {
+			rightMin[i] = rightMin[i + 1];
+		} else {
+			rightMin[i] = a[i + 1];
+		}
+	} 
+	
+	for (int i = 0; i < n; i++) {
+		if (leftMax[i] < a[i] && rightMin[i] > a[i]) { // i之前都比它小，i之后都比它大，即为主元 
+			ans.push_back(a[i]);
+		}
+	}
+	
+	printf("%d\n", ans.size());
+	
+	for (int i = 0; i < ans.size(); i++) {
+		if (i == 0) {
+			printf("%d", ans[i]);
+		} else {
+			printf(" %d", ans[i]);
+		}
+	}
+	
+	if (ans.size() == 0) {
+		printf("\n");
+	}
+	
+	return 0;
+}
+```
+
+
 
