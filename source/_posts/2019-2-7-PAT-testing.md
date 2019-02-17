@@ -2537,16 +2537,97 @@ int main()
 	return 0;
 }
 ```
-## 1044 火星数字 （20 分）
+## 1044 火星数字 （20 分）***
 
 https://pintia.cn/problem-sets/994805260223102976/problems/994805279328157696
 
-注意点：本质上是进制转化问题。
+注意点：本质上是进制转化问题。注意substr的使用，注意getchar获取多余空格技巧。
 
 答案：
 
 ```
+#include<cstdio>
+#include<string>
+#include<iostream>
 
+using namespace std;
+
+string mars1[13] = {"tret", "jan", "feb", "mar", "apr", "may", "jun", "jly", "aug", "sep", "oct", "nov", "dec"}; // 低位 
+
+string mars2[13] = {"####", "tam", "hel", "maa", "huh", "tou", "kes", "hei", "elo", "syy", "lok", "mer", "jou"}; // 高位 
+
+// 数字转火星文 
+void convertToMars (string str) {
+	int num = 0;
+	for (int i = 0; i < str.size(); i++) {	
+		num = num * 10 + (str[i] - '0');
+	}
+	
+	// 高位
+	if (num / 13) {
+		cout << mars2[ num / 13 ];
+	}
+	
+	// 空格
+	if ((num / 13) && (num % 13)) {
+		cout << " ";
+	}
+	
+	// 低位
+	if (num % 13 || num == 0) {
+		cout << mars1[num % 13];
+	} 
+	
+}
+
+// 火星文转数字
+void marsToConvert (string str) {
+
+	int t1 = 0, t2 = 0;
+	
+	string s1, s2;
+	
+	s1 = str.substr(0, 3);
+	if (str.size() > 4) {
+		s2 = str.substr(4, 3);
+	}
+	
+	for (int j = 1; j <= 12; j++) {
+		if (s1 == mars1[j] || s2 == mars1[j]) {
+			t2 = j; // 低位 
+		}
+		if (s1 == mars2[j]) {
+			t1 = j; // 高位 
+		}
+	}
+	
+	cout << t1 * 13 + t2; 
+	
+}
+
+main () {
+	
+	int n;
+	
+	cin >> n;
+	getchar();
+	
+	for (int i = 0; i < n; i++) {	
+		
+		string str;
+		getline(cin, str);
+		
+		if (str[0] >= '0' && str[0] <= '9') {
+			// 数字转火星文 
+			convertToMars(str);
+		} else {
+			// 火星文转数字 
+			marsToConvert(str);
+		}
+		cout << endl;
+	}
+	return 0;
+} 
 ```
 
 ## 1045 快速排序 （25 分）***
@@ -2624,5 +2705,893 @@ main () {
 }
 ```
 
+## 1046 划拳 （15 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805277847568384
+
+答案：
+
+```
+#include<cstdio>
+
+main () {
+	
+	int n;
+	
+	scanf("%d", &n);
+	
+	int aCount = 0, bCount = 0;
+	
+	for (int i = 0; i < n; i++) {
+		int a1, r1, a2, r2;
+		scanf("%d %d %d %d", &a1, &r1, &a2, &r2);	
+		if (a1 + a2 == r1 && a1 + a2 != r2) {
+			bCount++;
+		} else if (a1 + a2 == r2 && a1 + a2 != r1) {
+			aCount++;
+		}
+	}
+	
+	printf("%d %d", aCount, bCount);
+	
+	return 0;
+}
+```
+
+## 1047 编程团体赛 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805277163896832
+
+答案：
+
+```
+#include<cstdio>
+
+main () {
+	
+	int n;
+	
+	scanf("%d", &n);
+	int hashTable[10010] = { 0 };
+	
+	for (int i = 0; i < n; i++) {
+		
+		int teamNum, playerNum, score;
+		
+		scanf("%d-%d %d", &teamNum, &playerNum, &score);
+		
+		hashTable[teamNum] += score;
+		
+	}
+	
+	int maxTeam, maxScore = 0;
+	
+	for (int i = 0; i < 10010; i++) {
+		if (hashTable[i] > maxScore) {
+			maxScore = hashTable[i];
+			maxTeam = i;
+		}
+	}
+	
+	printf("%d %d", maxTeam, maxScore);
+	return 0;
+}
+```
+
+## 1048 数字加密 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805276438282240
+
+注意点：注意在string类型下，字符串相加的技巧。
+
+答案：
+
+```
+#include<cstdio>
+#include<string>
+#include<iostream>
+
+using namespace std;
+
+main () {
+	
+	string str1, str2;
+	
+	string t = "0123456789JQK";
+	cin >> str1 >> str2;
+	
+	int max;
+	int len1 = str1.size(), len2 = str2.size();
+	
+	max = len1 > len2 ? len1 : len2;
+	
+	// 补零 
+	if (len1 > len2) {
+		for (int i = 0; i < len1 - len2; i++) {
+			str2 = '0' + str2;
+		}
+	} else {
+		for (int i = 0; i < len2 - len1; i++) {
+			str1 = '0' + str1;
+		}
+	}
+	
+	string s = ""; 
+	
+	for (int i = max - 1; i >= 0; i--) {
+		int loc = max - i;
+		
+		if (loc % 2 == 0) { // 偶数
+			s = t[((str2[i] - '0') - (str1[i] - '0') + 10) % 10] + s;
+		} else { // 奇数
+			s = t[((str1[i] - '0') + (str2[i] - '0')) % 13] + s;
+		}
+	}
+	
+	cout << s;
+	return 0;
+}
+```
+
+## 1049 数列的片段和 （20 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805275792359424
+
+注意点：https://www.jianshu.com/p/937a367ae4ea。数学问题。
+
+答案：
+
+```
+#include <stdio.h>
+
+int main()
+{
+    int N;
+    double ai, sum = 0;
+
+    scanf("%d", &N);
+    for(int i = 0; i < N; i++)
+    {
+        scanf("%lf", &ai);
+        /* ai is put at the beginning to avoid overflow */
+        sum += ai * (i + 1) * (N - i);
+    }
+    printf("%.2lf", sum);
+
+    return 0;
+}
+```
+
+## 1050 螺旋矩阵 （25 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805275146436608
+
+注意点：还需要再理解下。
+
+答案：
+
+```
+// 用这三个会超时 
+//#include<cstdio>
+//#include<algorithm>
+//#include<math.h>
+
+#include<bits/stdc++.h>
+
+using namespace std;
+ 
+int a[10000][1000] = { 0 }; // 螺旋矩阵 
+int s[10000]; // 原数组 
+ 
+bool cmp(int a, int b){
+    return a > b;
+}
+
+int main(){
+	
+    int n,i,j,x,y,r,c,tot,minn = 9999;
+   	
+   	// 输入 
+    scanf("%d",&n);
+    for(int i = 0; i < n; i++) {
+    	scanf("%d", &s[i]);	
+	}
+	// 排序 
+    sort(s, s + n, cmp);
+    
+    // 计算行列 
+    for(i = 1; i <= sqrt(n * 1.0); i++)
+    {
+        if(n % i==0)
+        {
+            if(n / i - i < minn){
+                minn = n / i - i;
+                r = i;
+            }
+        }        
+    }
+    c = n / r; //c>r c行r列
+	 
+    a[1][1] = s[0]; // 初始点 
+    tot = 0; // 总数 
+	x = y = 1; // 初始化位置 
+	
+    while(tot < r * c-1) // 是否排满 
+    {	
+    	// 向右走 
+        while(y + 1 <= r && ! a[x][y + 1]) {
+        	a[x][++y] = s[++tot];
+		}
+		// 向下走 
+        while(x + 1 <= c && !a[x + 1][y]) {
+        	a[++x][y] = s[++tot];
+		}
+		// 向左走 
+        while(y - 1 > 0 && !a[x][y - 1]) {
+        	a[x][--y] = s[++tot];
+		}
+		// 向上走 
+        while(x - 1 > 0 && !a[x - 1][y]) {
+        	a[--x][y] = s[++tot];
+		}
+    }
+    
+    // 打印结果 
+    for(i = 1; i <= c; i++) {
+        printf("%d", a[i][1]);
+        for(j=2; j <= r; j++) {
+            printf(" %d", a[i][j]);
+        } 
+        printf("\n");
+        
+    }
+    return 0;
+}
+```
+
+## 1051 复数乘法 （15 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805274496319488
+
+注意点：三角恒等公式，复数的乘法。注意精度小于三位的情况要设为0。
+
+答案：
+
+```
+#include <stdio.h>
+#include <math.h>
+ 
+main() {
+	
+    double r1, r2, p1, p2;
+    double a, b;
+    
+    scanf("%lf %lf %lf %lf", &r1, &p1, &r2, &p2);
+    
+    a = (r1 * r2) * cos(p1 + p2); // r1 * r2 (cosp1cosp2 - sinp1sinp2) 
+    b = (r1 * r2) * sin(p1 + p2); // r1 * r2 (sinp1cosp2 + cosp1sinp2)
+    
+    if(fabs(a) < 0.01){
+        a = 0;
+    }
+    
+    if(fabs(b) < 0.01){
+        b = 0;
+    }
+	 
+    if (b < 0) {
+        printf("%.2lf-%.2lfi", a, fabs(b));
+    } else {
+        printf("%.2lf+%.2lfi", a, b);
+    }
+    return 0;
+}
+```
+
+## 1052 卖个萌 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805273883951104
+
+注意点：字符串处理。
+
+答案：
+
+```
+#include<iostream>
+#include<string>
+#include<vector>
+
+using namespace std;
+
+main () {
+	
+	vector<string> hand;
+	vector<string> eye;
+	vector<string> mouth;
+	
+	for (int i = 0; i < 3; i++) {
+		string str;
+		getline(cin, str);
+		
+		vector<string> tempVector;
+		
+		int j = 0, k = 0;
+		while (j < str.size()) {
+			
+			if (str[j] == '[') {
+				string tempStr = "";
+				k = j + 1;
+				while (str[k] != ']') {
+					tempStr = tempStr + str[k];
+					k++;
+				}
+				tempVector.push_back(tempStr);
+			}
+			j++;
+		}
+		
+		if (i == 0) {
+			hand = tempVector;
+		} else if (i == 1){
+			eye = tempVector;
+		} else if (i == 2) {
+			mouth = tempVector;
+		}
+	}
+	
+	int m;
+	
+	cin >> m;
+	
+	for (int i = 0; i < m; i++) {
+		int a, b, c, d, e;
+		cin >> a >> b >> c >> d >> e;
+		if (a > hand.size() || b > eye.size() || c > mouth.size() || d > eye.size() || e > hand.size() || a < 1 || b < 1 || c < 1 || d < 1 || e < 1) {
+			cout << "Are you kidding me? @\\/@" << endl;
+			continue;
+		}
+		cout << hand[a - 1] << "(" << eye[b - 1] << mouth[c - 1] << eye[d - 1] << ")" << hand[e - 1] << endl;
+	} 
+	
+	return 0;
+}
+```
+
+## 1053 住房空置率 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805273284165632
+
+注意点：注意用printf输出%和\的技巧。`%%`,`\\`
+
+答案：
+
+```
+#include<cstdio>
+
+main () {
+	
+	int n, D; // D观察期阈值 
+	
+	double e; // e阈值
+	
+	double ansA = 0, ansB = 0;
+	
+	scanf("%d %lf %d", &n, &e, &D);
+	
+	for (int i = 0; i < n; i++) {
+		
+		int m;
+		int count = 0;
+		
+		scanf("%d", &m);
+		
+		for (int j = 0; j < m; j++) {
+			double t;
+			scanf("%lf", &t);
+			if (t < e) {
+				count++;
+			}
+		}
+		
+		if (count > m / 2 && m > D) {
+			ansB++; // 空置 
+		} else if (count > m / 2 && m <= D) {
+			ansA++; // 可能空置 
+		}
+		
+	}
+	
+	printf("%.1lf%% %.1lf%%", (ansA / n) * 100, (ansB / n) * 100);
+	
+	return 0;
+}
+```
+
+## 1054 求平均值 （20 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805272659214336
+
+注意点：用sscanf和sprintf处理字符串数据。
+
+答案：
+
+```
+#include <iostream>
+#include <cstdio>
+#include <string.h>
+
+using namespace std;
+
+int main() {
+    int n, cnt = 0;
+    
+    char a[50], b[50];
+    
+    double temp, sum = 0.0;
+    
+    cin >> n;
+    
+    for(int i = 0; i < n; i++) {
+    	
+        scanf("%s", a);
+        
+        sscanf(a, "%lf", &temp); // 把字符串以double类型赋给temp
+        
+//      cout << "temp: " << temp << endl;
+        
+        sprintf(b, "%.2f", temp); // 把temp以.2double赋给b
+		
+//		cout << "a:" << a << " b:" << b << endl;
+        
+        int flag = 0;
+        
+        for(int j = 0; j < strlen(a); j++) {
+        	if(a[j] != b[j]) flag = 1;
+		}
+            
+        if(flag || temp < -1000 || temp > 1000) {
+            printf("ERROR: %s is not a legal number\n", a);
+            continue;
+        } else {
+            sum += temp;
+            cnt++;
+        }
+    }
+    if(cnt == 1) {
+    	printf("The average of 1 number is %.2f", sum);
+	} else if(cnt > 1) {
+		printf("The average of %d numbers is %.2f", cnt, sum / cnt);
+	} else {
+		printf("The average of 0 numbers is Undefined");
+	}
+        
+    return 0;
+}
+```
+
+## 1055 集体照 （25 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805272021680128
+
+注意点：自己独立做一遍。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+struct node {
+    string name;
+    int height;
+};
+
+int cmp (struct node a, struct node b) {
+    return a.height != b.height ? a.height > b.height : a.name < b.name; // 身高不等，身高大的排前，身高相等，身高小的排前。 
+}
+
+int main() {
+	
+    int n, k, m;
+    
+    cin >> n >> k; // n个人k排 
+    
+    vector<node> stu(n);
+    
+    for(int i = 0; i < n; i++) {
+        cin >> stu[i].name >> stu[i].height;
+    }
+    // 排序 
+    sort(stu.begin(), stu.end(), cmp);
+    
+    int t = 0, row = k;
+    
+    while(row) {
+    	
+        if(row == k) {
+			m = n - n / k * (k - 1); // 最高一排人数 
+		}
+        else {
+        	m = n / k; // 其余各排人数 
+		}
+		
+        vector<string> ans(m);
+        ans[m / 2] = stu[t].name; // 中间最高的人 
+        
+        // 左边一列
+        int j = m / 2 - 1;
+        for(int i = t + 1; i < t + m; i = i + 2) {
+        	ans[j--] = stu[i].name; // 从高到低间隔放入左边 
+		}
+        // 右边一列
+        j = m / 2 + 1;
+        for(int i = t + 2; i < t + m; i = i + 2) {
+        	ans[j++] = stu[i].name; // 从高到低间隔放入右边 
+		}
+        // 输出当前排
+        cout << ans[0];
+        for(int i = 1; i < m; i++)
+            cout << " " << ans[i];
+        cout << endl;
+        
+        // 换下一排 
+        t = t + m;
+        row--;
+    }
+    
+    return 0;
+}
+```
+
+## 1056 组合数的和 （15 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805271455449088
+
+答案：
+
+```
+#include <cstdio>
+
+using namespace std;
+
+int main() {
+    
+	int n;
+	
+	int sum = 0;
+	
+	scanf("%d", &n);
+	
+	int a[10];
+	
+	for(int i = 0; i < n; i++) {
+		
+		scanf("%d", &a[i]);
+		
+	}
+	
+	for (int i = 0; i < n; i++) {
+		
+		int temp = a[i];	
+		for (int j = 0; j < n; j++) {
+			if (j != i) {
+				sum += a[i]*10 + a[j];	
+			}
+		}
+		
+	}
+	
+	printf("%d", sum);
+    return 0;
+}
+```
+
+## 1057 数零壹 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805270914383872
+
+注意点：考察进制转换。
+
+答案：
+
+```
+#include<cstdio>
+#include<string>
+#include<iostream>
+#include<vector>
+
+using namespace std;
+
+main () {
+	
+	string str;
+	getline(cin, str);
+	int sum;
+	
+	for (int i = 0; i < str.size(); i++) {
+		char temp = str[i];
+		int num = 0;
+		if (temp >= 'a' && temp <= 'z') {
+			num = temp - 'a' + 1;
+			sum += num;
+		}
+		if (temp >= 'A' && temp <= 'Z') {
+			num = temp - 'A' + 1;
+			sum += num;
+		}	
+	}
+	
+	int r;
+	int count1 = 0, count2 = 0;
+	
+	while (sum > 0) {
+		r = sum % 2;
+		if (r == 1) {
+			count1++;
+		} else if (r == 0) {
+			count2++;
+		}
+		sum = sum / 2;
+	}
+	
+	printf("%d %d", count2, count1);
+	
+	return 0; 
+} 
+```
+
+## 1058 选择题 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805270356541440
+
+注意点：不难，但比较麻烦。
+
+答案：
+
+```
+#include<cstdio>
+
+struct Ques {
+	int allScore; // 满分值 
+	int selectNum; // 选项个数
+	int rSelectNum; // 正确选项个数
+	char select[6];
+};
+
+main () {
+	
+	int N, M; // 学生人数，多选题的个数
+	
+	scanf("%d %d", &N, &M);
+	
+	Ques list[M];
+	
+	int wrongAns[M] = { 0 };
+	
+	for (int i = 0; i < M; i++) {
+		scanf("%d %d %d", &list[i].allScore, &list[i].selectNum, &list[i].rSelectNum);
+		for (int j = 0; j < list[i].rSelectNum; j++) {
+			getchar(); // 获取空格 
+			scanf("%c", &list[i].select[j]);
+		}
+	}
+	
+	for (int i = 0; i < N; i++) {
+		
+		getchar();
+		
+		int score = 0;
+		for (int j = 0; j < M; j++) {
+			
+			bool flag = false;
+			
+			if (j != 0) {
+				getchar(); // 空格 
+			}
+			
+			int rNum;
+			scanf("(%d", &rNum);
+			
+			char c;
+			if (rNum == list[j].rSelectNum) {
+				bool isSame = true;
+				for (int k = 0; k < rNum; k++) {	
+					scanf(" %c", &c);
+					if (c != list[j].select[k]) {
+						isSame = false;
+					}
+				}
+				if (isSame) {
+					flag = true;
+				}
+			} else {
+				for (int k = 0; k < rNum; k++) {	
+					scanf(" %c", &c);
+				}
+			}
+			
+			scanf(")");
+			
+			if (flag) {
+				score += list[j].allScore; 
+			} else {
+				wrongAns[j]++; // 错误统计 
+			}
+		}
+		
+		printf("%d\n", score);
+		
+	}
+	
+	int maxWrong = 0;
+	for (int i = 0; i < M; i++) {
+		if(wrongAns[i] > maxWrong) {
+            maxWrong = wrongAns[i];
+        }
+	}
+	
+	if (maxWrong == 0) {
+		printf("Too simple");
+	} else {
+		printf("%d", maxWrong);
+		for (int i = 0; i < M; i++) {
+			if(wrongAns[i] == maxWrong) {
+                printf(" %d", i + 1);
+            }
+		}
+	}
+	return 0;
+}
+```
+
+## 1059 C语言竞赛 （20 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805269828059136
+
+注意点：注意其中map查询不到的时候的处理方式，以及素数的判断方式。
+
+答案：
+
+```
+#include<cstdio>
+#include<map>
+#include<string>
+#include<iostream>
+#include<math.h>
+
+using namespace std;
+
+map<string, int> m;
+
+// 获取map的值 
+int getRank (string str) {
+	map<string, int>::iterator it = m.find(str);
+	if (it != m.end()) {
+		return it -> second;
+	} else {
+		return 0; // 没找到 
+	}
+}
+
+// 是否是素数
+bool isPrime (int n) {
+	if (n <= 1) {
+		return false;
+	}
+	int sqr = (int)sqrt(1.0 * n);
+	for (int i = 2; i <= sqr; i++) {
+		if (n % i == 0) {
+			return false;
+		}
+	}
+	return true;
+}
+
+void check (string str) {
+	 
+	int res = getRank(str);
+	
+	if (res == 0) { // 没找到 
+		cout << str << ": " << "Are you kidding?" << endl;
+	} else if (res == -1) {
+		cout << str << ": " << "Checked" << endl;
+	} else {
+		
+		if (res == 1) {
+			cout << str << ": " << "Mystery Award" << endl;
+		} else if(isPrime(res)) {
+			cout << str << ": " << "Minion" << endl;
+		} else {
+			cout << str << ": " << "Chocolate" << endl;
+		}
+		
+		m[str] = -1;
+		
+	}
+	
+}
+
+main () {
+	
+	int N;
+	
+	scanf("%d", &N);
+	getchar(); // 获取空格 
+	string str;
+	
+	for (int i = 0; i < N; i++) {
+		getline(cin, str);
+		m[str] = i + 1;
+	}
+	
+	int M;
+	
+	scanf("%d", &M);
+	getchar();
+	
+	string str2;
+	for (int i = 0; i < M; i++) {
+		getline(cin, str2);
+		
+		check(str2);
+	} 
+	
+	return 0;
+} 
+```
+
+## 1060 爱丁顿数 （25 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805269312159744
+
+注意点：从大到小排序。
+
+答案：
+
+```
+#include<cstdio>
+#include<algorithm>
+
+using namespace std; 
+
+bool cmp (int a, int b) {
+	return a > b;
+}
+
+main () {
+	
+	int n;
+	
+	int list[100010];
+	
+	scanf("%d", &n);
+	
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &list[i]);
+	}
+	
+	// 从大到小排列 
+	sort(list, list + n, cmp);
+	
+	int ans = 0;
+	
+	for (int i = 0; i < n; i++) {
+		
+		int r = i + 1;
+		
+		if (list[i] > r) {
+			ans = r;
+		}
+		
+	} 
+	
+	printf("%d", ans);
+	 
+	return 0;
+} 
+```
 
 
