@@ -1889,6 +1889,66 @@ int main() {
 }
 ```
 
+## 1033 旧键盘打字 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805288530460672
+
+注意点：
+
+答案：
+
+```
+#include<stdio.h>
+#include<string>
+#include<iostream>
+
+using namespace std;
+
+bool hashTable[128]= { 0 };//元素自己做下表
+
+int main() {
+	
+	string str1, str2;
+	
+	getline(cin, str1);
+	getline(cin, str2);
+//	cin >> str1 >> str2;
+	
+	for (int i = 0; i < str1.size(); i++) {
+		
+		hashTable[(int)str1[i]] = true;
+		
+		if (str1[i] >= 'A' && str1[i] <= 'Z') {
+			hashTable[((int)str1[i]) + 32] = true;
+		}
+		
+		if (str1[i] == '+') {
+			
+			for (int j = 'A'; j <= 'Z'; j++) {
+				hashTable[(int)j] = true;
+			}
+			
+		}
+		
+	}
+	
+	int count = 0;
+	
+	for (int k = 0; k < str2.size(); k++) {
+		if (!hashTable[(int)str2[k]]) {
+			printf("%c", str2[k]);
+			count++;
+		}
+	}
+	
+	if (count == 0) {
+		printf("\n");
+	}
+	
+    return  0;
+}
+```
+
 ## 1034 有理数四则运算 （20 分）***
 
 https://pintia.cn/problem-sets/994805260223102976/problems/994805287624491008
@@ -3593,5 +3653,1918 @@ main () {
 	return 0;
 } 
 ```
+
+## 1061 判断题 （15 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805268817231872
+
+注意点：
+
+答案：
+
+```
+#include<cstdio>
+
+struct node {
+	
+	int score;
+	int flag;
+	
+};
+
+main () {
+	
+	int N, M;
+	
+	scanf("%d %d", &N, &M);
+	node list[M];
+	
+	// 分值 
+	for (int i = 0; i < M; i++) {
+		scanf("%d", &list[i].score);
+	}
+	
+	// 答案 
+	for (int i = 0; i < M; i++) {
+		scanf("%d", &list[i].flag);
+	}
+	
+	for (int i = 0; i < N; i++) {
+		
+		int sum = 0;
+		
+		for (int j = 0; j < M; j++) {
+			
+			int s;
+			
+			scanf("%d", &s);
+			
+			if (s == list[j].flag) {
+				sum += list[j].score;
+			}
+		}
+		printf("%d\n", sum);
+		
+	}
+	
+} 
+```
+
+## 1062 最简分数 （20 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805268334886912
+
+注意点：求最大公约数，与分数的加减乘除并无关系。
+
+答案：
+
+```
+#include <iostream>
+
+using namespace std;
+
+// 最大公约数 
+int gcd(int a, int b){
+	return b == 0 ? a : gcd(b, a % b);
+}
+
+int main() {
+	
+    int n1, m1, n2, m2, k;
+    scanf("%d/%d %d/%d %d", &n1, &m1, &n2, &m2, &k);
+    
+    // 当n1/m1大于n2/m2 
+    if(n1 * m2 > n2 * m1) {
+        swap(n1, n2);
+        swap(m1, m2);
+    }
+    
+    int num = 1; // 分子 
+    
+    bool flag = false; // 是否要打印空格 
+    
+    // 直到num/k > n1/m1
+    while(n1 * k >= m1 * num) {
+		num++;
+	}
+	
+	// 在n1/m1和n2/m2之间，并且不可再约分的num/k 
+    while(n1 * k < m1 * num && m2 * num < n2 * k) {
+        if(gcd(num, k) == 1) { // 最简（最大公约数是1） 
+            printf("%s%d/%d", flag == true ? " " : "", num, k);
+            flag = true; 
+        }
+        num++;
+    }
+    
+    return 0;
+}
+```
+
+## 1063 计算谱半径 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805267860930560
+
+注意点：理解题意。
+
+答案：
+
+```
+#include<cstdio>
+#include<algorithm>
+#include<cmath>
+
+using namespace std;
+
+double f (double a, double b){
+	return sqrt(( a * a + b * b ));
+}
+
+int main () {
+	
+	int n;
+	double a, b, ans = 0;
+	
+	scanf("%d", &n);
+	
+	for (int i = 0; i < n; i++) {
+		scanf("%lf%lf", &a, &b);
+		ans = max(ans, f(a, b));
+	}
+	
+	printf("%.2f\n",ans);
+	
+	return 0;
+}
+```
+
+## 1064 朋友数 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805267416334336
+
+注意点：灵活运用hashTable，sort，vector，string。
+
+答案：
+
+```
+#include<cstdio>
+#include<iostream>
+#include<string>
+#include<vector>
+#include<algorithm>
+
+using namespace std;
+
+main () {
+	
+	int n;
+	scanf("%d", &n);
+	
+	vector<int> v;
+	int list[10010] = { 0 }; // 验证用 
+	
+	for (int i = 0; i < n; i++) {
+		string str;
+		cin >> str;
+		int sum = 0;
+		
+		for (int j = 0; j < str.size(); j++) {
+			sum += str[j] - '0';
+		}
+		
+		if (list[sum] == 0) {
+			v.push_back(sum);
+			list[sum] = 1;	
+		}
+		
+	}
+	
+	printf("%d\n", v.size());
+	sort(v.begin(), v.end());
+	
+	for (int i = 0; i < v.size(); i++) {
+		if (i == 0) {
+			printf("%d", v[i]);	
+		} else {
+			printf(" %d", v[i]);
+		}
+	}
+	
+	return 0;	
+}
+```
+
+## 1065 单身狗 （25 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805266942377984
+
+注意点：注意特殊情况00000，所以输出需要%05d，并且数组初始化为-1
+
+答案：
+
+```
+#include<cstdio>
+#include<vector>
+#include<algorithm>
+#include<cstring>
+
+using namespace std;
+
+main () {
+	
+	int n;
+	
+	vector<int> ori;
+	vector<int> ans;
+	
+	int list1[100000]; // 用于存储couple
+	int list2[100000]; // 用于查询
+	
+	// 全部设为-1，因为00000也是ID 
+	memset(list1, -1, sizeof(list1));
+	memset(list2, -1, sizeof(list2));
+	
+	scanf("%d", &n);
+	
+	for (int i = 0; i < n; i++) {
+		int a, b;
+		scanf("%d %d", &a, &b);
+		list1[a] = b;
+		list1[b] = a;
+	}
+	
+	int m;
+	
+	scanf("%d", &m);
+	
+	for (int i = 0; i < m; i++) {
+		int a;
+		scanf("%d", &a);
+		list2[a] = 1;
+		ori.push_back(a);
+	}
+	
+	for (int i = 0; i < m; i++) {
+		
+		int a = -1, b = -1, c = -1;
+		
+		a = ori[i];
+		b = list1[a]; // a的对象
+		
+		if (b == -1) {
+			ans.push_back(a);
+		} else {
+			c = list2[b]; // b是否在list2中 
+			
+			if (c == -1) {
+				ans.push_back(a);
+			}
+			
+		}
+		
+	}
+	
+	sort(ans.begin(), ans.end());
+	printf("%d\n", ans.size());
+	
+	for (int i = 0; i < ans.size(); i++) {
+		if (i == 0) {
+			printf("%05d", ans[i]);	
+		} else {
+			printf(" %05d", ans[i]);
+		}
+	}
+	
+	return 0;	
+} 
+```
+
+## 1066 图像过滤 （15 分）。
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805266514558976
+
+答案：
+
+```
+#include<cstdio>
+
+main () {
+	
+	int M, N, A, B, r;
+	int arr[510][510];
+	
+	scanf("%d %d %d %d %d", &M, &N, &A, &B, &r);
+	
+	for (int i = 0; i < M; i++) {
+		for (int j = 0; j < N; j++) {
+			int t;		
+			scanf("%d", &t);
+			if (t >= A && t <= B) {
+				arr[i][j] = r;
+			} else {
+				arr[i][j] = t;
+			}	
+		}
+	}
+	
+	for (int i = 0; i < M; i++) {
+		for (int j = 0; j < N; j++) {
+			if (j == 0) {
+				printf("%03d", arr[i][j]);	
+			} else {
+				printf(" %03d", arr[i][j]);
+			} 
+			if (j == N - 1) {
+				printf("\n");
+			}
+		}
+	}
+	
+	return 0;
+} 
+```
+
+## 1067 试密码 （20 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805266007048192
+
+注意点：注意格式问题。注意获取行数的方式。
+
+答案：
+
+```
+#include<cstdio>
+#include<iostream>
+#include<string>
+
+using namespace std;
+
+main () {
+
+	string ans;
+	int n;
+	cin >> ans >> n;
+	string str;
+	bool flag = true;
+	getchar();
+	int count = 0;
+	
+	while (getline(cin, str) && str != "#") {
+		
+		if (flag) {
+			
+			if (str == ans) {
+				flag = false;
+				cout << "Welcome in" << endl;
+			} else {
+				
+				cout << "Wrong password: " << str << endl;
+				
+				count++;
+				
+				if (count >= n) {
+					flag = false;
+					cout << "Account locked" << endl;
+				}
+				
+			}
+				
+		} else {
+			continue;	
+		}
+	}
+	
+	return 0;	
+} 
+```
+
+## 1068 万绿丛中一点红 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805265579229184
+
+注意点：坑点在于审题，注意是要“独一无二”的颜色。
+
+答案：
+
+```
+#include<cstdio>
+#include<cmath>
+#include<map>
+
+using namespace std;
+
+main () {
+	
+	int M, N, TOL;
+	
+	map<int, int> vis; // 独一无二 
+	
+	scanf("%d %d %d", &M, &N, &TOL);
+	int arr[N][M];
+	
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			scanf("%d", &arr[i][j]);
+			vis[arr[i][j]]++;
+		}
+	}
+	
+	int count = 0;
+	int x, y, color;
+	
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			if (vis[arr[i][j]] == 1) {
+				int c = arr[i][j];
+			
+				// 上 
+				if (i - 1 >= 0) {
+					if (abs(arr[i][j] - arr[i - 1][j]) <= TOL) {
+						continue;
+					}
+				}
+				// 右上 
+				if (i - 1 >= 0 && j + 1 <= M) {
+					if (abs(arr[i][j] - arr[i - 1][j + 1]) <= TOL) {
+						continue;
+					}
+				}
+				// 右 
+				if (j + 1 <= M) {
+					if (abs(arr[i][j] - arr[i][j + 1]) <= TOL) {
+						continue;
+					}
+				}
+				// 右下 
+				if (i + 1 <= N && j + 1 <= M) {	
+					if (abs(arr[i][j] - arr[i + 1][j + 1]) <= TOL) {
+						continue;
+					}
+				}
+				// 下 
+				if (i + 1 <= N) {
+					if (abs(arr[i][j] - arr[i + 1][j]) <= TOL) {
+						continue;
+					}
+				}
+				// 左下 
+				if (i + 1 <= N && j - 1 >= 0) {
+					if (abs(arr[i][j] - arr[i + 1][j - 1]) <= TOL) {
+						continue;
+					}
+				}
+				// 左 
+				if (j - 1 >= 0) {
+					if (abs(arr[i][j] - arr[i][j - 1]) <= TOL) {
+						continue;
+					}
+				}
+				// 左上 
+				if (j - 1 >= 0 && i - 1 >= 0) {
+					if (abs(arr[i][j] - arr[i - 1][j - 1]) <= TOL) {
+						continue;
+					}
+				}
+				
+				x = i;
+				y = j;
+				color = arr[i][j];
+				
+				count++;
+			}
+			
+		}
+		
+	}
+	
+	if (count == 0) {
+		printf("Not Exist");
+	} else if (count == 1) {
+		printf("(%d, %d): %d", y + 1, x + 1, color);
+	} else {
+		printf("Not Unique");
+	}
+	
+	return 0;
+} 
+```
+
+## 1069 微博转发抽奖 （20 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805265159798784
+
+注意点：这题网上搜的答案可以看出，在一定情况下，没有搜到key的map返回0也是可以作为判断依据的。
+
+答案：
+
+```
+#include<cstdio>
+#include<iostream>
+#include<string>
+#include<map>
+
+using namespace std;
+
+map<string, int> m;
+
+int isRepeat (string str) {
+	map<string, int>::iterator it = m.find(str);
+	if (it != m.end()) {
+		return it -> second;
+	} else {
+		return 0; // 没找到 
+	}
+}
+
+main () {
+	
+	int M, N, S;
+	
+	scanf("%d %d %d", &M, &N, &S);
+	getchar();
+	int luck = S;
+	string str;
+	int count = 0;
+	
+	int r = 0;
+	
+	for (int i = 1; i <= M; i++) {
+		getline(cin, str);
+		
+		if (luck <= M && i == luck) {
+			int res = isRepeat(str);
+			if (res == 0) {
+				cout << str << endl;
+				count++;
+				m[str] = 1;
+				luck += N;	
+			} else {
+				luck++;	
+			}		
+		}
+		
+	}
+	
+	if (count == 0) {
+		cout << "Keep going..." << endl;
+	}
+	
+	return 0;
+} 
+```
+
+另外答案
+
+```
+#include <iostream>
+#include <map>
+using namespace std;
+int main() {
+    int m, n, s;
+    scanf("%d%d%d", &m, &n, &s);
+    string str;
+    map<string, int> mapp;
+    bool flag = false;
+    for (int i = 1; i <= m; i++) {
+        cin >> str;
+        if (mapp[str] == 1) s = s + 1;
+        if (i == s && mapp[str] == 0) {
+            mapp[str] = 1;
+            cout << str << endl;
+            flag = true;
+            s = s + n;
+        }
+    }
+    if (flag == false) cout << "Keep going...";
+    return 0;
+}
+```
+
+## 1070 结绳 （25 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805264706813952
+
+注意点：越长的绳子对折的次数应该要越少，最后才会最长。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+int main() {
+	
+    int n;
+    scanf("%d", &n);
+    
+    vector<int> v(n);
+    
+    for (int i = 0; i < n; i++) {
+    	scanf("%d", &v[i]);
+	}
+	
+    sort(v.begin(), v.end());
+    
+    int result = v[0];
+    
+    for (int i = 1; i < n; i++) {
+    	result = (result + v[i]) / 2;
+	}
+	
+    printf("%d", result);
+    return 0;
+}
+```
+
+## 1071 小赌怡情 （15 分）
+
+注意点：注意格式，total前面是两个空格。
+
+答案：
+
+```
+#include<cstdio>
+
+using namespace std;
+
+main () {
+	
+	int T, K; // 赠送筹码，游戏次数
+	
+	int chip;
+	scanf("%d %d", &T, &K);
+	chip = T;
+	
+	for (int i = 0; i < K; i++) {
+		
+		int n1, b, t, n2;
+		
+		int res;
+		scanf("%d %d %d %d", &n1, &b, &t, &n2);
+		
+		if (chip == 0) {
+			printf("Game Over.\n");
+			break;
+		}
+		if (t > chip) {
+			printf("Not enough tokens.  Total = %d.\n", chip);
+			continue;
+		}
+		
+		if (n2 > n1) {
+			res = 1;
+		} else if (n2 < n1){
+			res = 0;
+		}
+		
+		if ( res == b ) {
+			chip += t;
+			printf("Win %d!  Total = %d.\n", t, chip);
+		} else {
+			chip -= t;
+			printf("Lose %d.  Total = %d.\n", t, chip);
+		}	
+	}
+	
+	return 0;
+} 
+```
+
+## 1072 开学寄语 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805263964422144
+
+注意点：注意格式问题，其中四位数字需要尤其注意， %04d。
+
+答案：
+
+```
+#include<cstdio>
+#include<vector>
+
+using namespace std;
+
+main () {
+	
+	int N, M; // 学生人数，需要被查缴的物品编号 
+	
+	char name[5];
+	int arr[10000] = { 0 };
+	scanf("%d %d", &N, &M);
+	int nameCount = 0, itemCount = 0;
+	
+	for (int i = 0; i < M; i++) {
+		int n;
+		scanf("%d", &n);
+		arr[n] = 1;
+	}
+	
+	for (int i = 0; i < N; i++) {
+		
+		int tempN;
+		vector<int> v; // 存储当前被缴获的
+		bool flag = false; 
+		
+		scanf("%s %d", name, &tempN);
+		for (int j = 0; j < tempN; j++) {
+			int k;
+			scanf("%d", &k);
+			if (arr[k] == 1) {
+				v.push_back(k);
+			}
+		}
+		
+		if (v.size() != 0) {
+			nameCount++;
+			itemCount += v.size();
+			printf("%s:", name);
+			for (int h = 0; h < v.size(); h++) {
+				printf(" %04d", v[h]);
+			}
+			printf("\n");
+			
+		}
+		
+	}
+	
+	printf("%d %d", nameCount, itemCount);
+	return 0;
+}
+```
+
+## 1073 多选题常见计分法 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805263624683520
+
+注意点：可以与B1058联动，我这里采用网上 “柳婼” 的做法。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+int main() {
+    int n, m, optnum, truenum, temp, maxcnt = 0;
+    int hash[] = {1, 2, 4, 8, 16}, opt[1010][110] = {0};
+    char c;
+    scanf("%d %d", &n, &m);
+    vector<int> fullscore(m), trueopt(m);
+    vector<vector<int> > cnt(m, vector<int>(5));
+    for (int i = 0; i < m; i++) {
+        scanf("%d %d %d", &fullscore[i], &optnum, &truenum);
+        for (int j = 0; j < truenum; j++) {
+            scanf(" %c", &c);
+            trueopt[i] += hash[c-'a'];
+        }
+    }
+    for (int i = 0; i < n; i++) {
+        double grade = 0;
+        for (int j = 0; j < m; j++) {
+            getchar();
+            scanf("(%d", &temp);
+            for (int k = 0; k < temp; k++) {
+                scanf(" %c)", &c);
+                opt[i][j] += hash[c-'a'];
+            }
+            int el = opt[i][j] ^ trueopt[j];
+            if (el) {
+                if ((opt[i][j] | trueopt[j]) == trueopt[j]) {
+                    grade += fullscore[j] * 1.0 / 2;
+                }
+                if (el) {
+                    for (int k = 0; k < 5; k++)
+                        if (el & hash[k]) cnt[j][k]++;
+                }
+            } else {
+                grade += fullscore[j];
+            }
+        }
+        printf("%.1f\n", grade);
+    }
+    for (int i = 0; i < m; i++)
+        for (int j = 0; j < 5; j++)
+            maxcnt = maxcnt > cnt[i][j] ? maxcnt : cnt[i][j];
+    
+    if (maxcnt == 0) {
+        printf("Too simple\n");
+    } else {
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < cnt[i].size(); j++) {
+                if (maxcnt == cnt[i][j])
+                    printf("%d %d-%c\n", maxcnt, i+1, 'a'+j);
+            }
+        }
+    }
+    return 0;
+}
+```
+
+## 1074 宇宙无敌加法器 （20 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805263297527808
+
+注意点：注意这里补零的方式，并且理解为什么最后一个进位一定是1。
+
+答案：
+
+```
+#include <iostream>
+
+using namespace std;
+
+int main() {
+	
+	string s, s1, s2, ans; // 进制表，第一个数，第二个数，答案 
+	
+	int carry = 0, flag = 0; // 进位，结果是否为0
+	
+	cin >> s >> s1 >> s2;
+	
+	ans = s;
+	
+	// 将s1和s2变的与s一样长, 前面都是'0' 
+	string ss1(s.length() - s1.length(), '0');
+	s1 = ss1 + s1;
+	string ss2(s.length() - s2.length(), '0');
+	s2 = ss2 + s2;
+	
+	for(int i = s.length() - 1; i >= 0; i--) {
+		
+        int mod = s[i] == '0' ? 10 : (s[i] - '0'); // 进制 
+        
+        ans[i] = (s1[i] - '0' + s2[i] - '0' + carry) % mod + '0'; // 当前位 
+        
+        carry = (s1[i] - '0' + s2[i] - '0' + carry) / mod; // 进位，进位永远都是1 
+		
+    }
+    
+    if (carry != 0) ans = '1' + ans;
+    
+    for(int i = 0; i < ans.size(); i++) {
+        if (ans[i] != '0' || flag == 1) {
+            flag = 1;
+            cout << ans[i];
+        }
+    }
+    if (flag == 0) cout << 0;
+    return 0;
+}
+```
+
+
+## 1075 链表元素分类 （25 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805262953594880
+
+注意点：将数据分为3类，最后输出的时候有技巧。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+struct node {
+    int data, next;
+}list[100000];
+
+vector<int> v[3];
+
+int main() {
+	
+    int start, n, k, a;
+    
+    scanf("%d%d%d", &start, &n, &k); // 第一个结点地址，结点总个数，以及正整数K 
+    
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &a); // 结点地址作为下标 
+        scanf("%d%d", &list[a].data, &list[a].next);
+    }
+    
+    int p = start;
+    
+    // 分为三类 
+    while(p != -1) {
+		 
+        int data = list[p].data;
+        
+        if (data < 0) { // 小于0的为一类 
+        	v[0].push_back(p);
+		}
+		else if (data >= 0 && data <= k) { // [0, k]为一类 
+			v[1].push_back(p);
+		}
+        else { // 大于k为一类 
+        	v[2].push_back(p);
+		}
+        p = list[p].next;
+    }
+    
+    int flag = 0;
+    
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < v[i].size(); j++) {
+            if (flag == 0) {
+                printf("%05d %d ", v[i][j], list[v[i][j]].data); // 第一次，输出当前结点 
+                flag = 1;
+            } else {
+                printf("%05d\n%05d %d ", v[i][j], v[i][j], list[v[i][j]].data); // 输出上一个结点的next，也就是当前结点v[i][j]。接着输出下一个结点。  
+            }
+        }
+    }
+    
+    printf("-1"); // 最后一个结点的next 
+    
+    return 0;
+}
+```
+
+## 1076 Wifi密码 （15 分）
+
+答案：
+
+```
+#include<cstdio>
+#include<string>
+#include<iostream>
+
+using namespace std;
+
+main () {
+	int n;
+	
+	scanf("%d", &n);
+	
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < 4; j++) {
+			string str;
+			char a, b;
+			cin >> str;
+			a = str[0];
+			b = str[2];
+			if (b == 'T') {
+				if (a == 'A') {
+					printf("1");	
+				}
+				if (a == 'B') {
+					printf("2");
+				}
+				if (a == 'C') {
+					printf("3");
+				}
+				if (a == 'D') {
+					printf("4");
+				}
+			}	
+		}
+	}
+	
+	return 0;
+} 
+```
+
+## 1077 互评成绩计算 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805262303477760
+
+注意点：注意其四舍五入的方式。
+
+答案：
+
+```
+#include <iostream>
+
+using namespace std;
+
+int main() {
+	
+    int n, m;
+    
+    cin >> n >> m; // 分组数与满分 
+    
+    for (int i = 0; i < n; i++) {
+    	
+        int g2, g1 = 0, cnt = -2, temp, maxn = -1, minn = m + 1; // cnt去除最高分与最低分 
+        
+        cin >> g2;
+        
+        for (int j = 0; j < n-1; j++) {
+            cin >> temp;
+            if (temp >= 0 && temp <= m) {
+                if (temp > maxn) maxn = temp;
+                if (temp < minn) minn = temp;
+                g1 += temp;
+                cnt++;
+            }
+        }
+        
+        cout << int((((g1 - minn - maxn) * 1.0 / cnt) + g2) / 2 + 0.5) << endl;
+    }
+    return 0;
+}
+```
+
+## 1078 字符串压缩与解压 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805262018265088
+
+注意点：dev-c++ 工具-编译选项-编译器-编译 -std=c++11，stoi的用法。
+
+答案：
+
+```
+#include<iostream>
+
+using namespace std;
+
+int main() {
+	
+    char t;
+    cin >> t;
+    
+    getchar();
+    string s, num;
+    getline(cin, s);
+    
+    int cnt = 1;
+    
+    if (t == 'D') { // 解压
+        for (int i = 0; i < s.length(); i++) {
+            if (s[i] >= '0' && s[i] <= '9') {
+                num += s[i];
+            } else {
+                if (num.length() > 0) cnt = stoi(num); // string num 转化为 int cnt 
+                while(cnt--) cout << s[i];
+                cnt = 1;
+                num = "";
+            }
+        }
+    } else if (t == 'C') { // 压缩
+        char pre = s[0]; // 前一个 
+        for (int i = 1; i < s.length(); i++) {
+            if (s[i] == pre) { // 是否等于前一个 
+                cnt++;
+            } else {
+                if (cnt >= 2) cout << cnt;
+                cout << pre;
+                cnt = 1;
+                pre = s[i];
+            }
+        }
+        // 结尾扫描存储下来的cnt和pre，记得输出 
+        if (cnt >= 2) cout << cnt;
+        cout << pre;
+    }
+    return 0;
+}
+```
+
+## 1079 延迟的回文数 （20 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805261754023936
+
+注意点：重点在于其中的相加，需要使用大整数相加的想法。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include<string>
+
+using namespace std;
+
+// 与大整数相加类似 
+string add(string a) {
+    string b = a, ans;
+    reverse(b.begin(), b.end());
+    int len = a.length(), carry = 0;
+    for (int i = 0; i < len; i++) {
+        int num = (a[i] - '0' + b[i] - '0') + carry;
+        carry = 0;
+        if (num >= 10) {
+            carry = 1;
+            num = num - 10;
+        }
+        ans += char(num + '0');
+    }
+    if(carry == 1) ans += '1';
+    reverse(ans.begin(), ans.end());
+    return ans;
+}
+
+int main() {
+    string s;
+    cin >> s;
+    
+    int cnt = 0;
+    while (cnt < 10) {
+    	
+        string t = s;
+        reverse(t.begin(), t.end()); // 将s翻转 
+        
+        if (t == s) {
+            cout << s << " is a palindromic number.";
+            break;
+        } else {
+            cout << s << " + " << t << " = " << add(s) << endl;
+            s = add(s);
+            cnt++;
+        }
+        
+    }
+    
+    if (cnt == 10) cout << "Not found in 10 iterations.";
+    return 0;
+}
+```
+
+## 1080 MOOC期终成绩 （25 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805261493977088
+
+注意点：
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <map>
+
+using namespace std;
+
+struct node {
+    string name;
+    int gp, gm, gf, g; // 在线编程成绩，期中考试成绩，期末考试成绩，总评 
+};
+
+bool cmp(node a, node b) {
+    return a.g != b.g ? a.g > b.g : a.name < b.name; // 总分递减，总分相同则姓名递增 
+}
+
+map<string, int> idx; // 名字与在v中顺序的对应关系 
+
+int main() {
+	
+    int p, m, n, score, cnt = 1;
+    cin >> p >> m >> n; // P（做了在线编程作业的学生数）、M（参加了期中考试的学生数）、N（参加了期末考试的学生数）
+    
+    vector<node> v, ans;
+    string s;
+    
+	// p个在线编程成绩 
+    for (int i = 0; i < p; i++) {
+        cin >> s >> score;
+        if (score >= 200) {
+            v.push_back(node{s, score, -1, -1, 0}); // struct顺序初始化方式
+            idx[s] = cnt++;
+        }
+    }
+    // m个期中考试成绩 
+    for (int i = 0; i < m; i++) {
+        cin >> s >> score;
+        if (idx[s] != 0) v[idx[s] - 1].gm = score;
+    }
+    // n个期末考试成绩 
+    for (int i = 0; i < n; i++) {
+        cin >> s >> score;
+        if (idx[s] != 0) {
+            int temp = idx[s] - 1;
+            v[temp].gf = v[temp].g = score;
+            if (v[temp].gm > v[temp].gf) v[temp].g = int(v[temp].gm * 0.4 + v[temp].gf * 0.6 + 0.5); // 计算总评 
+        }
+    }
+    
+    // 总评超过60的即为答案 
+    for (int i = 0; i < v.size(); i++) {
+    	if (v[i].g >= 60) ans.push_back(v[i]);
+	}
+    // 按照cmp规则排序 
+    sort(ans.begin(), ans.end(), cmp);
+    // 输出 
+    for (int i = 0; i < ans.size(); i++) {
+    	printf("%s %d %d %d %d\n", ans[i].name.c_str(), ans[i].gp, ans[i].gm, ans[i].gf, ans[i].g);
+	}
+        
+    return 0;
+}
+```
+
+## 1081 检查密码 （15 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805261217153024
+
+注意点：一定要注意当需要一整行的时候，一行有可能出现空格的情况，需要使用getline，而使用getline，需要注意开头空格的情况。
+
+答案：
+
+```
+#include<cstdio>
+#include<iostream>
+#include<string>
+
+using namespace std;
+
+string check (string str) {
+	string ans;
+	bool a = false, b = false, c = false; // 字母，数字，其他 
+	// 太短 
+	if (str.size() < 6) {
+		ans = "Your password is tai duan le.";
+		return ans;
+	}
+	for (int i = 0; i < str.size(); i++) {
+		
+		if (str[i] >= 'a' && str[i] <= 'z' || str[i] >= 'A' && str[i] <= 'Z') { // 字母 
+			a = true; 
+		}
+		else if (str[i] >= '0' && str[i] <= '9') { // 数字 
+			b = true; 
+		}
+		else if (str[i] == '.') { // 小数点 
+			
+		} else { // 其他 
+			c = true;
+		}
+	}
+	if (c) {
+		ans = "Your password is tai luan le.";
+	}
+	if (!b && a) {
+		ans = "Your password needs shu zi.";
+	} 
+	if (!a && b) {
+		ans = "Your password needs zi mu.";
+	}
+	if (!c && b && a) {
+		ans = "Your password is wan mei.";
+	}
+	return ans;
+}
+
+main () {
+	
+	int n;
+	scanf("%d", &n); 
+	
+	getchar(); // 空格 
+	for (int i = 0; i < n; i++) {
+		string str;
+		getline(cin, str);
+		string ans = check(str);
+		cout << ans << endl;
+	}
+	
+	return 0; 
+} 
+```
+
+## 1082 射击比赛 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805260990660608
+
+注意点：只需要平方和就可以了。
+
+答案：
+
+```
+#include <iostream>
+
+using namespace std;
+
+int main() {
+	
+    int n, id, x, y, maxid, maxdis = -1, minid, mindis = 99999;
+    
+    cin >> n;
+    
+    for (int i = 0; i < n; i++) {
+    	
+        cin >> id >> x >> y;
+        
+        int dis = x * x + y * y;
+        
+        if (dis > maxdis) maxid = id;
+        if (dis < mindis) minid = id;
+        
+        maxdis = max(maxdis, dis);
+        mindis = min(mindis, dis);
+        
+    }
+    printf("%04d %04d", minid, maxid);
+    return 0;
+}
+```
+
+## 1083 是否存在相等的差 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805260780945408
+
+答案：
+
+```
+#include <iostream>
+
+using namespace std;
+
+int main() {
+	
+    int n, t, a[10000] = { 0 };
+    
+    cin >> n;
+    for (int i = 1; i <= n; i++) {
+    	
+        cin >> t;
+        
+        a[abs(t-i)]++;
+        
+    }
+    for (int i = 9999; i >= 0; i--) {
+		if (a[i] >= 2) cout << i << " " << a[i] << endl;
+	}
+	
+    return 0;
+}
+```
+
+## 1084 外观数列 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805260583813120
+
+注意点：to_string的用法，for的别样用法。
+
+答案：
+
+```
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    string s;
+    int n, j;
+    
+    cin >> s >> n; // 求s的第n项 
+    
+    for (int cnt = 1; cnt < n; cnt++) {
+    	
+        string t;
+        
+        for (int i = 0; i < s.length(); i = j) {
+        	
+        	// 从i开始到j为相同的s[i] 
+            for (j = i; j < s.length() && s[j] == s[i]; j++);
+            
+            t += s[i] + to_string(j - i);
+            
+        }
+        
+        s = t; // 当前的s 
+    }
+    
+    cout << s;
+    return 0;
+}
+```
+
+## 1085 PAT单位排行 （25 分）***
+
+https://pintia.cn/problem-sets/994805260223102976/problems/994805260353126400
+
+注意点：cctype其中一些处理字符串的函数。还有一个很重要的，就是遍历map的方式。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <cctype>
+#include <vector>
+#include <map>
+
+using namespace std;
+
+struct node {
+    string school; // 学校 
+    int tws, ns; // 加权总分，考生人数 
+};
+
+//学校首先按加权总分排行。如有并列，则应对应相同的排名，并按考生人数升序输出。如果仍然并列，则按单位码的字典序输出 
+bool cmp(node a, node b) {
+    if (a.tws != b.tws) {
+		return a.tws > b.tws;
+	}
+    else if (a.ns != b.ns) {
+		return a.ns < b.ns;
+	} 
+    else {
+		return a.school < b.school;
+	}
+}
+
+int main() {
+    int n;
+    scanf("%d", &n); // 考生总人数 
+    
+    // 学校作为key 
+    map<string, int> cnt; // 学校人数 
+    map<string, double> sum; // 学校分数 
+    
+    for (int i = 0; i < n; i++) {
+    	
+        string id, school; // 准考证，学校
+		
+		// 输入准考证，分数，学校 
+        cin >> id;
+        double score;
+        scanf("%lf", &score);
+        cin >> school;
+        
+        // 学校转化为小写
+        for (int j = 0; j < school.length(); j++) {
+			school[j] = tolower(school[j]);
+		} 
+        
+        // 顶级与乙级的分数的处理 
+        if (id[0] == 'B') {
+			score = score / 1.5;
+		} 
+        else if (id[0] == 'T') {
+			score = score * 1.5;
+		}
+            
+        sum[school] += score;
+        cnt[school]++;
+    }
+    
+    vector<node> ans;
+    // 遍历学校
+    for (auto it = cnt.begin(); it != cnt.end(); it++) {
+    	node temp = node{it->first, (int)sum[it->first], cnt[it->first]}; // 学校，加权总分，考生人数 
+    	ans.push_back(temp);
+	}
+	
+	// 按规则学校排序 
+    sort(ans.begin(), ans.end(), cmp);
+    
+    // 输出答案 
+    int rank = 0, pres = -1;
+    printf("%d\n", (int)ans.size()); // 学校总数 
+    for (int i = 0; i < ans.size(); i++) {
+        // 如果当前分数与前一个不同，即排名增加，否则排名与前一位相同的保持一致 
+		if (pres != ans[i].tws) {
+        	rank = i + 1;	
+		}
+        pres = ans[i].tws;
+        printf("%d ", rank); // 排名 
+        cout << ans[i].school; // 学校名 
+        printf(" %d %d\n", ans[i].tws, ans[i].ns); // 加权总分，考生人数 
+    }
+    return 0;
+}
+```
+
+## 1086 就不告诉你 （15 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/1038429065476579328
+
+注意点：善于利用to_string，reverse等。
+
+答案：
+
+```
+#include<cstdio>
+#include<iostream>
+#include<string>
+
+using namespace std;
+
+main () {
+	
+	int a, b, c;
+	
+	scanf("%d %d", &a, &b);
+	
+	c = a * b;
+	
+	string d = to_string(c);
+	
+	bool flag = false; // 数字最高位不能为0 
+	for (int i = d.size() - 1; i >= 0; i--) {
+		if (d[i] != '0' || flag) {
+			flag = true;
+			cout << d[i];	
+		}	
+	}
+	
+	return 0;	
+}
+```
+
+## 1087 有多少不同的值 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/1038429191091781632
+
+注意点：利用map或者set不重复的特点。
+
+答案：
+
+```
+#include <iostream>
+#include <set>
+using namespace std;
+int main() {
+    int n;
+    scanf("%d", &n);
+    set<int> s;
+    for (int i = 1; i <= n; i++)
+        s.insert(i / 2 + i / 3 + i / 5);
+    printf("%d", s.size());
+    return 0;
+}
+```
+
+```
+#include<map>
+#include<iostream>
+
+using namespace std;
+
+int main()
+{
+    int n;
+    map<int, int> mp;
+    cin >> n;
+    for(int i = 1; i <= n; i++){
+        mp[i / 2 + i / 3 + i / 5] ++;
+    }
+    cout << mp.size() << endl;
+    return 0;
+}
+```
+
+## 1088 三人行 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/1038429286185074688
+
+注意点：理解题意，丙不一定是整数。
+
+答案：
+
+```
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+int m, x, y;
+
+// 输出 
+void print(double t) {
+    if (m == t) printf(" Ping");
+    else if (m < t) printf(" Cong");
+    else printf(" Gai");
+}
+
+int main() {
+	
+    scanf("%d %d %d", &m, &x, &y);
+    
+    // i为甲，为两位数 
+    for (int i = 99; i >= 10; i--) {
+        int j = i % 10 * 10 + i / 10; // j为乙 
+        double k = abs(j - i) * 1.0 / x; // k为丙，不一定是整数。 
+        if (j == k * y) { // 乙的能力值是丙的y倍 
+            cout << i; // 输出甲 
+            print(i); print(j); print(k); // 与自己做对比 
+            return 0;
+        }
+    }
+    cout << "No Solution";
+    return 0;
+}
+```
+
+## 1089 狼人杀-简单版 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/1038429385296453632
+
+注意点：https://blog.csdn.net/liuchuo/article/details/82560831
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+int main() {
+    int n;
+    cin >> n;
+    vector<int> v(n+1);
+    for (int i = 1; i <= n; i++) cin >> v[i];
+    for (int i = 1; i <= n; i++) {
+        for (int j = i + 1; j <= n; j++) {
+            vector<int> lie, a(n + 1, 1);
+            a[i] = a[j] = -1;
+            for (int k = 1; k <= n; k++)
+                if (v[k] * a[abs(v[k])] < 0) lie.push_back(k);
+            if (lie.size() == 2 && a[lie[0]] + a[lie[1]] == 0) {
+                cout << i << " " << j;
+                return 0;
+            }
+        }
+    }
+    cout << "No Solution";
+    return 0;
+}
+```
+
+## 1090 危险品装箱 （25 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/1038429484026175488
+
+注意点：https://blog.csdn.net/liuchuo/article/details/82560808
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <map>
+using namespace std;
+int main() {
+    int n, k, t1, t2;
+    map<int,vector<int>> m;
+    scanf("%d%d", &n, &k);
+    for (int i = 0; i < n; i++) {
+        scanf("%d%d", &t1, &t2);
+        m[t1].push_back(t2);
+        m[t2].push_back(t1);
+    }
+    while (k--) {
+        int cnt, flag = 0, a[100000] = {0};
+        scanf("%d", &cnt);
+        vector<int> v(cnt);
+        for (int i = 0; i < cnt; i++) {
+            scanf("%d", &v[i]);
+            a[v[i]] = 1;
+        }
+        for (int i = 0; i < v.size(); i++)
+            for (int j = 0; j < m[v[i]].size(); j++)
+                if (a[m[v[i]][j]] == 1) flag = 1;
+        printf("%s\n",flag ? "No" :"Yes");
+    }
+    return 0;
+}
+```
+
+
+## 1091 N-自守数 （15 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/1071785664454127616
+
+注意点：注意to_string与substr的运用。
+
+答案：
+
+```
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int main() {
+	
+    int m;
+    cin >> m;
+    
+    while (m--) {
+        int k, flag = 0;
+        cin >> k;
+        
+        for (int n = 1; n < 10; n++) {
+            int mul = n * k * k;
+            string smul = to_string(mul), sk = to_string(k);
+            string smulend = smul.substr(smul.length() - sk.length());
+            if (smulend == sk) {
+                printf("%d %d\n", n, mul);
+                flag = 1;
+                break;
+            }
+        }
+        if (flag == 0) printf("No\n");
+    }
+    return 0;
+} 
+```
+
+## 1092 最好吃的月饼 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/1071785779399028736
+
+注意点：
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int sum[1005];
+
+int main() {
+    int m, n, maxn = 0, total = 0;
+    vector<int> ans;
+    
+    cin >> m >> n; // 月饼种类，城市数量 
+    
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+        	int a; 
+            cin >> a;
+            sum[j] += a; // 记录第j种月饼的数量 
+            maxn = max(maxn, sum[j]);
+        }
+    }
+    
+    cout << maxn << endl; // 最大销量 
+    
+    // 最大销量并列的情况 
+    for (int i = 1; i <= m; i++) {
+		if (sum[i] == maxn) ans.push_back(i);
+	}
+	// 递增顺序输出并列冠军 
+    for (int i = 0; i < ans.size(); i++) {
+        if (i != 0) cout << " ";
+        cout << ans[i];
+    }
+    return 0;
+}
+```
+
+## 1093 字符串A+B （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/1071785884776722432
+
+注意点：hashTable思想，已经输出过的字符串不输出即可。
+
+答案：
+
+```
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    string s1, s2, s;
+    int hash[200] = {0};
+    
+    getline(cin, s1);
+    getline(cin, s2);
+    s = s1 + s2;
+    
+    for (int i = 0; i < s.size(); i++) {
+        if (hash[s[i]] == 0) cout << s[i]; // 没有输出过的才输出 
+        hash[s[i]] = 1;
+    }
+    return 0;
+}
+```
+
+## 1094 谷歌的招聘 （20 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/1071785997033074688
+
+注意点：擅长应用substr，stoi，以及考察素数。
+
+答案：
+
+```
+#include<iostream>
+#include<string>
+#include<cmath>
+
+using namespace std;
+
+bool isPrime (int a) {
+	if (a <= 1) {
+		return false;
+	}
+	int sqr = (int)sqrt(1.0 * a);
+	for (int i = 2; i <= sqr; i++) {
+		if (a % i == 0) {
+			return false;
+		}
+	}
+	return true;
+}
+
+int main () {
+	int L, K;
+    string str;
+    cin >> L >> K >> str;
+	for (int i = 0; i <= L - K; i++) {
+		string s = str.substr(i, K);
+		int num = stoi(s);
+		if (isPrime(num)) {
+			cout << s;
+			return 0;
+		}
+	}
+	cout << "404\n";
+	return 0;
+}
+```
+
+## 1095 解码PAT准考证 （25 分）
+
+https://pintia.cn/problem-sets/994805260223102976/problems/1071786104348536832
+
+注意点：https://blog.csdn.net/liuchuo/article/details/84972869
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+using namespace std;
+struct node {
+    string t;
+    int value;
+};
+bool cmp(const node &a, const node &b) {
+    return a.value != b.value ? a.value > b.value : a.t < b.t;
+}
+int main() {
+    int n, k, num;
+    string s;
+    cin >> n >> k;
+    vector<node> v(n);
+    for (int i = 0; i < n; i++)
+        cin >> v[i].t >> v[i].value;
+    for (int i = 1; i <= k; i++) {
+        cin >> num >> s;
+        printf("Case %d: %d %s\n", i, num, s.c_str());
+        vector<node> ans;
+        int cnt = 0, sum = 0;
+        if (num == 1) {
+            for (int j = 0; j < n; j++)
+                if (v[j].t[0] == s[0]) ans.push_back(v[j]);
+        } else if (num == 2) {
+            for (int j = 0; j < n; j++) {
+                if (v[j].t.substr(1, 3) == s) {
+                    cnt++;
+                    sum += v[j].value;
+                }
+            }
+            if (cnt != 0) printf("%d %d\n", cnt, sum);
+        } else if (num == 3) {
+            unordered_map<string, int> m;
+            for (int j = 0; j < n; j++)
+                if (v[j].t.substr(4, 6) == s) m[v[j].t.substr(1, 3)]++;
+            for (auto it : m) ans.push_back({it.first, it.second});
+        }
+        sort(ans.begin(), ans.end(),cmp);
+        for (int j = 0; j < ans.size(); j++) printf("%s %d\n", ans[j].t.c_str(), ans[j].value);
+        if (((num == 1 || num == 3) && ans.size() == 0) || (num == 2 && cnt == 0)) printf("NA\n");
+    }
+    return 0;
+}
+```
+
+
+
+# 分类与总结
+
+## 分类1
+
+## 分类2
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
