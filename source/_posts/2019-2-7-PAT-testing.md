@@ -5633,6 +5633,8 @@ int main() {
 
 特点：排序算法sort的使用，能够理解并手写一些排序算法，比如，冒泡排序，选择排序，插入排序，归并排序，快速排序。
 
+添加：字符串比较strcmp()
+
 * 1004
 * 1015：考察sort中cmp函数的编写，以及vector排序的方式
 * 1035：插入与归并，需要大部分的排序算法与实现
@@ -5746,6 +5748,34 @@ int main() {
 特点：需要倒序输出可以尝试用stack
 
 * 1009
+
+## math与algorithm
+
+algorithm
+
+```
+max(),min(),abs(),
+
+swap(a, b),reverse(a, a + i),
+
+fill(a, a + i, -1),sort(a, a + i, cmp),
+
+lower_bound(a, a + i, -1), upper_bound(a, a + i, -1)
+```
+
+math
+
+```
+fabs(double x), floor(double x), ceil(double x),
+
+pow(double r, double p), sqrt(double x), log(double x),
+
+sin(double x), cos(double x), tan(double x)
+
+asin(), acos(), atan(),
+
+double r = round(double x)
+```
 
 
 
