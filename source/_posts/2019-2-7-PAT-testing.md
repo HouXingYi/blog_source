@@ -1437,88 +1437,36 @@ main () {
 
 https://pintia.cn/problem-sets/994805260223102976/problems/994805296180871168
 
-注意点：根据《算法笔记》里的代码，没通过，直接超时了。后面再想办法。
+注意点：根据《算法笔记》里的代码，没通过，直接超时了。后面再想办法。改用柳婼的。
 
 答案：
 
 ```
-#include<cstdio>
-#include<algorithm>
+#include <iostream>
 
 using namespace std;
 
-const int maxn = 100010;
-
-struct Node { // 定义静态链表 
-	int address, data, next;
-	int order; // 节点在链表上的序号，无效节点记为maxn 
-} node[maxn];
-
-bool cmp (Node a, Node b) {
-	return a.order < b.order;
-} 
-
-main () {
+int main() {
 	
-	for (int i = 0; i < maxn; i++) {
-		node[i].order = maxn;
-	}
-	
-	int begin, n, K, address;
-	
-	scanf("%d%d%d", &begin, &n, &K);	// 起始地址，节点个数，步长
-	
-	for (int i = 0; i < n; i++) {
-		scanf("%d", &address);
-		scanf("%d", &node[address].data, &node[address].next);
-		node[address].address = address;
-	}
-	
-	// 所有有效节点，按照next加入order 
-	int p = begin, count = 0;
-	while (p != -1) {
-		node[p].order = count++;
-		p = node[p].next;
-	}
-	
-	sort(node, node + maxn, cmp); // 排序，按order 
-	
-	// 有效节点为前count个节点 
-	n = count;
-	
-	// 分为n / K块 
-	for (int i = 0; i < n / K; i++) {
-		
-		// 完整的一块倒序输出 
-		for (int j = (i + 1) * K - 1; j > 1 * K; j--) {
-			printf("%05d %d %05d\n", node[j].address, node[j].data, node[j - 1].address);
-		}
-		
-		// 每一块的最后一个结点的next地址的处理
-		printf("%05d %d ", node[i * K].address, node[i * K].data); // 先输出每一块最后一个结点的address和data 
-		
-		if (i < n / K - 1) { // 如果不是最后一块，就指向下一块的最后一个结点 
-			printf("%05d\n", node[(i + 2) * K - 1].address);
-		} else {
-			if (n % K == 0) {
-				printf("-1\n"); // 恰好是最后一个结点，输出-1 
-			} else { // 剩下不完整的块按原先的顺序输出 
-				printf("%05d\n", node[(i + 1) * K].address);
-				for (int i = n / K * K; i < n; i++) {
-					printf("%05d %d", node[i].address, node[i].data);
-					if (i < n - 1) {
-						printf("%05d\n", node[i + 1].address);
-					} else {
-						printf("-1\n");
-					}
-				}
-			}
-		}
-		
-	}
-	
-	return 0; 
-	
+    int first, k, n, sum = 0;
+    
+    cin >> first >> n >> k;
+    int temp, data[100005], next[100005], list[100005], result[100005];
+    for (int i = 0; i < n; i++) {
+        cin >> temp;
+        cin >> data[temp] >> next[temp];
+    }
+    while (first != -1) {
+        list[sum++] = first;
+        first = next[first];
+    }
+    for (int i = 0; i < sum; i++) result[i] = list[i];
+    for (int i = 0; i < (sum - sum % k); i++)
+        result[i] = list[i / k * k + k - 1 - i % k];
+    for (int i = 0; i < sum - 1; i++)
+        printf("%05d %d %05d\n", result[i], data[result[i]], result[i + 1]);
+    printf("%05d %d -1", result[sum - 1], data[result[sum - 1]]);
+    return 0;
 }
 ```
 
@@ -5643,8 +5591,8 @@ int main() {
 冒泡排序，（交换）（进行n-1趟，每趟n - 1 - i次交换，每趟把最大的交换到最后）
 选择排序，（交换）（进行n趟，每趟把最小的换到最前）（想法与冒泡类似）
 插入排序，（后移）（进行n-1趟，每趟把加入的数，换到合适的位置）
-***归并排序，（分治，合并）两两分组，之后重复合并。（非递归写法）
-***快速排序。
+归并排序，（分治，合并）两两分组，之后重复合并。（非递归写法）
+快速排序。
 
 添加：字符串比较strcmp()
 
