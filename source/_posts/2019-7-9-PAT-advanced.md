@@ -320,6 +320,91 @@ int main() {
 
 https://pintia.cn/problem-sets/994805342720868352/problems/994805519074574336
 
+翻译：输入一个数字，将数字按位相加，将相加后的数字按位输出英文。
+
+思路：数字与字符的转化
+
+答案：
+
+```
+#include <iostream>
+using namespace std;
+int main() {
+	
+    string a;
+    cin >> a; // 输入数字 
+    
+    // 将数字每位累加 
+    int sum = 0;
+    for (int i = 0; i < a.length(); i++) {
+		sum += (a[i] - '0'); 
+	} 
+        
+    string s = to_string(sum);
+    string arr[10] = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
+    
+    // 输出每位的英文  
+	cout << arr[s[0] - '0'];
+	for (int i = 1; i < s.length(); i++) {
+		cout << " " << arr[s[i] - '0'];
+	}
+        
+    return 0;
+}
+```
+
+## 1006 Sign In and Sign Out (25 分)
+
+https://pintia.cn/problem-sets/994805342720868352/problems/994805516654460928
+
+翻译：输入一批人signIn与signOut的时间，找出最早signIn与最晚signOut的人的id。
+
+思路：遍历，对比保存最早signIn与最晚signOut的人的id。
+
+答案：
+
+```
+#include<string>
+#include<cstdio>
+#include<iostream>
+#include <climits>
+using namespace std;
+int main() {
+    int n, minn = 9999999999999, maxn = -1;
+    scanf("%d", &n);
+    string unlocked, locked;
+    
+    for(int i = 0; i < n; i++) {
+    	// id 
+        string t;
+        cin >> t;
+        // signIn时间与signOut时间 
+        int h1, m1, s1, h2, m2, s2;
+        scanf("%d:%d:%d %d:%d:%d", &h1, &m1, &s1, &h2, &m2, &s2);
+        // 全部转化为秒数，从00:00:00算起 
+        int tempIn = h1 * 3600 + m1 * 60 + s1;
+        int tempOut = h2 * 3600 + m2 * 60 + s2;
+        // 更新最早signIn与最晚signOut 
+        if (tempIn < minn) {
+            minn = tempIn;
+            unlocked = t;
+        }
+        if (tempOut > maxn) {
+            maxn = tempOut;
+            locked = t;
+        }
+    }
+    
+	// 输出更新最早signIn与最晚signOut的id 
+    cout << unlocked << " " << locked;
+    return 0;
+}
+```
+
+## 1007 Maximum Subsequence Sum (25 分)
+
+https://pintia.cn/problem-sets/994805342720868352/problems/994805516654460928
+
 翻译：
 
 思路：
