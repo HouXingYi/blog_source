@@ -405,6 +405,215 @@ int main() {
 
 https://pintia.cn/problem-sets/994805342720868352/problems/994805516654460928
 
+翻译：计算最大子列和，输出子列和的数与子列和的位置
+
+思路：最大子列和问题，采用在线处理的算法。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+using namespace std;
+int main() {
+    int n;
+    scanf("%d", &n);
+    vector<int> v(n);
+    int leftindex = 0, rightindex = n - 1, sum = -1, temp = 0, tempindex = 0;
+    
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &v[i]);
+        temp = temp + v[i];
+        if (temp < 0) { // 如果当前子列和为负，对子列无加成作用，重置子列 
+            temp = 0;
+            tempindex = i + 1;
+        } else if (temp > sum) { // 如果当前子列大于原子列，更新sum，更新起始与结束 
+            sum = temp;
+            leftindex = tempindex;
+            rightindex = i;
+        }
+    }
+    if (sum < 0) sum = 0;
+    printf("%d %d %d", sum, v[leftindex], v[rightindex]);
+    return 0;
+}
+```
+
+## 1008 Elevator (20 分)
+
+https://pintia.cn/problem-sets/994805342720868352/problems/994805511923286016
+
+翻译：起始在0层，上升需要6秒/层，下降需要4秒/层，每层需要停5秒，问走完需要多少秒
+
+思路：依题意累加时间即可。
+
+答案：
+
+```
+#include<iostream>
+
+typedef long long ll;
+
+using namespace std;
+
+int main() {
+	
+    int N;
+    cin >> N;
+    
+	int sum=0;
+    int start=0;
+	int endd=0;
+	
+    for(int i = 1; i <= N; i++) {
+        cin >> endd;
+        if (endd > start) { // 上升 
+        	sum = sum + (endd - start) * 6 + 5; // 上升一层6秒，停留5秒 
+        	start = endd;
+		}
+        else if(endd < start) { // 下降 
+        	sum = sum + (start - endd) * 4 + 5; // 下降一层4秒，停留5秒
+        	start = endd;
+        }
+        else { // 不动停留5秒 
+            sum += 5;
+			start = endd;
+        }
+    }
+    
+    cout << sum << endl;
+}
+```
+
+## 1009 Product of Polynomials (25 分)
+
+https://pintia.cn/problem-sets/994805342720868352/problems/994805509540921344
+
+翻译：多项式乘法计算
+
+思路：系数相乘，指数相加，逐项相乘
+
+答案：
+
+```
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    int n1, n2, a, cnt = 0;
+    
+    // 输入第一个多项式 
+    scanf("%d", &n1);
+    double b, arr[1001] = {0.0}, ans[2001] = {0.0};
+	for(int i = 0; i < n1; i++) {
+        scanf("%d %lf", &a, &b);
+        arr[a] = b;
+    }
+    
+    // 输入第二个多项式 
+    scanf("%d", &n2);
+    for(int i = 0; i < n2; i++) {
+        scanf("%d %lf", &a, &b);
+        for(int j = 0; j < 1001; j++) {
+			ans[j + a] += arr[j] * b; // 系数相乘，指数相加 
+		}
+    }
+    
+    // 统计结果的项数 
+    for(int i = 2000; i >= 0; i--) {
+		if(ans[i] != 0.0) cnt++;
+	}
+    printf("%d", cnt);
+    
+	// 打印结果 
+    for(int i = 2000; i >= 0; i--) {
+		if(ans[i] != 0.0) {
+			printf(" %d %.1f", i, ans[i]);
+		}
+	} 
+        
+    return 0;
+}
+```
+
+## 1010 Radix (25 分)**
+
+https://pintia.cn/problem-sets/994805342720868352/problems/994805507225665536
+
+翻译：给出两个数字，和其中一个数字的进制，找出另一个数字是否有进制转化后和前者相等。
+
+思路：找出进制的可能范围，通过二分查找进制，将两个数字都转化为10位进行对比。
+
+注：未理解透彻，可看算法指南练习P167
+
+答案：
+
+```
+#include <cctype>
+#include <algorithm>
+#include <cmath>
+#include <iostream>
+
+using namespace std;
+
+// 将n转化为10进制 
+long long convert(string n, long long radix) {
+    long long sum = 0;
+    int index = 0, temp = 0;
+    // 将radix进制转化为十进制算法 
+    for (auto it = n.rbegin(); it != n.rend(); it++) {
+        temp = isdigit(*it) ? *it - '0' : *it - 'a' + 10; // isdigit是否为数字 
+        sum += temp * pow(radix, index++); // 从个位反向累加 
+    }
+    return sum;
+}
+
+// num为10进制数 
+long long find_radix(string n, long long num) {
+    char it = *max_element(n.begin(), n.end()); // 获取n中最大的一位数
+	// 进制范围，下界为n所有数位中最大的加1，上界为low与num十进制的较大值
+    long long low = (isdigit(it) ? it - '0': it - 'a' + 10) + 1;
+    long long high = max(num, low);
+    // 二分查找，试出进制 
+	while (low <= high) {
+        long long mid = (low + high) / 2;
+        long long t = convert(n, mid);
+        if (t < 0 || t > num) { // 进制过大，往小里找 
+			high = mid - 1;
+		}
+        else if (t == num) { // 得到需要的进制 
+			return mid;
+		}
+        else { // 进制过小，往大里找 
+        	low = mid + 1;	
+		} 
+    }
+    return -1;
+}
+
+int main() {
+	
+    string n1, n2;
+    long long tag = 0, radix = 0, result_radix;
+    
+    cin >> n1 >> n2 >> tag >> radix;
+    
+    result_radix = tag == 1 ? find_radix(n2, convert(n1, radix)) : find_radix(n1, convert(n2, radix));
+    
+    if (result_radix != -1) {
+        printf("%lld", result_radix);
+    } else {
+        printf("Impossible");
+    }   
+    return 0;
+}
+```
+
+## 1011 World Cup Betting (20 分)
+
+https://pintia.cn/problem-sets/994805342720868352/problems/994805504927186944
+
 翻译：
 
 思路：
@@ -413,3 +622,7 @@ https://pintia.cn/problem-sets/994805342720868352/problems/994805516654460928
 
 ```
 ```
+
+
+
+
