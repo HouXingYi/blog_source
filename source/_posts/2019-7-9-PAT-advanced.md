@@ -614,6 +614,190 @@ int main() {
 
 https://pintia.cn/problem-sets/994805342720868352/problems/994805504927186944
 
+翻译：给出三个比赛的W，T，L的数据，根据公式计算出最后的收益
+
+思路：不用太理解说什么，直接按照题目给的公式计算就好了。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <cstdio>
+
+using namespace std;
+
+// 比较三个中最大的 
+double fmax(double a, double b, double c) {
+	double t = max(a, b);
+	return max(t, c);
+}
+
+int main() {
+	double w, t, l, ans = 1;
+	int k = 0;
+	for(int i = 0; i < 3; i++) {
+		scanf("%lf %lf %lf", &w, &t, &l);
+		if(fmax(w,t,l) == w) {
+			printf("%c ", 'W');
+			ans *= w;
+		} else if(fmax(w,t,l) == t){
+			printf("%c ", 'T');
+			ans *= t;
+		} else {
+			printf("%c ", 'L');
+			ans *= l;
+		}
+	}
+	ans = (ans*0.65-1)*2;
+	printf("%.2lf\n", ans);
+	return 0;
+}
+```
+
+## 1012 The Best Rank (25 分)
+
+https://pintia.cn/problem-sets/994805342720868352/problems/994805502658068480
+
+翻译：每个考生有四门成绩，分别为C，M，E，A。对这四门成绩分别在全部的学生中排名，选出学生在自己的四门成绩中排名最高的科目，如果有排名相同的科目，按照ACME的优先顺序确定科目。
+
+思路：理解题目很重要。后期要自己动手操作一遍。
+
+答案：
+
+```
+#include <cstdio>
+#include <algorithm>
+
+using namespace std;
+
+struct node {
+    int id, best;
+    int score[4], rank[4];
+}stu[2005];
+
+int exist[1000000], flag = -1;
+
+bool cmp1(node a, node b) {
+	return a.score[flag] > b.score[flag];
+}
+
+int main() {
+    int n, m, id;
+    scanf("%d %d", &n, &m);
+    
+	// 收录学生的各科成绩，并计算出平均分同时收录 
+    for(int i = 0; i < n; i++) {
+        scanf("%d %d %d %d", &stu[i].id, &stu[i].score[1], &stu[i].score[2], &stu[i].score[3]);
+        stu[i].score[0] = (stu[i].score[1] + stu[i].score[2] + stu[i].score[3]) / 3.0 + 0.5;
+    }
+    
+    // flag为科目 
+    for(flag = 0; flag <= 3; flag++) {
+        sort(stu, stu + n, cmp1); // 将学生排名 
+        // 标记学生的各科排名 
+		stu[0].rank[flag] = 1; // 第一名 
+        for(int i = 1; i < n; i++) {
+            stu[i].rank[flag] = i + 1;
+            // 同分的情况排名相等 
+            if(stu[i].score[flag] == stu[i-1].score[flag]) {
+            	stu[i].rank[flag] = stu[i-1].rank[flag];
+			}
+        }
+    }
+    
+    for(int i = 0; i < n; i++) {
+        exist[stu[i].id] = i + 1; // 对存在的学生标记，存在的有编号
+        // 默认平均成绩最优先 
+        stu[i].best = 0;
+        int minn = stu[i].rank[0]; // 平均成绩的排名优先最高 
+        // 是否有排名比平均成绩还高的 
+        for(int j = 1; j <= 3; j++) {
+            if(stu[i].rank[j] < minn) {
+                minn = stu[i].rank[j];
+                stu[i].best = j;
+            }
+        }
+    }
+    
+    char c[5] = {'A', 'C', 'M', 'E'};
+    for(int i = 0; i < m; i++) {
+        scanf("%d", &id);
+        int temp = exist[id]; // 是否存在，并获得编号 
+        if(temp) {
+        	// 打印最好排名的科目 
+            int best = stu[temp-1].best;
+            printf("%d %c\n", stu[temp-1].rank[best], c[best]);
+        } else {
+            printf("N/A\n");
+        }
+    }
+    return 0;
+}
+```
+
+## 1013 Battle Over Cities (25 分)
+
+https://pintia.cn/problem-sets/994805342720868352/problems/994805500414115840
+
+翻译：N为总的城市数量，M为剩下的公路数量，K为需要被检查的城市数量。需要给出，当一座城市被占领了，需要修补几条路能使其他城市联通。
+
+思路：一个连通图，去掉其中一个节点，假设变为a个连通分量，则最少需要a-1个边让他们相连。于是问题转化为，去掉一个节点之后，变为了几个连通分量。
+
+答案：
+
+```
+#include <algorithm>
+
+using namespace std;
+
+int v[1010][1010];
+bool visit[1010];
+int n;
+
+// 深度优先遍历 
+void dfs(int node) {
+    visit[node] = true;
+    for(int i = 1; i <= n; i++) {
+        if(visit[i] == false && v[node][i] == 1)
+            dfs(i);
+    }
+}
+
+int main() {
+    int m, k, a, b;
+    scanf("%d%d%d", &n, &m, &k); // N为总的城市数量，M为剩下的公路数量，K为需要被检查的城市数量
+	
+	// 构建图 
+    for(int i = 0; i < m; i++) {
+        scanf("%d%d", &a, &b);
+        v[a][b] = v[b][a] = 1; // 无向图 
+    }
+    
+    // 若干个城市被占领 
+    for(int i = 0; i < k; i++) {
+        fill(visit, visit + 1010, false); // 置空 
+        scanf("%d", &a);
+        int cnt = 0;
+        visit[a] = true; // 城市被占领
+		// 连通分量的数量统计 
+        for(int j = 1; j <= n; j++) {
+            if(visit[j] == false) {
+                dfs(j);
+                cnt++;
+            }
+        }
+        printf("%d\n", cnt - 1); // 需要cnt-1个边可将连通分量相连 
+    }
+    
+    return 0;
+}
+```
+
+## 1014 Waiting in Line (30 分)
+
+https://pintia.cn/problem-sets/994805342720868352/problems/994805498207911936
+
 翻译：
 
 思路：
@@ -622,7 +806,5 @@ https://pintia.cn/problem-sets/994805342720868352/problems/994805504927186944
 
 ```
 ```
-
-
 
 
