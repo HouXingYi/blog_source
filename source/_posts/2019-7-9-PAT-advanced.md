@@ -794,9 +794,236 @@ int main() {
 }
 ```
 
-## 1014 Waiting in Line (30 分)
+## 1014 Waiting in Line (30 分)**
 
 https://pintia.cn/problem-sets/994805342720868352/problems/994805498207911936
+
+翻译：N个窗口，每个窗口可以排M个人，8点开始服务，17点关门。队都排满了在黄线外等候，若有空位，则进入最短的队，若同时则选最小的窗口。求某个人的服务结束时间。
+
+思路：首先理解题目。利用队列模拟。
+
+答案：
+
+```
+#include <iostream>
+#include <queue>
+#include <vector>
+
+using namespace std;
+
+struct node {
+    int poptime, endtime; // 队首的人结束的时间，队尾的人结束的时间 
+    queue<int> q;
+};
+
+int main() {
+	
+    int n, m, k, q, index = 1;
+    scanf("%d%d%d%d", &n, &m, &k, &q); // N个窗口，每个窗口可排M个人，游客的人数，需要查询的游客 
+    
+	vector<int> time(k + 1), result(k + 1);
+    
+    // 各个游客办理业务的时间 
+	for(int i = 1; i <= k; i++) {
+        scanf("%d", &time[i]);
+    }
+    
+	vector<node> window(n + 1);
+    vector<bool> sorry(k + 1, false);
+    
+    // 对于前m*n个人，依次在窗口前排队，塞满
+    for(int i = 1; i <= m; i++) { // 从小到大一层一层排队 
+        for(int j = 1; j <= n; j++) {
+            if(index <= k) { // 不能超过游客人数 
+                window[j].q.push(time[index]);
+                if(window[j].endtime >= 540) {
+					sorry[index] = true;
+				}
+                window[j].endtime += time[index];
+                if(i == 1) { // 第一层 
+					window[j].poptime = window[j].endtime;
+				}
+                result[index] = window[j].endtime; // 结果 
+                index++;
+            }
+            
+        }
+    }
+    
+    // 对于黄线外的 
+    while(index <= k) {
+    	// 找出可以进入排队的window(即最先有人出队的窗口)
+        int tempmin = window[1].poptime, tempwindow = 1;
+        for(int i = 2; i <= n; i++) {
+            if(window[i].poptime < tempmin) {
+                tempwindow = i;
+                tempmin = window[i].poptime;
+            }
+        }
+        // 当前窗口的人出队，并计算时间 
+        window[tempwindow].q.pop();
+        window[tempwindow].q.push(time[index]);
+        window[tempwindow].poptime +=  window[tempwindow].q.front();
+        if(window[tempwindow].endtime >= 540) {
+        	sorry[index] = true;
+		}
+        window[tempwindow].endtime += time[index];
+        result[index] = window[tempwindow].endtime; // 记录最新的进队的人的结束时间 
+        index++;
+    }
+    // 查找查询的人的结束时间 
+    for(int i = 1; i <= q; i++) {
+        int query, minute;
+        scanf("%d", &query);
+        minute = result[query];
+        if(sorry[query] == true) {
+            printf("Sorry\n");
+        } else {
+            printf("%02d:%02d\n",(minute + 480) / 60, (minute + 480) % 60);
+        }
+    }
+    return 0;
+}
+```
+
+## 1015 Reversible Primes (20 分)
+
+https://pintia.cn/problem-sets/994805342720868352/problems/994805495863296000
+
+翻译：可翻转的素数是，本身是个素数，在某种进制下翻转后还是素数。
+
+思路：先检查本身是否是素数，接着把数字转化为指定的进制，翻转后，再转化为10进制，查看是否为素数。
+
+考点：素数的检查，把十进制转化为d进制：除基取余法，把d进制转化为十进制：累乘累加
+
+答案：
+
+```
+#include <cmath>
+#include <cstdio> 
+
+using namespace std;
+
+// 是否是素数 
+bool isprime(int n) {
+    if(n <= 1) return false;
+    int sqr = int(sqrt(n * 1.0));
+    for(int i = 2; i <= sqr; i++) {
+        if(n % i == 0) {
+			return false;
+		}
+    }
+    return true;
+}
+
+int main() {
+    int n, d;
+    while(scanf("%d", &n) != EOF) {
+        if(n < 0) break;
+        scanf("%d", &d); // 进制 
+        if(isprime(n) == false) {
+            printf("No\n");
+            continue;
+        }
+        // 将十进制转化为d进制，除基取余法 
+        int len = 0, arr[100];
+        do{
+            arr[len++] = n % d;
+            n = n / d;
+        }while(n != 0);
+        // 将d进制转化为十进制，并从高位到低位转化（反转数字） 
+        for(int i = 0; i < len; i++) {
+        	n = n * d + arr[i];
+		}
+        printf("%s", isprime(n) ? "Yes\n" : "No\n");
+    }
+    return 0;
+}
+```
+
+## 1016 Phone Bills (25 分)**
+
+翻译：题目给了一天每个小时的费率，与n条通话记录，通话记录为on-line开始，off-line结束，应该成对出现，不符合规律的可忽略。请你求出每个人的具体通话账单，其中有月份，通话开始时间，结束时间，持续时间，各个费用，总费用。
+
+思路：读懂题目，组织好数据结构。
+
+答案：
+
+```
+#include <iostream>
+#include <map>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+struct node {
+    string name;
+    int status, month, time, day, hour, minute;
+};
+
+bool cmp(node a, node b) {
+    return a.name != b.name ? a.name < b.name : a.time < b.time; // 先按照姓名排序，再按照时间的先后顺序排列 
+}
+
+double billFromZero(node call, int *rate) {
+    double total = rate[call.hour] * call.minute + rate[24] * 60 * call.day;
+    for (int i = 0; i < call.hour; i++)
+        total += rate[i] * 60;
+    return total / 100.0;
+}
+
+int main() {
+    int rate[25] = {0}, n;
+    // 每个小时的费率 
+    for (int i = 0; i < 24; i++) {
+        scanf("%d", &rate[i]);
+        rate[24] += rate[i];
+    }
+    scanf("%d", &n);
+    
+    vector<node> data(n);
+    
+	// 输入数据 
+	for (int i = 0; i < n; i++) {
+        cin >> data[i].name; // 名字 
+        scanf("%d:%d:%d:%d", &data[i].month, &data[i].day, &data[i].hour, &data[i].minute); // 时间 
+        string temp;
+        cin >> temp; // flag in-line off-line 
+        data[i].status = (temp == "on-line") ? 1 : 0;
+        data[i].time = data[i].day * 24 * 60 + data[i].hour * 60 + data[i].minute;
+    }
+    // 先按照姓名排序，再按照时间的先后顺序排列 
+    sort(data.begin(), data.end(), cmp);
+    map<string, vector<node> > custom;
+    
+    // 相同名字的两个，前一个为in-line，后一个为off-line，可以push进custom中 
+    for (int i = 1; i < n; i++) {
+        if (data[i].name == data[i - 1].name && data[i - 1].status == 1 && data[i].status == 0) {
+            custom[data[i - 1].name].push_back(data[i - 1]);
+            custom[data[i].name].push_back(data[i]);
+        }
+    }
+    
+    // 遍历custom, it为迭代器，it.first为key，it.second为value 
+    for (auto it : custom) {
+        vector<node> temp = it.second; // value
+        cout << it.first; // 打印名字,key
+        printf(" %02d\n", temp[0].month); // 打印月份 
+        double total = 0.0;
+        for (int i = 1; i < temp.size(); i += 2) {
+            double t = billFromZero(temp[i], rate) - billFromZero(temp[i - 1], rate); // 计算账单
+            // 打印开始时间，结束时间，持续时间，账单 
+            printf("%02d:%02d:%02d %02d:%02d:%02d %d $%.2f\n", temp[i - 1].day, temp[i - 1].hour, temp[i - 1].minute, temp[i].day, temp[i].hour, temp[i].minute, temp[i].time - temp[i - 1].time, t);
+            total += t; // 累计总账单 
+        }
+        printf("Total amount: $%.2f\n", total);
+    }
+    return 0;
+}
+```
+
+## 1017 Queueing at Bank (25 分)
 
 翻译：
 
@@ -806,5 +1033,4 @@ https://pintia.cn/problem-sets/994805342720868352/problems/994805498207911936
 
 ```
 ```
-
 
