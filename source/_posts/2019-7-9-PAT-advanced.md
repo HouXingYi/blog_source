@@ -537,7 +537,7 @@ int main() {
 }
 ```
 
-## 1010 Radix (25 分)**
+## 1010 **Radix (25 分)
 
 https://pintia.cn/problem-sets/994805342720868352/problems/994805507225665536
 
@@ -794,7 +794,7 @@ int main() {
 }
 ```
 
-## 1014 Waiting in Line (30 分)**
+## 1014 **Waiting in Line (30 分)
 
 https://pintia.cn/problem-sets/994805342720868352/problems/994805498207911936
 
@@ -941,7 +941,7 @@ int main() {
 }
 ```
 
-## 1016 Phone Bills (25 分)**
+## 1016 **Phone Bills (25 分)
 
 翻译：题目给了一天每个小时的费率，与n条通话记录，通话记录为on-line开始，off-line结束，应该成对出现，不符合规律的可忽略。请你求出每个人的具体通话账单，其中有月份，通话开始时间，结束时间，持续时间，各个费用，总费用。
 
@@ -1025,6 +1025,299 @@ int main() {
 
 ## 1017 Queueing at Bank (25 分)
 
+翻译：K个窗口服务，顾客需在黄线外等待，直到有空余的窗口。假设窗口不能被单一客人占用一小时。给你每个顾客的到达时间和每个顾客的“等待时间”。银行上班时间为8点到17点。
+
+思路：所求的时间为顾客的等待时间，即人到了但是没有空闲的窗口。将顾客按照到达时间排序，将当前最快能空出的窗口进行服务。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+struct node {
+	int come, time;
+} tempcustomer;
+
+// 按照到达时间排序 
+bool cmp1(node a, node b) {
+    return a.come < b.come;
+}
+
+int main() {
+	
+    int n, k;
+    scanf("%d%d", &n, &k); // 顾客的人数，窗口的人数 
+    
+	vector<node> custom;
+    
+	for(int i = 0; i < n; i++) {
+        int hh, mm, ss, time;
+        scanf("%d:%d:%d %d", &hh, &mm, &ss, &time); // 时，分，秒，耗时 
+        int cometime = hh * 3600 + mm * 60 + ss;
+        if (cometime > 61200) { // 超过17:00忽略
+			continue;
+		}
+        tempcustomer = {cometime, time * 60}; // 到达时间，耗时 
+        custom.push_back(tempcustomer); 
+    }
+    // 按照到达时间排序
+    sort(custom.begin(), custom.end(), cmp1);
+    
+    vector<int> window(k, 28800); // 大小为k，初始值为28800 
+    double result = 0.0;
+    
+    // 遍历 
+	for(int i = 0; i < custom.size(); i++) {
+		// 最快要完成的窗口
+        int tempindex = 0, minfinish = window[0]; 
+        for(int j = 1; j < k; j++) {
+            if(minfinish > window[j]) {
+                minfinish = window[j];
+                tempindex = j;
+            }
+        }
+        
+         // 若最快要完成的窗口的完成时间，比当前顾客来的时间早，顾客马上就可以办理业务 
+        if(window[tempindex] <= custom[i].come) { 
+            window[tempindex] = custom[i].come + custom[i].time; // 更新窗口时间
+        } else {
+        	// 否则顾客需要等待，等待的时间为，预计窗口完成的时间减去到来的时间 
+            result += (window[tempindex] - custom[i].come);
+            window[tempindex] += custom[i].time; // 更新窗口时间 
+        }
+    }
+    
+    if(custom.size() == 0) {
+		printf("0.0");
+	}
+	else {
+		printf("%.1f", result / 60.0 / custom.size());
+	}
+        
+    return 0;
+}
+```
+
+## 1018 **Public Bike Management (30 分)
+
+翻译：PBMC监控所有的车站，力图让所有的车站保持在完美状态-即半满状态。如果有车站是满的或者空的，PBMC需要找到最短的路去那个车站收集或者放置车，如果有两个同样短的路线，选带的车最少的路线。输入为Cmax：车站最大容量，N：车站的数量，Sp：有问题车站的编号，M：路的数量。第二行N个数字表示各个车站现在的车的数量。接下来M行的边的数据。
+
+思路：太难了，没有完全理解
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+const int inf = 99999999;
+int cmax, n, sp, m;
+int minNeed = inf, minBack = inf;
+int e[510][510], dis[510], weight[510];
+bool visit[510];
+vector<int> pre[510], path, temppath;
+
+void dfs(int v) {
+    temppath.push_back(v); // 塞入路径
+	// 到达原点 
+    if(v == 0) {
+        int need = 0, back = 0;
+        for(int i = temppath.size() - 1; i >= 0; i--) {
+            int id = temppath[i];
+            if(weight[id] > 0) {
+                back += weight[id];
+            } else {
+                if(back > (0 - weight[id])) {
+                    back += weight[id];
+                } else {
+                    need += ((0 - weight[id]) - back);
+                    back = 0;
+                }
+            }
+        }
+        if(need < minNeed) {
+            minNeed = need;
+            minBack = back;
+            path = temppath;
+        } else if(need == minNeed && back < minBack) {
+            minBack = back;
+            path = temppath;
+        }
+        temppath.pop_back();
+        return ;
+    }
+    for(int i = 0; i < pre[v].size(); i++) {
+		dfs(pre[v][i]);
+	}
+    temppath.pop_back();
+}
+
+int main() {
+	// 初始化e与dist都为inf 
+    fill(e[0], e[0] + 510 * 510, inf);
+    fill(dis, dis + 510, inf);
+    // 每个车站的最大容量，车站的总数，有问题车站的编号，路的数量 
+    scanf("%d%d%d%d", &cmax, &n, &sp, &m);
+    // 每个车站当前的车的数量 
+    for(int i = 1; i <= n; i++) {
+        scanf("%d", &weight[i]);
+        weight[i] = weight[i] - cmax / 2; // 比一半大为正，比一半小为负 
+    }
+    // 车站与车站之间的边，有权 
+    for(int i = 0; i < m; i++) {
+        int a, b;
+        scanf("%d%d", &a, &b);
+        scanf("%d", &e[a][b]);
+        e[b][a] = e[a][b];
+    }
+    
+    dis[0] = 0; // 初始原点为0 
+    
+    // Dijkstra求最短路径
+	for(int i = 0; i <= n; i++) {
+		// 找dist最近的那个赋给u 
+        int u = -1, minn = inf;
+        for(int j = 0; j <= n; j++) {
+            if(visit[j] == false && dis[j] < minn) {
+                u = j;
+                minn = dis[j];
+            }
+        }
+        if(u == -1) break;
+        visit[u] = true;
+        // 遍历与u相邻的节点，更新路径 
+        for(int v = 0; v <= n; v++) {
+            if(visit[v] == false && e[u][v] != inf) {
+                if(dis[v] > dis[u] + e[u][v]) { // 从u走距离更短 
+                    dis[v] = dis[u] + e[u][v];
+                    pre[v].clear();
+                    pre[v].push_back(u);
+                }else if(dis[v] == dis[u] + e[u][v]) { // 相同长度的路径 
+                    pre[v].push_back(u);
+                }
+            }
+        }
+    }
+    
+	dfs(sp);
+    
+	printf("%d 0", minNeed);
+    for(int i = path.size() - 2; i >= 0; i--)
+        printf("->%d", path[i]);
+    printf(" %d", minBack);
+    return 0;
+}
+```
+
+## 1019 General Palindromic Number (20 分)
+
+翻译：给一个十进制的数，和一个进制d，检查转化为d进制之后，数是不是回文的。
+
+思路：主要检测，十进制转化为d进制，采用“除基取余法”。
+
+答案：
+
+```
+#include <cstdio>
+
+using namespace std;
+
+int main() {
+	
+	int a, b;
+	scanf("%d %d", &a, &b); // 十进制数，进制 
+	
+	int arr[40], index = 0;
+	
+	// 除基取余法 
+	while(a != 0) {
+		arr[index++] = a % b;
+		a = a / b;
+	}
+	int flag = 0;
+	// 检查是否对称 
+	for(int i = 0; i < index / 2; i++) {
+		if(arr[i] != arr[index-i-1]) {
+			printf("No\n");
+			flag = 1;
+			break;
+		}
+	}
+	if(!flag) printf("Yes\n");
+	
+	// 输出进制转化之后的数字（从后向前输出） 
+	for(int i = index - 1; i >= 0; i--) {
+		printf("%d", arr[i]);
+		if(i != 0) printf(" ");
+	}
+	if(index == 0)
+		printf("0");
+	return 0;
+}
+```
+
+## 1020 Tree Traversals (25 分)
+
+翻译：假设二叉树所有的key都是不重复的正整数，给你后序遍历与中序遍历序列，你给出层序遍历的序列。
+
+思路：后序遍历与中序遍历可以确定一棵树。2i+1为左子树，2i+2为右子树。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+
+using namespace std;
+vector<int> post, in, level(100000, -1);
+
+// root：后序根节点的位置，start：中序的start，end：中序的end，index：在层序中的序号 
+void pre(int root, int start, int end, int index) {
+    if(start > end) return ;
+    int i = start;
+    while(i < end && in[i] != post[root]) i++; // 在中序中找到根节点 
+    level[index] = post[root];
+    // 左子树在后序中根节点的位置，在中序中的start和end，在层序中左子树为2*index+1
+    pre(root - 1 - end + i, start, i - 1, 2 * index + 1); 
+    // 右子树在后序中根节点的位置，在中序中的start和end，在层序中左子树为2*index+1
+    pre(root - 1, i + 1, end, 2 * index + 2);
+}
+
+int main() {
+    int n, cnt = 0;
+    scanf("%d", &n);
+    
+    // 改变容器的大小
+	post.resize(n);
+    in.resize(n);
+    
+    // 读入后序与中序序列的数据 
+	for(int i = 0; i < n; i++) scanf("%d", &post[i]);
+    for(int i = 0; i < n; i++) scanf("%d", &in[i]);
+    
+	pre(n-1, 0, n-1, 0);
+    
+	for(int i = 0; i < level.size(); i++) {
+        if (level[i] != -1) {
+            if (cnt != 0) printf(" ");
+            printf("%d", level[i]);
+            cnt++;
+        }
+        if (cnt == n) break;
+    }
+    return 0;
+}
+```
+
+## 1021 Deepest Root (25 分)
+
 翻译：
 
 思路：
@@ -1033,4 +1326,3 @@ int main() {
 
 ```
 ```
-
