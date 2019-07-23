@@ -30,6 +30,10 @@ PAT练习题列表地址（甲级）：https://pintia.cn/problem-sets/9948053427
 
 1. C/C++的主函数必须定义为整型，即“int main()”; 程序正常结束必须返回0，即“return 0;”否则将会得到返回非零错误。
 
+## 柳神，码云
+
+https://gitee.com/branches/PAT
+
 ## 1001 A+B Format (20 分)
 
 https://pintia.cn/problem-sets/994805342720868352/problems/994805528788582400
@@ -1316,7 +1320,90 @@ int main() {
 }
 ```
 
-## 1021 Deepest Root (25 分)
+## 1021 **Deepest Root (25 分)
+
+算法笔记上机实战P343
+
+翻译：第一行给一个正整数N，后面给出N-1条边。找到一个节点，这个节点作为树根生成的树最深，若有多个这种节点，则输出他的连通分量。
+
+思路：若不为连通图，则输出其连通分量。若为连通图，从任意顶点DFS找到最深的顶点，这些顶点们记为集合A，从集合A中任意选一个顶点，再DFS找到最深的顶点，记为集合B，集合A与集合B的并集就是要求的。其正确性证明在《算法笔记上机实战》的P344。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <set>
+#include <algorithm>
+
+using namespace std;
+
+int n, maxheight = 0;
+vector<vector<int>> v;
+bool visit[10010];
+set<int> s;
+vector<int> temp;
+
+// 深度优先遍历 
+void dfs(int node, int height) {
+    if(height > maxheight) {
+        temp.clear();
+        temp.push_back(node);
+        maxheight = height;
+    } else if(height == maxheight){
+        temp.push_back(node); 
+    }
+    visit[node] = true;
+    for(int i = 0; i < v[node].size(); i++) {
+        if(visit[v[node][i]] == false)
+            dfs(v[node][i], height + 1);
+    }
+}
+
+int main() {
+    scanf("%d", &n); // n个顶点 
+    v.resize(n + 1);
+    int a, b, cnt = 0, s1 = 0;
+    // n-1条边 
+    for(int i = 0; i < n - 1; i++) {
+        scanf("%d%d", &a, &b);
+        v[a].push_back(b);
+        v[b].push_back(a);
+    }
+    // 计算连通分量 
+    for(int i = 1; i <= n; i++) {
+        if(visit[i] == false) {
+            dfs(i, 1); // 第一次遍历 
+            if(i == 1) {
+                if (temp.size() != 0) {
+					s1 = temp[0]; // 第一次遍历最深顶点集合的第一个 
+				}
+                for(int j = 0; j < temp.size(); j++) {
+                	s.insert(temp[j]); // 第一次遍历最深顶点集合放入s中 
+				}
+            }
+            cnt++;
+        }
+    }
+    if(cnt >= 2) {
+        printf("Error: %d components", cnt);
+    } else {
+        temp.clear();
+        maxheight = 0;
+        fill(visit, visit + 10010, false); // 重置visit 
+        dfs(s1, 1); // 第二次遍历 
+        for(int i = 0; i < temp.size(); i++) {
+        	s.insert(temp[i]); // 第二次遍历最深顶点集合放入s中 
+		}
+        for(auto it = s.begin(); it != s.end(); it++) {
+        	printf("%d\n", *it); // 输出全部顶点 
+		}
+    }
+    return 0;
+}
+```
+
+## 1022 Digital Library (30 分)
 
 翻译：
 
@@ -1326,3 +1413,5 @@ int main() {
 
 ```
 ```
+
+
