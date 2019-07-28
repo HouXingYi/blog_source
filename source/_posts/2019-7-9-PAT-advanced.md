@@ -1403,7 +1403,817 @@ int main() {
 }
 ```
 
-## 1022 Digital Library (30 分)
+## 1022 **Digital Library (30 分)
+
+翻译：模拟电子图书馆查询，给出n本书的信息，信息分类有m种。查询的时候根据信息分类来对应查询ID，有多个ID的递增输出ID。
+
+思路：考察map的思想，一个分类给一个map。
+
+自己动手做一遍
+
+答案：
+
+```
+#include <iostream>
+#include <map>
+#include <set>
+
+using namespace std;
+
+map<string, set<int> > title, author, key, pub, year;
+
+// 查询 
+void query(map<string, set<int> > &m, string &str) { // 分类map，分类下的关键字 
+    if(m.find(str) != m.end()) { // 找到了 
+        // 遍历输出 
+		for(auto it = m[str].begin(); it != m[str].end(); it++)
+            printf("%07d\n", *it);
+    } else // 未找到 
+        cout << "Not Found\n";
+}
+
+int main() {
+	
+    int n, m, id, num;
+    scanf("%d", &n); // n本书 
+    string ttitle, tauthor, tkey, tpub, tyear;
+    
+	for(int i = 0; i < n; i++) {
+        scanf("%d\n", &id);
+        // 标题 
+        getline(cin, ttitle);
+        title[ttitle].insert(id);
+        // 作者 
+		getline(cin, tauthor);
+        author[tauthor].insert(id);
+        // 关键字 
+		while(cin >> tkey) {
+            key[tkey].insert(id);
+            char c = getchar();
+            if(c == '\n') break;
+        }
+        // 出版商 
+        getline(cin, tpub);
+        pub[tpub].insert(id);
+    	// 出版年份 
+		getline(cin, tyear);
+        year[tyear].insert(id);
+    }
+    
+    // m个查询 
+    scanf("%d", &m);
+    
+	for(int i = 0; i < m; i++) {
+        scanf("%d: ", &num); // 对应的分类 
+        string temp;
+        getline(cin, temp); // 对应分类的具体关键字 
+        cout << num << ": " << temp << "\n";
+        // 查询 
+        if(num == 1) query(title, temp); // 书名 
+        else if(num == 2) query(author, temp); // 作者  
+        else if(num == 3) query(key, temp); // 关键字 
+        else if(num == 4) query(pub,temp); // 出版商 
+        else if(num ==5) query(year, temp); // 出版年份 
+    }
+    return 0;
+}
+```
+
+## 1023 Have Fun with Numbers (20 分)
+
+翻译：翻倍一个k位数的数字，看是否翻倍的数字中的数字排列是否和原来的一样。
+
+思路：大整数计算。理解题意。
+
+答案：
+
+```
+#include <cstdio>
+#include <string.h>
+
+using namespace std;
+
+int book[10];
+
+int main() {
+    char num[22];
+    scanf("%s", num); // 输入的数字，用char储存 
+    int flag = 0, len = strlen(num);
+    // 位数从小到大 
+    for(int i = len - 1; i >= 0; i--) {
+        int temp = num[i] - '0'; // char转数字 
+        book[temp]++;
+        temp = temp * 2 + flag; // 乘2加进位 
+        flag = 0;
+        // 超10进1 
+        if(temp >= 10) {
+            temp = temp - 10;
+            flag = 1;
+        }
+        num[i] = (temp + '0'); // 数字转char 
+        book[temp]--; 
+    }
+    int flag1 = 0;
+    // 若book中有不为0的即上面的循环中没有对称加减 
+    for(int i = 0; i < 10; i++) {
+        if(book[i] != 0)
+            flag1 = 1;
+    }
+    printf("%s", (flag == 1 || flag1 == 1) ? "No\n" : "Yes\n"); // 有进位肯定不相同 
+    if(flag == 1) printf("1"); // 最高一位有进1 
+    printf("%s", num);
+    return 0;
+}
+```
+
+## 1024 Palindromic Number (25 分)
+
+翻译：对称数字就是正向写和反向写是一样的。非对称数字可以通过一系列操作变为对称的，首先将数字翻转，然后将翻转的数字与原来的数字相加，若不是对称数字则重复以上步骤。输入：N一个原始数字，K最多的步数。输出：第一行为：对称数字和用的步数，如果在规定步数内还没有达到，则输出第K步的结果。
+
+思路：大整数计算，翻转，加法。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+string s;
+
+// 大整数加法 
+void add(string t) {
+    int len = s.length(), carry = 0;
+    // 大整数加法，数组的低位就是数字的低位 
+    for(int i = 0; i < len; i++) {
+        s[i] = s[i] + t[i] + carry - '0'; // 计算的暂时转化为int，赋值的时候又改为string了 
+        carry = 0;
+        if(s[i] > '9') {
+            s[i] = s[i] - 10;
+            carry = 1;
+        }
+    }
+    if(carry) s += '1';
+    reverse(s.begin(), s.end());
+}
+
+int main() {
+	
+    int cnt, i;
+    cin >> s >> cnt;
+    
+	for(i = 0; i <= cnt; i++) {
+        string t = s;
+        reverse(t.begin(), t.end());
+        if(s == t || i == cnt) break; // 如果正反一样或者到了规定步数则退出 
+        add(t); // 正反相加 
+    }
+    cout << s << endl << i;
+    return 0;
+}
+```
+
+## 1025 **PAT Ranking (25 分)
+
+翻译：有n个考场，每个考场有一些学生，考试结束后，计算出所有考生的编号，排名，考场号，考场内排名。
+
+思路：排序函数的编写，分数大的排前面，分数相同的情况，编号小的排前面。
+
+自己做一遍，比较典型的题型
+
+答案：
+
+```
+#include <cstdio>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+struct student {
+    long long int no;
+    int score, finrank, loca, locarank;
+};
+
+bool cmp1(student a, student b) {
+    return a.score != b.score ? a.score > b.score : a.no < b.no;
+}
+
+int main() {
+    int n, m;
+    scanf("%d", &n); // n个考场 
+    vector<student> fin;
+    for(int i = 1; i <= n; i++) {
+        scanf("%d", &m); // 每个考场m个学生 
+        vector<student> v(m);
+        // 每个学生的学号，成绩，考场编号 
+        for(int j = 0; j < m; j++) {
+            scanf("%lld %d", &v[j].no, &v[j].score);
+            v[j].loca = i; // 考场编号 
+        }
+        sort(v.begin(), v.end(), cmp1); // 本地排序
+		// 本地排名标记 
+        v[0].locarank = 1; // 本地排名第一名 
+        fin.push_back(v[0]);
+        for(int j = 1; j < m; j++) {
+        	// 若与上一个分数相同，则排名相同，若不同，则在真实排名上加一 
+            v[j].locarank = (v[j].score == v[j - 1].score) ? (v[j - 1].locarank) : (j + 1); 
+            fin.push_back(v[j]);
+        }
+    }
+    // 全部排序 
+    sort(fin.begin(), fin.end(), cmp1);
+    // 全部排名第一名 
+	fin[0].finrank = 1;
+    for(int j = 1; j < fin.size(); j++) {
+    	// 排名标记规则与本地排名相同 
+		fin[j].finrank = (fin[j].score == fin[j - 1].score) ? (fin[j - 1].finrank) : (j + 1);
+	}
+	// 输出结果 
+    printf("%d\n", fin.size());
+    for(int i = 0; i < fin.size(); i++) {
+    	printf("%013lld %d %d %d\n", fin[i].no, fin[i].finrank, fin[i].loca, fin[i].locarank);
+	}
+    return 0;
+}
+```
+
+## 1026 **Table Tennis (30 分)
+
+翻译：排队打乒乓球，有分vip桌与普通桌。
+
+思路：排队问题，十分典型，可与1014做对比。
+
+排队问题，十分典型
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+
+using namespace std;
+
+struct person {
+    int arrive, start, time;
+    bool vip;
+}tempperson;
+
+struct tablenode {
+    int end = 8 * 3600, num;
+    bool vip;
+};
+
+bool cmp1(person a, person b) {
+    return a.arrive < b.arrive;
+}
+
+bool cmp2(person a, person b) {
+    return a.start < b.start;
+}
+
+vector<person> player;
+vector<tablenode> table;
+
+// 入桌 
+void alloctable(int personid, int tableid) {
+    if(player[personid].arrive <= table[tableid].end)
+        player[personid].start = table[tableid].end;
+    else
+        player[personid].start = player[personid].arrive;
+    table[tableid].end = player[personid].start + player[personid].time;
+    table[tableid].num++;
+}
+
+// 找到下一个vip的编号 
+int findnextvip(int vipid) {
+    vipid++;
+    while(vipid < player.size() && player[vipid].vip == false) vipid++;
+    return vipid;
+}
+
+int main() {
+    int n, k, m, viptable;
+    scanf("%d", &n); // n名游客 
+    for(int i = 0; i < n; i++) {
+        int h, m, s, temptime, flag;
+        // 构造tempperson 
+        scanf("%d:%d:%d %d %d", &h, &m, &s, &temptime, &flag);
+        tempperson.arrive = h * 3600 + m * 60 + s; // 到达时间，单位s 
+        tempperson.start = 21 * 3600; // 开始时间，先定21点 
+        if(tempperson.arrive >= 21 * 3600) continue; // 若超过21点到达，无效 
+        tempperson.time = temptime <= 120 ? temptime * 60 : 7200; // 若超过2小时，一律按两小时计算 
+        tempperson.vip = ((flag == 1) ? true : false); // 是否是vip 
+        player.push_back(tempperson);
+    }
+    scanf("%d%d", &k, &m); //总桌数，vip桌数 
+    table.resize(k + 1);
+    for(int i = 0; i < m; i++) {
+        scanf("%d", &viptable); // vip桌的桌号 
+        table[viptable].vip = true;
+    }
+    sort(player.begin(), player.end(), cmp1); // 按照到达时间的先后排序 
+    int i = 0, vipid = -1;
+    vipid = findnextvip(vipid); // 找到下一个vip的编号
+	 
+	// 开始排队 
+    while(i < player.size()) {
+        int index = -1, minendtime = 999999999;
+        // 寻找空闲的桌子 
+        for(int j = 1; j <= k; j++) {
+            if(table[j].end < minendtime) {
+                minendtime = table[j].end;
+                index = j;
+            }
+        }
+        if(table[index].end >= 21 * 3600) break;
+        
+		// 若队首是vip，i<vipid，则表示当前vip已经插队了，跳过 
+        if(player[i].vip == true && i < vipid) {
+            i++;
+            continue;
+        }
+       	 
+        if(table[index].vip == true) { // 如果vip桌空闲 
+            if(player[i].vip == true) { // 队首是vip，直接入桌 
+                alloctable(i, index);
+                if(vipid == i) vipid = findnextvip(vipid);
+                i++;
+            } else { // 队首不是vip 
+            	// 还有vip存在，并且已经在排队中，直接插队 
+                if(vipid < player.size() && player[vipid].arrive <= table[index].end) {
+                    alloctable(vipid, index);
+                    vipid = findnextvip(vipid);
+                } else { // 若没有vip排队，则安排当前队首入桌 
+                    alloctable(i, index);
+                    i++;
+                }
+            }
+        } else { // 如果普通桌空闲
+            if(player[i].vip == false) { // 不是vip在队首，直接入桌 
+                alloctable(i, index);
+                i++;
+            } else { // vip在队首 
+                int vipindex = -1, minvipendtime = 999999999;
+                // 寻找最早空闲的vip桌子 
+				for(int j = 1; j <= k; j++) {
+                    if(table[j].vip == true && table[j].end < minvipendtime) {
+                        minvipendtime = table[j].end;
+                        vipindex = j;
+                    }
+                }
+                // 若有空闲的vip桌子，则进入vip桌子 
+                if(vipindex != -1 && player[i].arrive >= table[vipindex].end) {
+                    alloctable(i, vipindex);
+                    if(vipid == i) vipid = findnextvip(vipid);
+                    i++;
+                } else { // 若没有空闲的vip桌子，则进入普通桌子
+                    alloctable(i, index);
+                    if(vipid == i) vipid = findnextvip(vipid);
+                    i++;
+                }
+            }
+        }
+    }
+    
+    // 最后全部人按照开始时间排序 
+    sort(player.begin(), player.end(), cmp2);
+    
+    for(i = 0; i < player.size() && player[i].start < 21 * 3600; i++) {
+        printf("%02d:%02d:%02d ", player[i].arrive / 3600, player[i].arrive % 3600 / 60, player[i].arrive % 60);
+        printf("%02d:%02d:%02d ", player[i].start / 3600, player[i].start % 3600 / 60, player[i].start % 60);
+        printf("%.0f\n", round((player[i].start - player[i].arrive) / 60.0));
+    }
+    for(int i = 1; i <= k; i++) {
+        if(i != 1) printf(" ");
+        printf("%d", table[i].num);
+    }
+    return 0;
+}
+```
+
+
+## 1027 Colors in Mars (20 分)
+
+翻译：火星人的颜色是用13进制表示的，将地球的十进制RGB转化为火星的13进制RGB。
+
+思路：给3个十进制的数（范围0~168），转化为十三进制的数。因为168转化为13进制为CC，即不会超过两位数。所以，采用除基取余法，两位就可以了
+
+答案：
+
+```
+#include <cstdio>
+
+using namespace std;
+
+int main() {
+    char c[14] = {"0123456789ABC"};
+    printf("#");
+    for(int i = 0; i < 3; i++) {
+        int num;
+        scanf("%d", &num);
+        printf("%c%c", c[num/13], c[num%13]); // 除基取余法 
+    }
+    return 0;
+}
+```
+
+## 1028 List Sorting (25 分)
+
+翻译：模拟excel的排序功能，C=1按照ID升序排列，C=2按照名字非降序排列，C=3按照分数非降序排列，如果名字和分数相同，则按照ID升序排列。
+
+思路：写比较函数，注意strcmp的使用。排序题型，比较典型。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <string.h>
+
+using namespace std;
+
+const int maxn = 100001;
+
+struct NODE {
+    int no, score; // ID，成绩 
+    char name[10]; // 名字 
+}node[maxn];
+
+int c;
+
+// 排序函数 
+int cmp1(NODE a, NODE b) {
+    if(c == 1) { // 按ID排序，升序 
+        return a.no < b.no;
+    } else if(c == 2) { // 按名字排序 
+        if(strcmp(a.name, b.name) == 0) return a.no < b.no; // 名字相同按ID升序 
+        return strcmp(a.name, b.name) <= 0; // 名字不同 
+    } else { // 按成绩排序
+        if(a.score == b.score) return a.no < b.no; // 成绩相同，按ID升序  
+        return a.score <= b.score; // 成绩非降排序 
+    }
+}
+
+int main() {
+    int n;
+    
+    scanf("%d%d", &n, &c);
+    
+	for(int i = 0; i < n; i++) {
+    	scanf("%d %s %d", &node[i].no, node[i].name, &node[i].score);
+	}
+    
+	sort(node, node + n, cmp1);
+    
+	for(int i = 0; i < n; i++) {
+		printf("%06d %s %d\n", node[i].no, node[i].name, node[i].score);
+	}
+    
+	return 0;
+}
+```
+
+## 1029 Median (25 分)
+
+翻译：给出两个已排序序列，找出两个序列的中位数。
+
+思路：two pointers，序列合并问题。书P139，练习册P181
+
+答案：
+
+```
+#include <iostream>
+
+using namespace std;
+int k[200005];
+
+int main(){
+    int n, m, temp, count = 0;
+    cin >> n; // 第一个序列的个数 
+    for (int i = 1; i <= n; i++)
+        scanf("%d", &k[i]); //输入第一个序列 
+    k[n + 1] = 0x7fffffff;
+    cin >> m; // 第二个序列的个数
+    // 中间值位置 
+    int midpos = (n + m + 1) / 2, i = 1;
+    // 将第二个序列加入，two pointers i是第一个数组的指针，j是第二个数组的指针 
+    for (int j = 1; j <= m; j++) {
+        scanf("%d", &temp);
+        while (k[i] < temp) {
+            count++;
+            if (count == midpos) cout << k[i];
+            i++;
+        }
+        count++;
+        if (count == midpos) cout << temp;
+    }
+    // 第二个数组读取完了，还没数到中间数
+    while (i <= n) {
+    	// 说明中间数在剩下的第一个数组中 
+        count++;
+        if (count == midpos) cout << k[i];
+        i++;
+    }
+    return 0;
+}
+```
+
+## 1030 **Travel Plan (30 分)
+
+翻译：给出一张图，求出发点和结束点的最短路径，如果最短路径相同，选最短路费的一条。
+
+思路：Dijksta + DFS。
+
+十分典型的题，有Dijksta算法与DFS算法。自己做一遍
+
+答案：
+
+```
+#include <cstdio>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+int n, m, s, d;
+int e[510][510], dis[510], cost[510][510]; // 边，距离，路费 
+
+vector<int> pre[510];
+bool visit[510];
+const int inf = 99999999;
+vector<int> path, temppath;
+int mincost = inf;
+
+// 深度优先算法 
+void dfs(int v) {
+    temppath.push_back(v); // 向深处走 
+    if(v == s) { // 从终点一直走到起点
+    	// 计算总路费 
+        int tempcost = 0;
+        for(int i = temppath.size() - 1; i > 0; i--) {
+            int id = temppath[i], nextid = temppath[i-1];
+            tempcost += cost[id][nextid];
+        }
+        // 选取其中最少的路费 
+        if(tempcost < mincost) {
+            mincost = tempcost;
+            path = temppath;
+        }
+        temppath.pop_back();
+        return ;
+    }
+    for(int i = 0; i < pre[v].size(); i++) {
+		dfs(pre[v][i]);
+	}
+    temppath.pop_back();
+}
+
+int main() {
+    
+	fill(e[0], e[0] + 510 * 510, inf);
+    fill(dis, dis + 510, inf);
+    scanf("%d%d%d%d", &n, &m, &s, &d); // 城市数量，边的数量，开始点，结束点
+	 
+	// 输入边与路费 
+    for(int i = 0; i < m; i++) {
+        int a, b;
+        scanf("%d%d", &a, &b);
+        scanf("%d", &e[a][b]);
+        e[b][a] = e[a][b];
+        scanf("%d", &cost[a][b]);
+        cost[b][a] = cost[a][b];
+    }
+    
+    // Dijksta算法开始 
+    pre[s].push_back(s); // 先压入初始点 
+    dis[s] = 0;
+    for(int i = 0; i < n; i++) {
+    	 
+        int u = -1, minn = inf;
+        // 选与当前集合距离最近的点，为u 
+		for(int j = 0; j < n; j++) {
+            if(visit[j] == false && dis[j] < minn) {
+                u = j;
+                minn = dis[j];
+            }
+        }
+        if(u == -1) break;
+        visit[u] = true; // 将选出的u设为已访问 
+        for(int v = 0; v < n; v++) {
+            if(visit[v] == false && e[u][v] != inf) {
+                if(dis[v] > dis[u] + e[u][v]) { // 若u的加入使得距离变短，则更新最短路径 
+                    dis[v] = dis[u] + e[u][v];
+                    pre[v].clear();
+                    pre[v].push_back(u);
+                } else if(dis[v] == dis[u] + e[u][v]) { // 若相同，也压入路径 
+                    pre[v].push_back(u);
+                }
+            }
+        }
+    }
+    
+    dfs(d);
+    
+    // 打印结果 
+    for(int i = path.size() - 1; i >= 0; i--) {
+		printf("%d ", path[i]);
+	}
+    printf("%d %d", dis[d], mincost);
+    return 0;
+}
+```
+
+## 1031 **Hello World for U (20 分)
+
+翻译：将输入的字符串画成U形状，要求n1=n3，n2>=n1，n1尽可能的大。
+
+思路：理解题意。均分为三份，多余的分配给n2。
+
+典型题目，打印
+
+答案：
+
+```
+#include <iostream>
+#include <string.h>
+
+using namespace std;
+
+int main() {
+    char c[81], u[30][30];
+    memset(u, ' ', sizeof(u));
+    
+    scanf("%s", c);
+    
+	int n = strlen(c) + 2;
+    
+	int n1 = n / 3, n2 = n / 3 + n % 3, index = 0;
+    
+    // n1放在第一列 
+	for(int i = 0; i < n1; i++) {
+		u[i][0] = c[index++];
+	}
+	// n2放在最后一行 
+    for(int i = 1; i <= n2 - 2; i++) {
+		u[n1-1][i] = c[index++];
+	}
+	// n3放在最后一列 
+    for(int i = n1 - 1; i >= 0; i--) {
+		u[i][n2-1] = c[index++];
+	}
+	// 依次打印 
+    for(int i = 0; i < n1; i++) {
+        for(int j = 0; j < n2; j++) 
+            printf("%c", u[i][j]);
+        printf("\n");
+    }
+    return 0;
+}
+```
+
+## 1032 **Sharing (25 分)
+
+翻译：两个单词分享相同的结尾。
+
+思路：先遍历第一个单词，再遍历第二个单词，初次遇到的相同的单词即为所求单词。
+
+疑问：柳这种方式全面吗？王道P56页有不同的做法。
+
+答案：
+
+```
+#include <cstdio>
+
+using namespace std;
+
+struct NODE {
+    char key;
+    int next;
+    bool flag;
+}node[100000];
+
+int main() {
+
+    int s1, s2, n, a, b;
+    scanf("%d%d%d", &s1, &s2, &n);
+    char data;
+
+    for(int i = 0; i < n; i++) {
+        scanf("%d %c %d", &a, &data, &b); // adress, data, next 
+        node[a] = {data, b, false}; // key, next, flag
+    }
+	
+	// 第一次全部标为true 
+    for(int i = s1; i != -1; i = node[i].next) {
+		node[i].flag = true;
+	}
+	
+	// 第二次再次遇到同样的true，即为相同的起点 
+    for(int i = s2; i != -1; i = node[i].next) {
+        if(node[i].flag == true) {
+            printf("%05d", i);
+            return 0;
+        }
+    }
+    printf("-1");
+    return 0;
+}
+```
+
+## 1033 **To Fill or Not to Fill (25 分)
+
+翻译：选出最便宜的路径。Cmax油箱最大容量，D杭州到目标城市的距离，Davg每单位的油车可以跑的距离，N加油站的总数。下面跟着N行，每行分别是Pi每单位油的价格，Di这个车站和杭州的距离
+
+思路：贪心算法。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+const int inf = 99999999;
+
+struct station {
+    double price, dis;
+};
+
+bool cmp1(station a, station b) {
+    return a.dis < b.dis;
+}
+
+int main() {
+    double cmax, d, davg;
+    int n;
+    
+    // Cmax油箱最大容量，D杭州到目标城市的距离，Davg每单位的油车可以跑的距离，N加油站的总数
+    scanf("%lf%lf%lf%d", &cmax, &d, &davg, &n);
+    
+	vector<station> sta(n + 1);
+    sta[0] = {0.0, d};
+    
+	for(int i = 1; i <= n; i++) {
+		scanf("%lf%lf", &sta[i].price, &sta[i].dis);
+	} 
+    
+    // 将车站按照距离从远到近排列 
+    sort(sta.begin(), sta.end(), cmp1);
+    
+	double nowdis = 0.0, maxdis = 0.0, nowprice = 0.0, totalPrice = 0.0, leftdis = 0.0;
+    if(sta[0].dis != 0) { // 出不了家门 
+        printf("The maximum travel distance = 0.00");
+        return 0;
+    } else {
+        nowprice = sta[0].price;
+    }
+    while(nowdis < d) { // 若还未到达终点 
+        maxdis = nowdis + cmax * davg;
+        double minPriceDis = 0, minPrice = inf;
+        int flag = 0;
+        
+        // 遍历所有当前油量能到达的车站 
+        for(int i = 1; i <= n && sta[i].dis <= maxdis; i++) {
+            if(sta[i].dis <= nowdis) continue;
+            if(sta[i].price < nowprice) { // 有比当前还低的第一个，直接加刚好到那个车站的油量 
+                totalPrice += (sta[i].dis - nowdis - leftdis) * nowprice / davg;
+                leftdis = 0.0;
+                nowprice = sta[i].price;
+                nowdis = sta[i].dis;
+                flag = 1;
+                break;
+            }
+            // 没有比当前还低的就找尽可能低的 
+            if(sta[i].price < minPrice) {
+                minPrice = sta[i].price;
+                minPriceDis = sta[i].dis;
+            }
+        }
+        
+        // 找到了尽可能低的距离
+        if(flag == 0 && minPrice != inf) {
+            totalPrice += (nowprice * (cmax - leftdis / davg));
+            leftdis = cmax * davg - (minPriceDis - nowdis);
+            nowprice = minPrice;
+            nowdis = minPriceDis;     
+        }
+        
+        if(flag == 0 && minPrice == inf) {
+            nowdis += cmax * davg;
+            printf("The maximum travel distance = %.2f", nowdis);
+            return 0;
+        }
+    }
+    printf("%.2f", totalPrice);
+    return 0;
+}
+```
+
+## 1034 Head of a Gang (30 分)
 
 翻译：
 
@@ -1413,5 +2223,14 @@ int main() {
 
 ```
 ```
+
+
+
+
+
+
+
+
+
 
 
