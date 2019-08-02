@@ -2657,7 +2657,124 @@ int main() {
 }
 ```
 
-## 1043 Is It a Binary Search Tree (25 分)
+## 1043 **Is It a Binary Search Tree (25 分)
+
+翻译：检查一个序列是否是BST或者BST的镜像的先序遍历序列，如果是，输出该BST的后序遍历序列。
+
+思路：BST的先序遍历，BST的后序遍历。
+
+算法笔记实战指南P316
+
+答案：
+
+```
+#include <cstdio>
+#include <vector>
+
+using namespace std;
+
+bool isMirror;
+vector<int> pre, post;
+
+void getpost(int root, int tail) {
+    if(root > tail) return ;
+    int i = root + 1, j = tail;
+    if(!isMirror) { // 不是镜像 
+        while(i <= tail && pre[root] > pre[i]) i++;
+        while(j > root && pre[root] <= pre[j]) j--;
+    } else { // 是镜像 
+        while(i <= tail && pre[root] <= pre[i]) i++;
+        while(j > root && pre[root] > pre[j]) j--;
+    }
+    if(i - j != 1) return ;
+    getpost(root + 1, j);
+    getpost(i, tail);
+    post.push_back(pre[root]);
+}
+
+int main() {
+    int n;
+    scanf("%d", &n); // 序列长度 
+    pre.resize(n);
+    for(int i = 0; i < n; i++)
+        scanf("%d", &pre[i]); // 先序序列 
+    getpost(0, n - 1);
+    if(post.size() != n) {
+        isMirror = true;
+        post.clear();
+        getpost(0, n - 1);
+    }
+    if(post.size() == n) {
+        printf("YES\n%d", post[0]);
+        for(int i = 1; i < n; i++)
+            printf(" %d", post[i]);
+    } else {
+        printf("NO");
+    }
+    return 0;
+}
+```
+
+## 1044 **Shopping in Mars (25 分)
+
+翻译：火星人购物付钱用钻石，请你帮忙算如何取出合适的钻石。
+
+思路：求一串的数字中连续的一段，使得这个连续的段内数字的和恰好等于所期望的值m。
+
+没有完全理解，后面再理解下。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+vector<int> sum, resultArr;
+int n, m;
+
+void Func(int i, int &j, int &tempsum) {
+    int left = i, right = n;
+    while(left < right) {
+        int mid = (left + right) / 2;
+        if(sum[mid] - sum[i-1] >= m)
+            right = mid;
+        else
+            left = mid + 1;
+    }
+    j = right;
+    tempsum = sum[j] - sum[i-1];
+}
+
+int main() {
+    scanf("%d%d", &n, &m); // 钻石的个数，需要付的钻石的数量 
+    sum.resize(n+1);
+    for(int i = 1; i <= n; i++) {
+        scanf("%d", &sum[i]);
+        sum[i] += sum[i-1];
+    }
+    int minans = sum[n];
+    for(int i = 1; i <= n; i++) {
+        int j, tempsum;
+        Func(i, j, tempsum);
+        if(tempsum > minans) continue;
+        if(tempsum >= m) {
+            if(tempsum < minans) {
+                resultArr.clear();
+                minans = tempsum;
+            }
+            resultArr.push_back(i);
+            resultArr.push_back(j);
+        }
+    }
+    for(int i = 0; i < resultArr.size(); i += 2)
+        printf("%d-%d\n", resultArr[i], resultArr[i+1]);
+    return 0;
+}
+```
+
+## 1045 Favorite Color Stripe (30 分)
 
 翻译：
 
@@ -2667,7 +2784,4 @@ int main() {
 
 ```
 ```
-
-
-
 
