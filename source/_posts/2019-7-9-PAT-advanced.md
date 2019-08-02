@@ -2215,6 +2215,450 @@ int main() {
 
 ## 1034 Head of a Gang (30 分)
 
+翻译：超过两个人，通话的总次数超过阀值称为一个帮派，帮派中通话记录最多的为帮派老大。给你N条通话记录，问你有几个帮派，帮派老大分别是谁。
+
+思路：用DFS计算连通分量，连通分量即为帮派的个数。在DFS中记录一个连通分量总的节点数以及权值最大的节点。
+
+答案：
+
+```
+#include <iostream>
+#include <map>
+
+using namespace std;
+
+map<string, int> stringToInt;
+map<int, string> intToString;
+map<string, int> ans;
+int idNumber = 1, k;
+
+// 名字记录 
+int stoifunc(string s) {
+    if(stringToInt[s] == 0) { // 若未储存过，存 
+        stringToInt[s] = idNumber; // 名字查数字 
+        intToString[idNumber] = s; // 数字查名字 
+        return idNumber++; // 返回名字总数 
+    } else { // 若已有记录，查 
+        return stringToInt[s];
+    }
+}
+
+int G[2010][2010], weight[2010];
+
+bool vis[2010];
+
+// 深度优先遍历 
+void dfs(int u, int &head, int &numMember, int &totalweight) {
+    vis[u] = true;
+    numMember++; // 计算总人数 
+    // 权值最大节点即为老大 
+	if(weight[u] > weight[head]) {
+		head = u;
+	}
+	// 继续遍历 
+    for(int v = 1; v < idNumber; v++) {
+        if(G[u][v] > 0) {
+            totalweight += G[u][v]; // 将u相邻的边的权重记录 
+            G[u][v] = G[v][u] = 0; // 已记录的权重置空 
+            if(vis[v] == false) {
+				dfs(v, head, numMember, totalweight);
+			}
+        }
+    }
+}
+
+void dfsTrave() {
+    for(int i = 1; i < idNumber; i++) {
+        if(vis[i] == false) {
+            int head = i, numMember = 0, totalweight = 0;
+            dfs(i, head, numMember, totalweight);
+            // 遍历完成，记录当前帮派的老大以及人数 
+            if(numMember > 2 && totalweight > k)
+                ans[intToString[head]] = numMember;
+        }
+    }
+}
+
+int main() {
+    int n, w;
+    cin >> n >> k; // 总通话数，阀值
+    string s1, s2;
+    for(int i = 0; i < n; i++) {
+        cin >> s1 >> s2 >> w;
+        int id1 = stoifunc(s1);
+        int id2 = stoifunc(s2);
+        // 节点权值 
+        weight[id1] += w;
+        weight[id2] += w;
+        // 边权值 
+		G[id1][id2] += w;
+        G[id2][id1] += w;
+    }
+    
+    dfsTrave();
+    
+	cout << ans.size() << endl; // ans的有记录的总数即为帮派的个数 
+    for(auto it = ans.begin(); it != ans.end(); it++) {
+		cout << it->first << " " << it->second << endl; // key为名字，value为帮派人数 
+	} 
+        
+    return 0;
+}
+
+```
+
+## 1035 Password (20 分)
+
+翻译：将有可能混淆的密码用其他字符替代。
+
+思路：边遍历字符串边替换即可。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    int n;
+    scanf("%d", &n); // 密码的个数 
+    vector<string> v;
+    
+	for(int i = 0; i < n; i++) {
+        string name, s;
+        cin >> name >> s; // 名字，密码 
+        int len = s.length(), flag = 0;
+        for(int j = 0; j < len; j++) {
+            switch(s[j]) {
+                case '1' : s[j] = '@'; flag = 1; break;
+                case '0' : s[j] = '%'; flag = 1; break;
+                case 'l' : s[j] = 'L'; flag = 1; break;
+                case 'O' : s[j] = 'o'; flag = 1; break;
+            }
+        }
+        if(flag) {
+            string temp = name + " " + s;
+            v.push_back(temp);
+        }
+    }
+    int cnt = v.size();
+    if(cnt != 0) {
+        printf("%d\n", cnt);
+        for(int i = 0; i < cnt; i++)
+            cout << v[i] << endl;
+    } else if(n == 1) {
+        printf("There is 1 account and no account is modified");
+    } else {
+        printf("There are %d accounts and no account is modified", n);
+    }
+    return 0;
+}
+```
+
+## 1036 Boys vs Girls (25 分)
+
+翻译：求分数最高的男同学与分数最高的女同学的差。
+
+思路：比较简单，按照题目意思求就可以了。
+
+答案：
+
+```
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    int n;
+    scanf("%d", &n); // 学生的总数 
+    string female, male;
+    int femalescore = -1, malescore = 101;
+    for(int i = 0; i < n; i++) {
+        string name, sex, num;
+        int score;
+        cin >> name >> sex >> num; 
+        scanf("%d", &score);
+        // 选出最大的女学生成绩与最小的男学生成绩 
+        if(sex == "F") {
+            if(femalescore < score) {
+                femalescore = score;
+                female = name + " " + num;
+            }
+        } else if(malescore > score) {
+                malescore = score;
+                male = name + " " + num;
+            }
+    }
+    if(femalescore != -1)
+        cout << female << endl;
+    else
+        printf("Absent\n");
+    if(malescore != 101)
+        cout << male << endl;
+    else
+        printf("Absent\n");
+    if(femalescore != -1 && malescore != 101)
+        printf("%d", femalescore - malescore);
+    else
+        printf("NA");
+    return 0;
+}
+```
+
+## 1037 Magic Coupon (25 分)
+
+翻译：一堆的优惠券和一堆的商品，请你计算收回的最多的钱。
+
+思路：贪心算法。负的优惠券用于负的商品会收钱。所以比较合理的是先将负的优惠券用于负的商品。
+
+答案：
+
+```
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+    int m, n, ans = 0, p = 0, q = 0;
+    scanf("%d", &m); // 优惠券个数 
+    vector<int> v1(m);
+    for(int i = 0; i < m; i++)
+        scanf("%d", &v1[i]);
+    scanf("%d", &n); // 商品个数 
+    vector<int> v2(n);
+    for(int i = 0; i < n; i++)
+        scanf("%d", &v2[i]);
+    // 从小到大排序 
+    sort(v1.begin(), v1.end());
+    sort(v2.begin(), v2.end());
+   	// 负的相乘求和，绝对值大的乘绝对值大的 
+	while(p < m && q < n && v1[p] < 0 && v2[q] < 0) {
+        ans += v1[p] * v2[q];
+        p++; q++;
+    }
+    p = m - 1, q = n - 1;
+    // 正的相乘求和，大的和大的乘 
+    while(p >= 0 && q >= 0 && v1[p] > 0 && v2[q] > 0) {
+        ans += v1[p] * v2[q];
+        p--; q--;
+    }
+    printf("%d", ans);
+    return 0;
+}
+```
+
+## 1038 **Recover the Smallest Number (30 分)
+
+翻译：给一组数，组成最小的数。
+
+思路：奇淫巧技，在于cmp函数，按照数字的ASCII码顺序排列。
+
+需要理解下这个原理
+
+答案：
+
+```
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+bool cmp0(string a, string b) {
+    return a + b < b + a;
+}
+
+string str[10010];
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    for(int i = 0; i < n; i++)
+        cin >> str[i];
+    sort(str, str + n, cmp0);
+    string s;
+    for(int i = 0; i < n; i++)
+        s += str[i];
+    while(s.length() != 0 && s[0] == '0')
+        s.erase(s.begin());
+    if(s.length() == 0) cout << 0;
+    cout << s;
+    return 0;
+}
+```
+
+## 1039 Course List for Student (25 分)
+
+翻译：给出每个课程注册的学生的数据，之后给出学生求这个学生注册了哪些课程。
+
+思路：考虑到string、cin、cout会超时，可以使用hash(26*26*26*10+10)将学生姓名变为int型，然后存储在vector里面。
+
+答案：
+
+```
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+// 将学生姓名变为int型 
+int getid(char *name) {
+    int id = 0;
+    for(int i = 0; i < 3; i++)
+        id = 26 * id + (name[i] - 'A');
+    id = id * 10 + (name[3] - '0');
+    return id;
+}
+
+const int maxn = 26 * 26 * 26 * 10 + 10;
+vector<int> v[maxn];
+
+int main() {
+    int n, k, no, num, id = 0;
+    char name[5];
+    scanf("%d %d", &n, &k); // 查询课程学生的数量，课程的数量 
+    for(int i = 0; i < k; i++) {
+        scanf("%d %d", &no, &num); // 课程编号，此课程注册的学生数 
+        for(int j = 0; j < num; j++) {
+            scanf("%s", name); // 学生名字 
+            id = getid(name);
+            v[id].push_back(no); // 学生对应的课程 
+        }
+    }
+    // 打印学生对应的课程 
+    for(int i = 0; i < n; i++) {
+        scanf("%s", name);
+        id = getid(name);
+        sort(v[id].begin(), v[id].end());
+        printf("%s %lu", name, v[id].size());
+        for(int j = 0; j < v[id].size(); j++)
+            printf(" %d", v[id][j]);
+        printf("\n");
+    }
+    return 0;
+}
+```
+
+## 1040 **Longest Symmetric String (25 分)
+
+翻译：给一个字符串，输出最长的对称子字符串的长度。
+
+思路：动态规划。
+
+算法笔记：P425动态规划专题   算法笔记实战指南P394 最长回文子串
+
+答案：
+
+```
+#include <iostream>
+
+using namespace std;
+
+int dp[1010][1010];
+
+int main() {
+    string s;
+    getline(cin, s);
+    int len = s.length(), ans = 1;
+    for(int i = 0; i < len; i++) {
+        dp[i][i] = 1;
+        if(i < len - 1 && s[i] == s[i+1]) {
+            dp[i][i+1] = 1;
+            ans = 2;
+        }
+    }
+    for(int L = 3; L <= len; L++) {
+        for(int i = 0; i + L - 1 < len; i++) {
+            int j = i + L -1;
+            if(s[i] == s[j] && dp[i+1][j-1] == 1) {
+                dp[i][j] = 1;
+                ans = L;
+            }
+        }
+    }
+    printf("%d", ans);
+    return 0;
+}
+```
+
+## 1041 Be Unique (20 分)
+
+翻译：哪个只出现一次的数字即为我们需要的数字。
+
+思路：理解题意，map功能。
+
+答案：
+
+```
+#include <cstdio>
+
+using namespace std;
+
+int a[100001], m[100000];
+
+int main() {
+    int n;
+    scanf("%d", &n); // n个数字 
+    for(int i = 0; i < n; i++) {
+        scanf("%d", &a[i]);
+        m[a[i]]++;
+    }
+    for(int i = 0; i < n; i++) {
+        if(m[a[i]] == 1) {
+            printf("%d", a[i]);
+            return 0;
+        }
+    }
+    printf("None");
+    return 0;
+}
+```
+
+## 1042 Shuffling Machine (20 分)
+
+翻译：洗牌机器将顺序的牌组打乱。
+
+思路：按照给的数据简单模拟即可。
+
+答案：
+
+```
+#include <cstdio>
+
+using namespace std;
+
+int main() {
+    int cnt;
+    scanf("%d", &cnt); // 重复次数 
+    int start[55], end[55], scan[55];
+    for(int i = 1; i < 55; i++) {
+        scanf("%d", &scan[i]);
+        end[i] = i;
+    }
+    // 重复洗牌 
+    for(int i = 0; i < cnt; i++) {
+        for(int j = 1; j < 55; j++)
+            start[j] = end[j];
+        for(int k = 1; k < 55; k++)
+            end[scan[k]] = start[k];
+    }
+    char c[6] = {"SHCDJ"};
+    for(int i = 1; i < 55; i++) {
+        end[i] = end[i] - 1;
+        printf("%c%d", c[end[i]/13], end[i]%13+1);
+        if(i != 54) printf(" ");
+    }
+    return 0;
+}
+```
+
+## 1043 Is It a Binary Search Tree (25 分)
+
 翻译：
 
 思路：
@@ -2223,13 +2667,6 @@ int main() {
 
 ```
 ```
-
-
-
-
-
-
-
 
 
 
