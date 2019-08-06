@@ -2774,7 +2774,996 @@ int main() {
 }
 ```
 
-## 1045 Favorite Color Stripe (30 分)
+## 1045 **Favorite Color Stripe (30 分)
+
+翻译：选择最长的一段喜欢的颜色
+
+思路：动态规划。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+using namespace std;
+int book[201], a[10001], dp[10001];
+int main() {
+    int n, m, x, l, num = 0, maxn = 0;
+    scanf("%d %d", &n, &m);
+    for(int i = 1; i <= m; i++) {
+        scanf("%d", &x);
+        book[x] = i;
+    }
+    scanf("%d", &l);
+    for(int i = 0; i < l; i++) {
+        scanf("%d", &x);
+        if(book[x] >= 1)
+            a[num++] = book[x];
+    }
+    for(int i = 0; i < num; i++) {
+        dp[i] = 1;
+        for(int j = 0; j < i; j++)
+            if(a[i] >= a[j])
+                dp[i] = max(dp[i], dp[j] + 1);
+        maxn = max(dp[i], maxn);
+    }
+    printf("%d", maxn);
+    return 0;
+}
+```
+
+## 1046 Shortest Distance (20 分)
+
+翻译：有一个带权值的环，求任意两个节点最短的距离
+
+思路：简单模拟。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+using namespace std;
+int main() {
+    int n;
+    scanf("%d", &n);
+    vector<int> dis(n + 1);
+    int sum = 0, left, right, cnt;
+    for(int i = 1; i <= n; i++) {
+        int temp;
+        scanf("%d", &temp);
+        sum += temp;
+        dis[i] = sum;
+    }
+    scanf("%d", &cnt);
+    for(int i = 0; i < cnt; i++) {
+        scanf("%d %d", &left, &right);
+        if(left > right)
+            swap(left, right);
+        int temp = dis[right - 1] - dis[left - 1];
+        printf("%d\n", min(temp, sum - temp));
+    }
+    return 0;
+}
+```
+
+## 1047 Student List for Course (25 分)
+
+翻译：给你每个学生的注册的课程，请你给出每个课程的注册的学生。
+
+思路：map思想
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string.h>
+
+using namespace std;
+char name[40010][5];
+vector<int> course[2510];
+
+bool cmp1(int a, int b) {
+    return strcmp(name[a], name[b]) < 0;
+}
+
+int main() {
+    int n, k;
+    scanf("%d %d", &n, &k); // 学生人数，课程数量 
+    for(int i = 0; i < n; i++) {
+        int cnt, temp;
+        scanf("%s %d", name[i], &cnt); // 学生名字，注册的课程数量 
+        for(int j = 0; j < cnt; j++) {
+            scanf("%d", &temp); // 课程 
+            course[temp].push_back(i); // 课程push进学生 
+        }
+    }
+    for(int i = 1; i <= k; i++) {
+        printf("%d %d\n", i, course[i].size()); // 课程编号，课程学生人数 
+        sort(course[i].begin(), course[i].end(), cmp1);
+        for(int j = 0; j < course[i].size(); j++)
+            printf("%s\n", name[course[i][j]]); // 打印学生名字 
+    }
+    return 0;
+}
+```
+
+## 1048 Find Coins (25 分)
+
+翻译：口袋有很多不同面值的硬币，对于某一个价格，只能用两个硬币正好付清，求哪两个硬币。
+
+思路：从小到大，寻找是否能有数补上后等于m（商品的价格）。
+
+答案：
+
+```
+#include <iostream>
+
+using namespace std;
+int a[1001];
+
+int main() {
+    int n, m, temp;
+    scanf("%d %d", &n, &m); // 硬币的数量，需要付的钱 
+    for(int i = 0; i < n; i++) {
+        scanf("%d", &temp); // 硬币币值 
+        a[temp]++; // 记录每个数字出现的次数 
+    }
+    for(int i = 0; i < 1001; i++) {
+        if(a[i]) {
+            a[i]--;
+            if(m > i && a[m-i]) { // i < m，并且m-i存在，即为所需要的那一对 
+                printf("%d %d", i, m - i);
+                return 0;
+            }
+            a[i]++;
+        }
+    }
+    printf("No Solution");
+    return 0;
+}
+```
+
+## 1049 **Counting Ones (30 分)
+
+翻译：给出一个数字n，求1~n的所有数字里面出现1的个数相加，比如1,10,11,12总共有5个1。
+
+思路：找规律。
+
+实战指南P198
+
+答案：
+
+```
+#include <iostream>
+using namespace std;
+int main() {
+    int n, left = 0, right = 0, a = 1, now = 1, ans = 0;
+    scanf("%d", &n);
+    while(n / a) {
+        left = n / (a * 10), now = n / a % 10, right = n % a;
+        if(now == 0) ans += left * a;
+        else if(now == 1) ans += left * a + right + 1;
+        else ans += (left + 1) * a;
+        a = a * 10;
+    }
+    printf("%d", ans);
+    return 0;
+}
+```
+
+## 1050 String Subtraction (20 分)
+
+翻译：在一段字符串中去除指定的字符。
+
+思路：用hash记录指定的字符，相等的不输出即可。
+
+答案：
+
+```
+#include <iostream>
+#include <string>
+#include <string.h>
+
+using namespace std;
+char s1[100000], s2[100000];
+
+int main() {
+    cin.getline(s1, 100000);
+    cin.getline(s2, 100000);
+    int lens1 = strlen(s1), lens2 = strlen(s2);
+    bool flag[256] = {false};
+    for(int i = 0; i < lens2; i++)
+        flag[s2[i]] = true;
+    for(int i = 0; i < lens1; i++) {
+        if(!flag[s1[i]])
+            printf("%c", s1[i]);
+    }
+    return 0;
+}
+```
+
+## 1051 Pop Sequence (25 分)
+
+翻译：M为栈的长度，按顺序输出N个数字，检测pop序列是否有可能。
+
+思路：模拟栈的pop过程
+
+答案：
+
+```
+#include <iostream>
+#include <stack>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    
+	int m, n, k;
+    scanf("%d %d %d", &m, &n, &k); // 栈的容量，序列的长度，序列的条数 
+    
+	for(int i = 0; i < k; i++) {
+        bool flag = false;
+        stack<int> s; // 申请一个栈 
+        vector<int> v(n + 1);
+        for(int j = 1; j <= n; j++)
+            scanf("%d", &v[j]); // 序列 
+        int current = 1;
+        for(int j = 1; j <= n; j++) {
+            s.push(j);
+            if(s.size() > m) break; // 超过栈的容量 
+            while(!s.empty() && s.top() == v[current]) { // 与pop序列相同，pop出来，并移动当前指针 
+                s.pop();
+                current++;
+            }
+        }
+        if(current == n + 1) flag = true;
+        if(flag) printf("YES\n");
+        else printf("NO\n");
+    }
+    
+	return 0;
+}
+```
+
+## 1052 Linked List Sorting (25 分)
+
+翻译：链表按照key从小到大排序，修改next
+
+思路：直接将链表放到数组中，用sort排序，最后输出的时候有点技巧
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+struct NODE {
+    int address, key, next;
+    bool flag;
+}node[100000];
+
+int cmp1(NODE a, NODE b) {
+	// 无效的节点往后移，有效的节点按key从小到大排 
+    return !a.flag || !b.flag ? a.flag > b.flag : a.key < b.key;
+}
+
+int main() {
+    int n, cnt = 0, s, a, b, c;
+    scanf("%d%d", &n, &s); // 链的长度，首项的地址 
+    for(int i = 0; i < n; i++) {
+        scanf("%d%d%d", &a, &b, &c); // address, key, next
+        node[a] = {a, b, c, false};
+    }
+    for(int i = s; i != -1; i = node[i].next) {
+        node[i].flag = true; // 标记有效节点 
+        cnt++;
+    }
+    if(cnt == 0) {
+        printf("0 -1");
+    } else {
+    	// 排序完成 
+        sort(node, node + 100000, cmp1);
+        // 排序完成之后 
+		printf("%d %05d\n", cnt, node[0].address); // 第一个节点的前两个数据 
+        for(int i = 0; i < cnt; i++) {
+            printf("%05d %d ", node[i].address, node[i].key);
+            // 区分最后一个节点 
+			if(i != cnt - 1)
+                printf("%05d\n", node[i + 1].address);
+            else
+                printf("-1\n");
+        }
+    }
+    return 0;
+}
+```
+
+## 1053 **Path of Equal Weight (30 分)
+
+翻译：给一棵树，给一个权值，查路径到叶结点权值之和为给定的权值的路径。
+
+思路：
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+int target;
+
+struct NODE {
+    int w;
+    vector<int> child;
+};
+
+vector<NODE> v;
+vector<int> path;
+
+void dfs(int index, int nodeNum, int sum) {
+    if(sum > target) return ;
+    if(sum == target) {
+        if(v[index].child.size() != 0) return;
+        for(int i = 0; i < nodeNum; i++)
+            printf("%d%c", v[path[i]].w, i != nodeNum - 1 ? ' ' : '\n');
+        return ;
+    }
+    for(int i = 0; i < v[index].child.size(); i++) {
+        int node = v[index].child[i];
+        path[nodeNum] = node;
+        dfs(node, nodeNum + 1, sum + v[node].w);
+    }
+    
+}
+
+int cmp1(int a, int b) {
+    return v[a].w > v[b].w;
+}
+
+int main() {
+    int n, m, node, k;
+    scanf("%d %d %d", &n, &m, &target); // 总节点数，非叶子节点数，目标权值 
+    v.resize(n), path.resize(n);
+    for(int i = 0; i < n; i++)
+        scanf("%d", &v[i].w); // 权值 
+    for(int i = 0; i < m; i++) {
+        scanf("%d %d", &node, &k);
+        v[node].child.resize(k);
+        for(int j = 0; j < k; j++)
+            scanf("%d", &v[node].child[j]);
+        sort(v[node].child.begin(), v[node].child.end(), cmp1);
+    }
+    dfs(0, 1, v[0].w);
+    return 0;
+}
+```
+
+## 1054 The Dominant Color (20 分)
+
+翻译：在一个分辨率下，超过一半的颜色称为Dominant Color，给你数据，寻找这个颜色。
+
+思路：map计数
+
+答案：
+
+```
+#include <iostream>
+#include <map>
+using namespace std;
+int main() {
+    int m, n;
+    scanf("%d %d", &m, &n); // 宽，高 
+    map<int, int> arr;
+    int half = m * n / 2;
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < m; j++) {
+            int temp;
+            scanf("%d", &temp);
+            arr[temp]++; // 计数 
+            if(arr[temp] > half) { // 超过一半 
+                printf("%d", temp);
+                return 0;
+            }
+        }
+    }
+    return 0;
+}
+```
+
+## 1055 The World's Richest (25 分)
+
+翻译：给很多人的数据，分别是名字，年龄，财富。然后给你一定的年龄范围，查符合范围的富豪。
+
+思路：排序，筛选，注意性能。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <cstring>
+
+using namespace std;
+
+struct node {
+    char name[10];
+    int age, money;
+};
+
+// 排序 
+int cmp1(node a, node b) {
+    if(a.money != b.money)
+        return a.money > b.money;
+    else if(a.age != b.age)
+        return a.age < b.age;
+    else
+        return (strcmp(a.name, b.name) < 0);
+}
+
+int main() {
+    int n, k, num, amin, amax;
+    scanf("%d %d", &n, &k); // 富豪人数，查询个数 
+    vector<node> vt(n), v;
+    vector<int> book(205, 0);
+    for(int i = 0; i < n; i++)
+        scanf("%s %d %d", vt[i].name, &vt[i].age, &vt[i].money); // 名字，年龄，财富 
+    sort(vt.begin(), vt.end(), cmp1);
+    for(int i = 0; i < n; i++) {
+        if(book[vt[i].age] < 100) { // 只取每个年龄的前100名 
+            v.push_back(vt[i]); // 压入新数组 
+            book[vt[i].age]++; // 统计每个年龄对应的人数 
+        }
+    }
+    for(int i = 0; i < k; i++) {
+        scanf("%d %d %d", &num, &amin, &amax); // 个数，最小年龄，最大年龄 
+        vector<node> t; // 储存当前这个查询，符合的人 
+        for(int j = 0; j < v.size(); j++) {
+            if(v[j].age >= amin && v[j].age <= amax)
+                t.push_back(v[j]); // 符合年龄区间的压入t 
+        }
+        if(i != 0) printf("\n");
+        printf("Case #%d:", i + 1);
+        int flag = 0;
+        for(int j = 0; j < num && j < t.size(); j++) {
+            printf("\n%s %d %d", t[j].name, t[j].age, t[j].money);
+            flag = 1;
+        }
+        if(flag == 0) printf("\nNone");
+    }
+    return 0;
+}
+```
+
+## 1056 **Mice and Rice (25 分)
+
+翻译：
+
+思路：
+
+没看懂。
+
+答案：
+
+```
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <algorithm>
+using namespace std;
+struct node {
+    int weight, index, rank, index0;
+};
+bool cmp1(node a, node b) {
+    return a.index0 < b.index0;
+}
+int main() {
+    int n, g, num;
+    scanf("%d%d", &n, &g);
+    vector<int> v(n);
+    vector<node> w(n);
+    for(int i = 0; i < n; i++)
+        scanf("%d", &v[i]);
+    for(int i = 0; i < n; i++) {
+        scanf("%d", &num);
+        w[i].weight = v[num];
+        w[i].index = i;
+        w[i].index0 = num;
+    }
+    queue<node> q;
+    for(int i = 0; i < n; i++)
+        q.push(w[i]);
+    while(!q.empty()) {
+        int size = q.size();
+        if(size == 1) {
+            node temp = q.front();
+            w[temp.index].rank = 1;
+            break;
+        }
+        int group = size / g;
+        if(size % g != 0)
+            group += 1;
+        node maxnode;
+        int maxn = -1, cnt = 0;
+        for(int i = 0; i < size; i++) {
+            node temp = q.front();
+            w[temp.index].rank = group + 1;
+            q.pop();
+            cnt++;
+            if(temp.weight > maxn) {
+                maxn = temp.weight;
+                maxnode = temp;
+            }
+            if(cnt == g || i == size - 1) {
+                cnt = 0;
+                maxn = -1;
+                q.push(maxnode);
+            }
+        }
+    }
+    sort(w.begin(), w.end(), cmp1);
+    for(int i = 0; i < n; i++) {
+        if(i != 0) printf(" ");
+        printf("%d", w[i].rank);
+    }
+    return 0;
+}
+```
+
+## 1057 Stack (30 分)
+
+翻译：
+
+思路：树状数组？？？
+
+树状数组是什么？
+
+答案：
+
+```
+#include <iostream>
+#include <stack>
+#define lowbit(i) ((i) & (-i))
+
+const int maxn = 100010;
+using namespace std;
+int c[maxn];
+stack<int> s;
+
+void update(int x, int v) {
+    for(int i = x; i < maxn; i += lowbit(i))
+        c[i] += v;
+}
+
+int getsum(int x) {
+    int sum = 0;
+    for(int i = x; i >= 1; i -= lowbit(i))
+        sum += c[i];
+    return sum;
+}
+
+void PeekMedian() {
+    int left = 1, right = maxn, mid, k = (s.size() + 1) / 2;
+    while(left < right) {
+        mid = (left + right) / 2;
+        if(getsum(mid) >= k)
+            right = mid;
+        else
+            left = mid + 1;
+    }
+    printf("%d\n", left);
+}
+
+int main() {
+    int n, temp;
+    scanf("%d", &n); // n个指令 
+    char str[15];
+    for(int i = 0; i < n; i++) {
+        scanf("%s", str); // 指令 
+        if(str[1] == 'u') { // psuh指令 
+            scanf("%d", &temp);
+            s.push(temp);
+            update(temp, 1);
+        } else if(str[1] == 'o') { // pop指令
+            if(!s.empty()) {
+                update(s.top(), -1);
+                printf("%d\n", s.top());
+                s.pop();
+            } else {
+                printf("Invalid\n");
+            }
+        } else { // PeekMedian指令
+            if(!s.empty())
+                PeekMedian();
+            else
+                printf("Invalid\n");
+        }
+    }
+    return 0;
+}
+```
+
+## 1058 A+B in Hogwarts (20 分)
+
+翻译：哈利波特中的货币系统，29个Knuts为一个Sickle，17个Sickles为一个Galleon。用这种方式计算A+B。
+
+思路：全部转化为Knuts之后相加，再转化为需要的形式。
+
+答案：
+
+```
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    long long a, b, c, d, e, f;
+    scanf("%lld.%lld.%lld %lld.%lld.%lld", &a, &b, &c, &d, &e, &f);
+    long long num = c + b * 29 + a * 29 * 17 + f + e * 29 + d * 29 * 17;
+    long long g = num / (17 * 29);
+    num = num % (17 * 29);
+    printf("%lld.%lld.%lld", g, num / 29, num % 29);
+    return 0;
+}
+```
+
+## 1059 Prime Factors (25 分)
+
+翻译：给一个数，算出它的素数的分解。
+
+思路：将这个数依次除以素数表的素数，从小到大，计算每个素数除的次数。
+
+答案：
+
+```
+#include <cstdio>
+#include <vector>
+
+using namespace std;
+vector<int> prime(500000, 1);
+
+int main() {
+	// 建立素数表，即prime[] = 1的为素数，即不是由相乘得到的即为素数。 
+    for(int i = 2; i * i < 500000; i++)
+        for(int j = 2; j * i < 500000; j++)
+            prime[j * i] = 0;
+    long int a;
+    scanf("%ld", &a);
+    printf("%ld=", a);
+    if(a == 1) printf("1");
+    bool state = false;
+    for(int i = 2; a >= 2;i++) {
+        int cnt = 0, flag = 0;
+        // 一直除当前的素数，直到除不净为止 
+        while(prime[i] == 1 && a % i == 0) {
+            cnt++;
+            a = a / i;
+            flag = 1;
+        }
+        // flag表示当前是否有能除净的素数 
+        if(flag) {
+            if(state) printf("*");
+            printf("%d", i);
+            state = true;
+        }
+        // cnt表示素数的重复次数 
+        if(cnt >= 2)
+            printf("^%d", cnt);
+    }
+    return 0;
+}
+```
+
+## 1060 **Are They Equal (25 分)
+
+翻译：12300与12358.9在保留三位的科学计数法眼中是一样的，都是0.123×10^5。你需要告诉我们，两个数在某个位数的科学计数法下是否是一样的。
+
+思路：科学计数法。
+
+科学计数法为一类题目。
+
+答案：
+
+```
+#include <iostream>
+#include <cstring>
+using namespace std;
+int main() {
+    int n, p = 0, q = 0;
+    char a[10000], b[10000], A[10000], B[10000];
+    scanf("%d%s%s", &n, a, b);
+    int cnta = strlen(a), cntb = strlen(b);
+    for(int i = 0; i < strlen(a); i++) {
+        if(a[i] == '.') {
+            cnta = i;
+            break;
+        }
+    }
+    for(int i = 0; i < strlen(b); i++) {
+        if(b[i] == '.') {
+            cntb = i;
+            break;
+        }
+    }
+    int indexa = 0, indexb = 0;
+    while(a[p] == '0' || a[p] == '.') p++;
+    while(b[q] == '0' || b[q] == '.') q++;
+    if(cnta >= p)
+        cnta = cnta - p;
+    else
+        cnta = cnta - p + 1;
+    if(cntb >= q)
+        cntb = cntb - q;
+    else
+        cntb = cntb - q + 1;
+    if(p == strlen(a))
+        cnta = 0;
+    if(q == strlen(b))
+        cntb = 0;
+    while(indexa < n) {
+        if(a[p] != '.' && p < strlen(a))
+            A[indexa++] = a[p];
+        else if(p >= strlen(a))
+            A[indexa++] = '0';
+        p++;
+    }
+    while(indexb < n) {
+        if(b[q] != '.' && q < strlen(b))
+            B[indexb++] = b[q];
+        else if(q >= strlen(b))
+            B[indexb++] = '0';
+        q++;
+    }
+    if(strcmp(A, B) == 0 && cnta == cntb)
+        printf("YES 0.%s*10^%d", A, cnta);
+    else
+        printf("NO 0.%s*10^%d 0.%s*10^%d" , A, cnta, B, cntb);
+    return 0;
+}
+```
+
+## 1061 Dating (20 分)
+
+翻译：解密约会的时间。前两个字符串，第一个重复的为D，代表一周的第四天，第二个重复为E，代表一天的第14个小时，后两个重复的为s，在4的位置上，代表第4分钟。
+
+思路：读懂题目，按照题意解即可。
+
+答案：
+
+```
+#include <iostream>
+#include <cctype>
+
+using namespace std;
+
+int main() {
+    string a, b, c, d;
+    cin >> a >> b >> c >> d; // 四个字符串 
+    char t[2];
+    int pos, i = 0, j = 0;
+    // 前两个字符串相同的第一个字符 
+    while(i < a.length() && i < b.length()) {
+        if (a[i] == b[i] && (a[i] >= 'A' && a[i] <= 'G')) {
+            t[0] = a[i];
+            break;
+        }
+        i++;
+    }
+    i = i + 1;
+    // 前两个字符串相同的第二个字符，数字或者A到N 
+	while (i < a.length() && i < b.length()) {
+        if (a[i] == b[i] && ((a[i] >= 'A' && a[i] <= 'N') || isdigit(a[i]))) {
+            t[1] = a[i];
+            break;
+        }
+        i++;
+    }
+    // 后两个字符串相同的字母的位置 
+    while (j < c.length() && j < d.length()) {
+        if (c[j] == d[j] && isalpha(c[j])) {
+            pos = j;
+            break;
+        }
+        j++;
+    }
+    string week[7] = {"MON ", "TUE ", "WED ", "THU ", "FRI ", "SAT ", "SUN "};
+    int m = isdigit(t[1]) ? t[1] - '0' : t[1] - 'A' + 10;
+    cout << week[t[0]-'A']; // 打印星期 
+    printf("%02d:%02d", m, pos); // 打印小时与分钟 
+    return 0;
+}
+```
+
+## 1062 Talent and Virtue (25 分)
+
+翻译：分为五类，1.德才兼备 2. 德胜才 3. 才德兼亡，但尚有德胜才 4. 才德兼亡 5. 不及格，无法进入名单。每个分级别的排序，排序先按照总分排序，然后按照德分排序，最后按照才分排序。
+
+思路：读懂题目，先分类，后排序。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+struct node {
+    int num, de, cai;
+};
+
+// 排序 // 排序先按照总分排序，然后按照德分排序，最后按照才分排序 
+int cmp(struct node a, struct node b) {
+    if ((a.de + a.cai) != (b.de + b.cai))
+        return (a.de + a.cai) > (b.de + b.cai);
+    else if (a.de != b.de)
+        return a.de > b.de;
+    else
+        return a.num < b.num;
+}
+
+int main() {
+    int n, low, high;
+    scanf("%d %d %d", &n, &low, &high);
+    vector<node> v[4];
+    node temp;
+    int total = n;
+    for (int i = 0; i < n; i++) {
+        scanf("%d %d %d", &temp.num, &temp.de, &temp.cai);
+        if (temp.de < low || temp.cai < low) // 德才的最低线 
+            total--;
+        else if (temp.de >= high && temp.cai >= high) // 德才兼备 
+            v[0].push_back(temp);
+        else if (temp.de >= high && temp.cai < high) // 德胜才 
+            v[1].push_back(temp);
+        else if (temp.de < high && temp.cai < high && temp.de >= temp.cai) // 才德兼亡，但尚有德胜才
+            v[2].push_back(temp);
+        else // 才德兼亡
+            v[3].push_back(temp);
+    }
+    printf("%d\n", total);
+    for (int i = 0; i < 4; i++) {
+        sort(v[i].begin(), v[i].end(), cmp); // 在每个分类的内部，再排序 
+        for (int j = 0; j < v[i].size(); j++)
+            printf("%d %d %d\n", v[i][j].num, v[i][j].de, v[i][j].cai);
+    }
+    return 0;
+}
+```
+
+## 1063 Set Similarity (25 分)
+
+翻译：nc是两个集合的公共元素个数，nt是两个集合的所有包含的元素个数。查询不同set之间的相似度。
+
+思路：理解题意，按题意即可。
+
+答案：
+
+```
+#include <cstdio>
+#include <vector>
+#include <set>
+
+using namespace std;
+
+int main() {
+	
+    int n, m, k, temp, a, b;
+    scanf("%d", &n); // n个set 
+    vector<set<int>> v(n);
+    
+	for(int i = 0; i < n; i++) {
+        scanf("%d", &m); // set有m个元素 
+        set<int> s;
+        for(int j = 0; j < m; j++) {
+            scanf("%d", &temp);
+            s.insert(temp);
+        }
+        v[i] = s;
+    }
+    scanf("%d", &k); // k个查询 
+    for(int i = 0; i < k; i++) {
+        scanf("%d %d", &a, &b); // 查哪两个set的相似度 
+        int nc = 0, nt = v[b-1].size();
+        for(auto it = v[a-1].begin(); it != v[a-1].end(); it++) {
+            if(v[b-1].find(*it) == v[b-1].end()) // 是否有相同的 
+                nt++;
+            else
+                nc++;
+        }
+        double ans = (double)nc / nt * 100;
+        printf("%.1f%%\n", ans);
+    }
+    return 0;
+}
+```
+
+## 1064 **Complete Binary Search Tree (30 分)
+
+翻译：给一串构成树的序列，已知该树是完全二叉搜索树，求它的层序遍历的序列
+
+思路：...
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+vector<int> in, level;
+void levelorder(int start, int end, int index) {
+    if(start > end) return ;
+    int n = end - start + 1;
+    int l = log(n + 1) / log(2); // 除了最后一层的层数
+    int leave = n - (pow(2, l) - 1);// 最后一层的叶子节点数
+    int root = start + (pow(2, l - 1) - 1) + min((int)pow(2, l - 1), leave); // pow(2, l - 1) - 1是除了root结点所在层和最后一层外，左子树的结点个数，pow(2, l - 1) 是l+1层最多拥有的属于根结点左子树的结点个数，min(pow(2, l - 1), leave)是最后一个结点真正拥有的属于根结点左子树上的结点个数
+    level[index] = in[root];
+    levelorder(start, root - 1, 2 * index + 1);
+    levelorder(root + 1, end, 2 * index + 2);
+}
+int main() {
+    int n;
+    scanf("%d", &n);
+    in.resize(n);
+    level.resize(n);
+    for(int i = 0 ; i < n; i++)
+        scanf("%d", &in[i]);
+    sort(in.begin(), in.end());
+    levelorder(0, n - 1, 0);
+    printf("%d", level[0]);
+    for(int i = 1; i < n; i++)
+        printf(" %d", level[i]);
+    return 0;
+}
+```
+
+## 1065 **A+B and C (64bit) (20 分)
+
+翻译：判断A+B是否大于C
+
+思路：sum有可能溢出。
+
+自己试一下
+
+答案：
+
+```
+#include <cstdio>
+ 
+using namespace std;
+
+int main() {
+    int n;
+    scanf("%d", &n); 
+    for(int i = 0; i < n; i++) {
+        long long a, b, c;
+        scanf("%lld %lld %lld", &a, &b, &c);
+        long long sum = a + b;
+        if(a > 0 && b > 0 && sum < 0) {
+            printf("Case #%d: true\n", i + 1);
+        } else if(a < 0 && b < 0 && sum >= 0){
+            printf("Case #%d: false\n", i + 1);
+        } else if(sum > c) {
+            printf("Case #%d: true\n", i + 1);
+        } else {
+            printf("Case #%d: false\n", i + 1);
+        }
+    }
+    return 0;
+}
+```
+
+## 1066 Root of AVL Tree (25 分)
 
 翻译：
 
@@ -2784,4 +3773,3 @@ int main() {
 
 ```
 ```
-
