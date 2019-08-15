@@ -5067,6 +5067,750 @@ int main() {
 
 ## 1090 Highest Price in Supply Chain (25 分)
 
+翻译：求供应链树种最高价格的零售商的价格和个数。
+
+思路：DFS遍历求树的深度，**理解树本题树的建构
+
+答案：
+
+```
+#include <iostream>
+#include <cmath>
+#include <vector>
+
+using namespace std;
+int n, maxdepth = 0, maxnum = 0, temp, root;
+vector<int> v[100010];
+
+void dfs(int index, int depth) {
+    if(v[index].size() == 0) {
+        if(maxdepth == depth)
+            maxnum++;
+        if(maxdepth < depth) {
+            maxdepth = depth;
+            maxnum = 1;
+        }
+        return ;
+    }
+    for(int i = 0; i < v[index].size(); i++)
+        dfs(v[index][i], depth + 1);
+}
+
+int main() {
+    double p, r;
+    scanf("%d %lf %lf", &n, &p, &r); // 人数，根节点价格，利润 
+    for(int i = 0; i < n; i++) {
+        scanf("%d", &temp);
+        if(temp == -1)
+            root = i;
+        else
+            v[temp].push_back(i);
+    }
+    dfs(root, 0);
+    printf("%.2f %d", p * pow(1 + r/100, maxdepth), maxnum);
+    return 0;
+}
+```
+
+## 1091 **Acute Stroke (30 分)
+
+翻译：没看懂
+
+思路：
+
+答案：
+
+```
+#include <cstdio>
+#include <queue>
+using namespace std;
+struct node {
+    int x, y, z;
+};
+int m, n, l, t;
+int X[6] = {1, 0, 0, -1, 0, 0};
+int Y[6] = {0, 1, 0, 0, -1, 0};
+int Z[6] = {0, 0, 1, 0, 0, -1};
+int arr[1300][130][80];
+bool visit[1300][130][80];
+bool judge(int x, int y, int z) {
+    if(x < 0 || x >= m || y < 0 || y >= n || z < 0 || z >= l) return false;
+    if(arr[x][y][z] == 0 || visit[x][y][z] == true) return false;
+    return true;
+}
+int bfs(int x, int y, int z) {
+    int cnt = 0;
+    node temp;
+    temp.x = x, temp.y = y, temp.z = z;
+    queue<node> q;
+    q.push(temp);
+    visit[x][y][z] = true;
+    while(!q.empty()) {
+        node top = q.front();
+        q.pop();
+        cnt++;
+        for(int i = 0; i < 6; i++) {
+            int tx = top.x + X[i];
+            int ty = top.y + Y[i];
+            int tz = top.z + Z[i];
+            if(judge(tx, ty, tz)) {
+                visit[tx][ty][tz] = true;
+                temp.x = tx, temp.y = ty, temp.z = tz;
+                q.push(temp);
+            }
+        }
+    }
+    if(cnt >= t)
+        return cnt;
+    else
+        return 0;
+    
+}
+int main() {
+    scanf("%d %d %d %d", &m, &n, &l, &t);
+    for(int i = 0; i < l; i++)
+        for(int j = 0; j < m; j++)
+            for(int k = 0; k < n; k++)
+                scanf("%d", &arr[j][k][i]);
+    int ans = 0;
+    for(int i = 0; i < l; i++) {
+        for(int j = 0; j < m; j++) {
+            for(int k = 0; k < n; k++) {
+                if(arr[j][k][i] == 1 && visit[j][k][i] == false)
+                    ans += bfs(j, k, i);
+            }
+        }
+    }
+    printf("%d", ans);
+    return 0;
+}
+```
+
+## 1092 To Buy or Not to Buy (20 分)
+
+翻译：有颜色的珠子只能整条买，问是否值得买（包含所有的颜色就要买）。
+
+思路：字符串对比。利用map。
+
+答案：
+
+```
+#include <iostream>
+
+using namespace std;
+int book[256];
+
+int main() {
+
+    string a, b;
+    cin >> a >> b; 
+
+    for (int i = 0; i < a.length(); i++)
+        book[a[i]]++;
+    int result = 0;
+
+    for (int i = 0; i < b.length(); i++) {
+        if (book[b[i]] > 0)
+            book[b[i]]--;
+        else
+            result++; // 找到了没有的珠子 
+    }
+    if(result != 0)
+        printf("No %d", result);
+    else
+        printf("Yes %d", a.length() - b.length());
+    return 0;
+}
+```
+
+## 1093 Count PAT's (25 分)
+
+翻译：问一段字符串中有多少个pat
+
+思路：对每一个A，之前的P乘上之后的T。
+
+答案：
+
+```
+#include <iostream>
+#include <string>
+using namespace std;
+int main() {
+    string s;
+    cin >> s;
+    int len = s.length(), result = 0, countp = 0, countt = 0;
+    for (int i = 0; i < len; i++) {
+        if (s[i] == 'T')
+            countt++;
+    }
+    for (int i = 0; i < len; i++) {
+        if (s[i] == 'P') countp++;
+        if (s[i] == 'T') countt--;
+        if (s[i] == 'A') result = (result + (countp * countt) % 1000000007) % 1000000007; // 需要边乘边取余，不然会溢出 
+    }
+    cout << result;
+    return 0;
+}
+```
+
+## 1094 **The Largest Generation (25 分)
+
+翻译：找出家谱树中最多人的一代。
+
+思路：求最多节点的一层。BFS，DFS都可以。
+
+典型题。
+
+答案：
+
+DFS
+
+```
+#include <cstdio>
+#include <vector>
+using namespace std;
+vector<int> v[100];
+int book[100];
+void dfs(int index, int level) {
+    book[level]++;
+    for(int i = 0; i < v[index].size(); i++)
+        dfs(v[index][i], level+1);
+}
+int main() {
+    int n, m, a, k, c;
+    scanf("%d %d", &n, &m);
+    for(int i = 0; i < m; i++) {
+        scanf("%d %d",&a, &k);
+        for(int j = 0; j < k; j++) {
+            scanf("%d", &c);
+            v[a].push_back(c);
+        }
+    }
+    dfs(1, 1);
+    int maxnum = 0, maxlevel = 1;
+    for(int i = 1; i < 100; i++) {
+        if(book[i] > maxnum) {
+            maxnum = book[i];
+            maxlevel = i;
+        }
+    }
+    printf("%d %d", maxnum, maxlevel);
+    return 0;
+}
+```
+
+BFS
+
+```
+#include <cstdio>
+#include <vector>
+#include <queue>
+using namespace std;
+vector<int> v[100];
+int level[100];
+int book[100];
+int main() {
+    int n, m, a, k, c;
+    scanf("%d %d", &n, &m);
+    for(int i = 0; i < m; i++) {
+        scanf("%d %d",&a, &k);
+        for(int j = 0; j < k; j++) {
+            scanf("%d", &c);
+            v[a].push_back(c);
+        }
+    }
+    queue<int> q;
+    q.push(1);
+    level[1] = 1;
+    while(!q.empty()) {
+        int index = q.front();
+        q.pop();
+        book[level[index]]++;
+        for(int i = 0; i < v[index].size(); i++) {
+            level[v[index][i]] = level[index] + 1;
+            q.push(v[index][i]);
+        }
+        
+    }
+    int maxnum = 0, maxlevel = 1;
+    for(int i = 1; i < 100; i++) {
+        if(book[i] > maxnum) {
+            maxnum = book[i];
+            maxlevel = i;
+        }
+    }
+    printf("%d %d", maxnum, maxlevel);
+    return 0;
+}
+```
+
+## 1095 **Cars on Campus (30 分)
+
+翻译：查询某个时间停了多少车，以及一天结束后停车时间最久的车。
+
+思路：map排序
+
+分类待定
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cstring>
+#include <string>
+#include <map>
+using namespace std;
+struct node {
+    char id[10];
+    int time, flag = 0;
+};
+bool cmp1(node a, node b) {
+    if(strcmp(a.id, b.id) != 0)
+        return strcmp(a.id, b.id) < 0;
+    else
+        return a.time < b.time;
+}
+bool cmp2(node a, node b) {
+    return a.time < b.time;
+}
+int main() {
+    int n, k, maxtime = -1, tempindex = 0;
+    scanf("%d%d\n", &n, &k);
+    vector<node> record(n), car;
+    for(int i = 0; i < n; i++) {
+        char temp[5];
+        int h, m, s;
+        scanf("%s %d:%d:%d %s\n", record[i].id, &h, &m, &s, temp);
+        int temptime = h * 3600 + m * 60 + s;
+        record[i].time = temptime;
+        record[i].flag = strcmp(temp, "in") == 0 ? 1 : -1;
+    }
+    sort(record.begin(), record.end(), cmp1);
+    map<string, int> mapp;
+    for(int i = 0; i < n - 1; i++) {
+        if(strcmp(record[i].id, record[i+1].id) == 0 && record[i].flag == 1 && record[i+1].flag == -1) {
+            car.push_back(record[i]);
+            car.push_back(record[i+1]);
+            mapp[record[i].id] += (record[i+1].time - record[i].time);
+            if(maxtime < mapp[record[i].id]) {
+                maxtime = mapp[record[i].id];
+            }
+        }
+    }
+    sort(car.begin(), car.end(), cmp2);
+    vector<int> cnt(n);
+    for(int i = 0; i < car.size(); i++) {
+        if(i == 0)
+            cnt[i] += car[i].flag;
+         else
+            cnt[i] = cnt[i - 1] + car[i].flag;
+    }
+    for(int i = 0; i < k; i++) {
+        int h, m, s;
+        scanf("%d:%d:%d", &h, &m, &s);
+        int temptime = h * 3600 + m * 60 + s;
+        int j;
+        for(j = tempindex; j < car.size(); j++) {
+            if(car[j].time > temptime) {
+                printf("%d\n", cnt[j - 1]);
+                break;
+            } else if(j == car.size() - 1) {
+                printf("%d\n", cnt[j]);
+            }
+        }
+        tempindex = j;
+    }
+    for(map<string, int>::iterator it = mapp.begin(); it != mapp.end(); it++) {
+        if(it->second == maxtime)
+            printf("%s ", it->first.c_str());
+    }
+    printf("%02d:%02d:%02d", maxtime / 3600, (maxtime % 3600) / 60, maxtime % 60);
+    return 0;
+}
+```
+
+## 1096 **Consecutive Factors (20 分)
+
+翻译：有多少连续的乘级因子。
+
+思路：数学问题。
+
+分类到数学问题中。
+
+答案：
+
+```
+#include <iostream>
+#include <cmath>
+using namespace std;
+long int num, temp;
+int main(){
+    cin >> num;
+    int first = 0, len = 0, maxn = sqrt(num) + 1;
+    for (int i = 2; i <= maxn; i++) {
+        int j; 
+        temp = 1;
+        for (j = i; j <= maxn; j++) {
+            temp *= j;
+            if (num % temp != 0) break;
+        }
+        if (j - i > len) {
+            len = j - i;
+            first = i;
+        }
+    }
+    if (first == 0) {
+        cout << 1 << endl << num;
+    } else {
+        cout << len << endl;
+        for (int i = 0; i < len; i++) {
+            cout << first + i;
+            if (i != len - 1) cout << '*';
+        }
+    }
+    return 0;
+}
+```
+
+## 1097 Deduplication on a Linked List (25 分)
+
+翻译：一个链表，重复的值只留第一个。
+
+思路：链表放在数组中排序。数组可以绝对的转化位置。
+
+答案：
+
+```
+#include <cstdio>
+#include <stdlib.h>
+#include <algorithm>
+
+using namespace std;
+const int maxn = 100000;
+
+struct NODE {
+    int address, key, next, num = 2 * maxn;
+}node[maxn];
+bool exist[maxn];
+
+int cmp1(NODE a, NODE b){
+    return a.num < b.num;
+}
+
+int main() {
+    int begin, n, cnt1 = 0, cnt2 = 0, a;
+    scanf("%d%d", &begin, &n); // 开始节点 与 节点数量。
+	 
+    for(int i = 0; i < n; i++) {
+        scanf("%d", &a); // 
+        scanf("%d%d", &node[a].key, &node[a].next);
+        node[a].address = a;
+    }
+    
+	for(int i = begin; i != -1; i = node[i].next) {
+        if(exist[abs(node[i].key)] == false) { // 第一次出现  
+            exist[abs(node[i].key)] = true;
+            node[i].num = cnt1;
+            cnt1++;
+        }
+        else { // 出现过一次
+            node[i].num = maxn + cnt2; // 排到后面去了 
+            cnt2++;
+        }
+    }
+    sort(node, node + maxn, cmp1);
+    int cnt = cnt1 + cnt2;
+    for(int i = 0; i < cnt; i++) {
+        if(i != cnt1 - 1 && i != cnt - 1) {
+            printf("%05d %d %05d\n", node[i].address, node[i].key, node[i+1].address);
+        } else {
+            printf("%05d %d -1\n", node[i].address, node[i].key);
+        }
+    }
+    return 0;
+}
+```
+
+## 1098 **Insertion or Heap Sort (25 分)
+
+翻译：给出初始序列和中间序列，问你是插入排序还是堆排序。
+
+思路：与 1089 **Insert or Merge (25 分) 联动
+
+考点为排序算法。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+void downAdjust(vector<int> &b, int low, int high) {
+    int i = 1, j = i * 2;
+    while(j <= high) {
+        if(j + 1 <= high && b[j] < b[j + 1]) j = j + 1;
+        if (b[i] >= b[j]) break;
+        swap(b[i], b[j]);
+        i = j; j = i * 2;
+    }
+}
+int main() {
+    int n, p = 2;
+    scanf("%d", &n);
+    vector<int> a(n + 1), b(n + 1);
+    for(int i = 1; i <= n; i++) scanf("%d", &a[i]);
+    for(int i = 1; i <= n; i++) scanf("%d", &b[i]);
+    while(p <= n && b[p - 1] <= b[p]) p++;
+    int index = p;
+    while(p <= n && a[p] == b[p]) p++;
+    if(p == n + 1) {
+        printf("Insertion Sort\n");
+        sort(b.begin() + 1, b.begin() + index + 1);
+    } else {
+        printf("Heap Sort\n");
+        p = n;
+        while(p > 2 && b[p] >= b[1]) p--;
+        swap(b[1], b[p]);
+        downAdjust(b, 1, p - 1);
+    }
+    printf("%d", b[1]);
+    for(int i = 2; i <= n; i++)
+        printf(" %d", b[i]);
+    return 0;
+}
+```
+
+## 1099 **Build A Binary Search Tree (30 分)
+
+翻译：建立一个二叉搜索树，并输出其层序排列。
+
+思路：二叉搜索树。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+using namespace std;
+int n, cnt, b[100];
+struct node {
+    int data, l, r, index, lebel;
+}a[110];
+bool cmp(node x, node y) {
+    if (x.lebel != y.lebel) return x.lebel < y.lebel;
+    return x.index < y.index;
+}
+void dfs(int root, int index, int lebel) {
+    if (a[root].l == -1 && a[root].r == -1) {
+        a[root] = {b[cnt++], a[root].l, a[root].r, index, lebel};
+    } else {
+        if (a[root].l != -1) dfs(a[root].l, index * 2 + 1, lebel + 1);
+        a[root] = {b[cnt++], a[root].l, a[root].r, index, lebel};
+        if (a[root].r != -1) dfs(a[root].r, index * 2 + 2, lebel + 1);
+    }
+}
+int main() {
+    cin >> n;
+    for (int i = 0; i < n; i++)
+        cin >> a[i].l >> a[i].r;
+    for (int i = 0; i < n; i++)
+        cin >> b[i];
+    sort(b, b + n);
+    dfs(0, 0, 0);
+    sort(a, a + n, cmp);
+    for (int i = 0; i < n; i++) {
+        if (i != 0) cout << " ";
+        cout << a[i].data;
+    }
+    return 0;
+}
+```
+
+## 1100 Mars Numbers (20 分)
+
+翻译：火星数字与地球数字转化
+
+思路：乙级有做过。考点为数字的进制转化。
+
+答案：
+
+```
+#include <iostream>
+#include <string>
+using namespace std;
+string a[13] = {"tret", "jan", "feb", "mar", "apr", "may", "jun", "jly", "aug", "sep", "oct", "nov", "dec"};
+string b[13] = {"####", "tam", "hel", "maa", "huh", "tou", "kes", "hei", "elo", "syy", "lok", "mer", "jou"};
+string s;
+int len;
+void func1(int t) {
+    if (t / 13) cout << b[t / 13];
+    if ((t / 13) && (t % 13)) cout << " ";
+    if (t % 13 || t == 0) cout << a[t % 13];
+}
+void func2() {
+    int t1 = 0, t2 = 0;
+    string s1 = s.substr(0, 3), s2;
+    if (len > 4) s2 = s.substr(4, 3);
+    for (int j = 1; j <= 12; j++) {
+        if (s1 == a[j] || s2 == a[j]) t2 = j;
+        if (s1 == b[j]) t1 = j;
+    }
+    cout << t1 * 13 + t2;
+}
+int main() {
+    int n;
+    cin >> n;
+    getchar();
+    for (int i = 0; i < n; i++) {
+        getline(cin, s);
+        len = s.length();
+        if (s[0] >= '0' && s[0] <= '9')
+            func1(stoi(s));
+        else
+            func2();
+        cout << endl;
+    }
+    return 0;
+}
+```
+
+## 1101 Quick Sort (25 分)
+
+翻译：pivot左小右大，给一个序列，问pivot有几个。
+
+思路：逻辑题。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+int v[100000];
+using namespace std;
+
+int main() {
+
+    int n, max = 0, cnt = 0;
+    scanf("%d", &n);
+    vector<int> a(n), b(n);
+
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &a[i]);
+        b[i] = a[i];
+    }
+
+    sort(a.begin(), a.end()); // 将a排序 
+
+	/* 
+		当当前元素没有变化
+		并且
+		它左边的所有值的最大值都比它小的时候
+		就可以认为它一定是主元
+	*/
+	for (int i = 0; i < n; i++) {
+        if(a[i] == b[i] && b[i] > max) // 它左边的所有值的最大值都比它小 
+            v[cnt++] = b[i]; // 主元 
+        if (b[i] > max)
+            max = b[i];
+    }
+    
+	printf("%d\n", cnt);
+    
+	for(int i = 0; i < cnt; i++) {
+        if (i != 0) printf(" ");
+        printf("%d", v[i]);
+    }
+    
+	printf("\n");
+    return 0;
+}
+```
+
+## 1102 **Invert a Binary Tree (25 分)
+
+翻译：Google: 90% of our engineers use the software you wrote (Homebrew), but you can't invert a binary tree on a whiteboard so fuck off.
+
+证明你可以翻转二叉树。输出翻转后的层序遍历与中序遍历。
+
+思路：反转二叉树就是存储的时候所有左右结点都交换，接着有层序遍历算法与中序遍历算法。
+
+综合性比较强的一题。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+struct node {
+    int id, l, r, index, level;
+} a[100];
+
+vector<node> v1;
+
+// 中序遍历 
+void dfs(int root, int index, int level) {
+    if (a[root].r != -1) dfs(a[root].r, index * 2 + 2, level + 1);
+    v1.push_back({root, 0, 0, index, level});
+    if (a[root].l != -1) dfs(a[root].l, index * 2 + 1, level + 1);
+}
+
+// 层序遍历 
+bool cmp(node a, node b) {
+    if (a.level != b.level) return a.level < b.level;
+    return a.index > b.index;
+}
+
+int main() {
+    int n, have[100] = {0}, root = 0;
+    cin >> n; // 节点数量 
+    for (int i = 0; i < n; i++) {
+        a[i].id = i;
+        string l, r;
+        cin >> l >> r;
+        if (l != "-") {
+            a[i].l = stoi(l);
+            have[stoi(l)] = 1;
+        } else {
+            a[i].l = -1;
+        }
+        if (r != "-") {
+            a[i].r = stoi(r);
+            have[stoi(r)] = 1;
+        } else {
+            a[i].r = -1;
+        }
+    }
+    while (have[root] == 1) root++;
+    
+	dfs(root, 0, 0);
+    
+	vector<node> v2(v1);
+    sort(v2.begin(), v2.end(), cmp);
+    
+	for (int i = 0; i < v2.size(); i++) {
+        if (i != 0) cout << " ";
+        cout << v2[i].id;
+    }
+    cout << endl;
+    for (int i = 0; i < v1.size(); i++) {
+        if (i != 0) cout << " ";
+        cout << v1[i].id;
+    }
+    return 0;
+}
+```
+
+## 1103 **Integer Factorization (30 分)
+
 翻译：
 
 思路：
@@ -5074,6 +5818,1255 @@ int main() {
 答案：
 
 ```
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+int n, k, p, maxFacSum = -1;
+vector<int> v, ans, tempAns;
+void init() {
+    int temp = 0, index = 1;
+    while (temp <= n) {
+        v.push_back(temp);
+        temp = pow(index, p);
+        index++;
+    }
+}
+void dfs(int index, int tempSum, int tempK, int facSum) {
+    if (tempK == k) {
+        if (tempSum == n && facSum > maxFacSum) {
+                ans = tempAns;
+                maxFacSum = facSum;
+        }
+        return;
+    }
+    while(index >= 1) {
+        if (tempSum + v[index] <= n) {
+            tempAns[tempK] = index;
+            dfs(index, tempSum + v[index], tempK + 1, facSum + index);
+        }
+        if (index == 1) return;
+        index--;
+    }
+}
+int main() {
+    scanf("%d%d%d", &n, &k, &p);
+    init(); 
+    tempAns.resize(k);
+    dfs(v.size() - 1, 0, 0, 0);
+    if (maxFacSum == -1) {
+        printf("Impossible");
+        return 0;
+    }
+    printf("%d = ", n);
+    for (int i = 0; i < ans.size(); i++) {
+        if (i != 0) printf(" + ");
+        printf("%d^%d", ans[i], p);
+    }
+    return 0;
+}
 ```
+
+## 1104 **Sum of Number Segments (20 分)
+
+翻译：所有片段和。
+
+思路：数学问题。逻辑题。
+
+答案：
+
+```
+#include <iostream>
+using namespace std;
+int main() {
+    int n;
+    cin >> n;
+    double sum = 0.0, temp;
+    for (int i = 1; i <= n; i++) { 
+        cin >> temp;
+        sum = sum + temp * i * (n - i + 1);
+    }
+    printf("%.2f", sum);
+    return 0;
+}
+```
+
+## 1105 Spiral Matrix (25 分)
+
+翻译：数列先排序，然后再做成一个旋转的矩阵。
+
+思路：逻辑题。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+#include <vector>
+using namespace std;
+int cmp(int a, int b) {return a > b;}
+int main() {
+    int N, m, n, t = 0;
+    scanf("%d", &N);
+    for (n = sqrt((double)N); n >= 1; n--) {
+        if (N % n == 0) {
+            m = N / n;
+            break;
+        }
+    }
+    vector<int> a(N);
+    for (int i = 0; i < N; i++)
+        scanf("%d", &a[i]);
+    sort(a.begin(), a.end(), cmp);
+    vector<vector<int> > b(m, vector<int>(n));
+    int level = m / 2 + m % 2;
+    for (int i = 0; i < level; i++) {
+        for (int j = i; j <= n - 1 - i && t <= N - 1; j++)
+                b[i][j] = a[t++];
+        for (int j = i + 1; j <= m - 2 - i && t <= N - 1; j++)
+                b[j][n - 1 - i] = a[t++];
+        for (int j = n - i - 1; j >= i && t <= N - 1; j--)
+                b[m - 1 - i][j] = a[t++];
+        for (int j = m - 2 - i; j >= i + 1 && t <= N - 1; j--)
+                b[j][i] = a[t++];
+    }
+    for (int i = 0; i < m; i++) {
+        for (int j = 0 ; j < n; j++) {
+            printf("%d", b[i][j]);
+            if (j != n - 1) printf(" ");
+        }
+        printf("\n");
+    }
+    return 0;
+}
+```
+
+## 1106 Lowest Price in Supply Chain (25 分)
+
+翻译：寻找供应链中最便宜的零售商
+
+思路：树的遍历
+
+1090 Highest Price in Supply Chain (25 分)
+
+1079 Total Sales of Supply Chain (25 分)
+
+答案：
+
+```
+#include <cstdio>
+#include <vector>
+#include <cmath>
+using namespace std;
+vector<int> v[100005];
+int mindepth = 99999999, minnum = 1;
+void dfs(int index, int depth) {
+    if(mindepth < depth)
+        return ;
+    if(v[index].size() == 0) {
+        if(mindepth == depth)
+            minnum++;
+        else if(mindepth > depth) {
+            mindepth = depth;
+            minnum = 1;
+        }
+    }
+    for(int i = 0; i < v[index].size(); i++)
+        dfs(v[index][i], depth + 1);
+}
+int main() {
+    int n, k, c;
+    double p, r;
+    scanf("%d %lf %lf", &n, &p, &r);
+    for(int i = 0; i < n; i++) {
+        scanf("%d", &k);
+        for(int j = 0; j < k; j++) {
+            scanf("%d", &c);
+            v[i].push_back(c);
+        }
+    }
+    dfs(0, 0);
+    printf("%.4f %d", p * pow(1 + r/100, mindepth), minnum);
+    return 0;
+}
+```
+
+## 1107 Social Clusters (30 分)
+
+翻译：给出一些人的兴趣，将这些人按照兴趣相同的分组。
+
+思路：并查集
+
+答案：
+
+```
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+using namespace std;
+vector<int> father, isRoot;
+int cmp1(int a, int b){return a > b;}
+int findFather(int x) {
+    int a = x;
+    while(x != father[x])
+        x = father[x];
+    while(a != father[a]) {
+        int z = a;
+        a = father[a];
+        father[z] = x;
+    }
+    return x;
+}
+void Union(int a, int b) {
+    int faA = findFather(a);
+    int faB = findFather(b);
+    if(faA != faB) father[faA] = faB;
+}
+int main() {
+    int n, k, t, cnt = 0;
+    int course[1001] = {0};
+    scanf("%d", &n);
+    father.resize(n + 1);
+    isRoot.resize(n + 1);
+    for(int i = 1; i <= n; i++)
+        father[i] = i;
+    for(int i = 1; i <= n; i++) {
+        scanf("%d:", &k);
+        for(int j = 0; j < k; j++) {
+            scanf("%d", &t);
+            if(course[t] == 0)
+                course[t] = i;
+            Union(i, findFather(course[t]));
+        }
+    }
+    for(int i = 1; i <= n; i++)
+        isRoot[findFather(i)]++;
+    for(int i = 1; i <= n; i++) {
+        if(isRoot[i] != 0) cnt++;
+    }
+    printf("%d\n", cnt);
+    sort(isRoot.begin(), isRoot.end(), cmp1);
+    for(int i = 0; i < cnt; i++) {
+        printf("%d", isRoot[i]);
+        if(i != cnt - 1) printf(" ");
+    }
+    return 0;
+}
+```
+
+## 1108 Finding Average (20 分)
+
+翻译：算平均数，并排除不合法的数。
+
+思路：简单题。
+
+答案：
+
+```
+#include <iostream>
+#include <cstdio>
+#include <string.h>
+using namespace std;
+int main() {
+    int n, cnt = 0;
+    char a[50], b[50];
+    double temp, sum = 0.0;
+    cin >> n;
+    for(int i = 0; i < n; i++) {
+        scanf("%s", a);
+        sscanf(a, "%lf", &temp);
+        sprintf(b, "%.2f",temp);
+        int flag = 0;
+        for(int j = 0; j < strlen(a); j++)
+            if(a[j] != b[j]) flag = 1;
+        if(flag || temp < -1000 || temp > 1000) {
+            printf("ERROR: %s is not a legal number\n", a);
+            continue;
+        } else {
+            sum += temp;
+            cnt++;
+        }
+    }
+    if(cnt == 1)
+        printf("The average of 1 number is %.2f", sum);
+    else if(cnt > 1)
+        printf("The average of %d numbers is %.2f", cnt, sum / cnt);
+    else
+        printf("The average of 0 numbers is Undefined");
+    return 0;
+}
+```
+
+## 1109 Group Photo (25 分)
+
+翻译：团体拍照如何布局。每排N/K个，后排要不低于前排，最高的站中间，其他依次递减，相同的按名字排。
+
+思路：先从高到矮排，再分排，最后分一排中的左边与右边。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+struct node {
+    string name;
+    int height;
+};
+int cmp(struct node a, struct node b) {
+    return a.height != b.height ? a.height > b.height : a.name < b.name;
+}
+int main() {
+    int n, k, m;
+    cin >> n >> k;
+    vector<node> stu(n);
+    for(int i = 0; i < n; i++) {
+        cin >> stu[i].name;
+        cin >> stu[i].height;
+    }
+    sort(stu.begin(), stu.end(), cmp);
+    int t = 0, row = k;
+    while(row) {
+        if(row == k) {
+            m = n - n / k * (k - 1);
+        } else {
+            m = n / k;
+        }
+        vector<string> ans(m);
+        ans[m / 2] = stu[t].name;
+        // 左边一列
+        int j = m / 2 - 1;
+        for(int i = t + 1; i < t + m; i = i + 2)
+            ans[j--] = stu[i].name;
+        // 右边一列
+        j = m / 2 + 1;
+        for(int i = t + 2; i < t + m; i = i + 2)
+            ans[j++] = stu[i].name;
+        // 输出当前排
+        cout << ans[0];
+        for(int i = 1; i < m; i++)
+            cout << " " << ans[i];
+        cout << endl;
+        t = t + m;
+        row--;
+    }
+    return 0;
+}
+```
+
+## 1110 Complete Binary Tree (25 分)
+
+翻译：检查是否是完全二叉树。
+
+思路：若是完全二叉树，最大的maxn会等于n。
+
+答案：
+
+```
+#include <iostream>
+using namespace std;
+struct node{
+    int l, r;
+}a[100];
+int maxn = -1, ans;
+void dfs(int root, int index) {
+    if(index > maxn) {
+        maxn = index;
+        ans = root;
+    }
+    if(a[root].l != -1) dfs(a[root].l, index * 2);
+    if(a[root].r != -1) dfs(a[root].r, index * 2 + 1);
+}
+int main() {
+    int n, root = 0, have[100] = {0};
+    cin >> n;
+    for (int i = 0; i < n; i++) {
+        string l, r;
+        cin >> l >> r;
+        if (l == "-") {
+            a[i].l = -1;
+        } else {
+            a[i].l = stoi(l);
+            have[stoi(l)] = 1;
+        }
+        if (r == "-") {
+            a[i].r = -1;
+        } else {
+            a[i].r = stoi(r);
+            have[stoi(r)] = 1;
+        }
+    }
+    while (have[root] != 0) root++;
+    dfs(root, 1);
+    if (maxn == n)
+        cout << "YES " << ans;
+    else
+        cout << "NO " << root;
+    return 0;
+}
+```
+
+## 1111 **Online Map (30 分)
+
+翻译：求路径的最短距离和最快距离
+
+思路：Dijkstra算法。
+
+比较复杂，自己做做看。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+const int inf = 999999999;
+int dis[510], Time[510], e[510][510], w[510][510], dispre[510],Timepre[510], weight[510],NodeNum[510];
+bool visit[510];
+vector<int> dispath, Timepath, temppath;
+int st, fin, minnode = inf;
+void dfsdispath(int v) {
+    dispath.push_back(v);
+    if(v == st) return ;
+    dfsdispath(dispre[v]);
+}
+void dfsTimepath(int v) {
+    Timepath.push_back(v);
+    if(v == st) return ;
+    dfsTimepath(Timepre[v]);
+}
+int main() {
+    fill(dis, dis + 510, inf);
+    fill(Time, Time + 510, inf);
+    fill(weight, weight + 510, inf);
+    fill(e[0], e[0] + 510 * 510, inf);
+    fill(w[0], w[0] + 510 * 510, inf);
+    int n, m;
+    scanf("%d %d", &n, &m);
+    int a, b, flag, len, t;
+    for(int i = 0; i < m; i++) {
+        scanf("%d %d %d %d %d", &a, &b, &flag, &len, &t);
+        e[a][b] = len;
+        w[a][b] = t;
+        if(flag != 1) {
+            e[b][a] = len;
+            w[b][a] = t;
+        }
+    }
+    scanf("%d %d", &st, &fin);
+    dis[st] = 0;
+    for(int i = 0; i < n; i++)
+        dispre[i] = i;
+    for(int i = 0; i < n; i++) {
+        int u = -1, minn = inf;
+        for(int j = 0; j < n; j++) {
+            if(visit[j] == false && dis[j] < minn) {
+                u = j;
+                minn = dis[j];
+            }
+        }
+        if(u == -1) break;
+        visit[u] = true;
+        for(int v = 0; v < n; v++) {
+            if(visit[v] == false && e[u][v] != inf) {
+                if(e[u][v] + dis[u] < dis[v]) {
+                    dis[v] = e[u][v] + dis[u];
+                    dispre[v] = u;
+                    weight[v] = weight[u] + w[u][v];
+                } else if(e[u][v] + dis[u] == dis[v] && weight[v] > weight[u] + w[u][v]) {
+                    weight[v] = weight[u] + w[u][v];
+                    dispre[v] = u;
+                }
+            }
+        }
+    }
+    dfsdispath(fin);
+    Time[st] = 0;
+    fill(visit, visit + 510, false);
+    for(int i = 0; i < n; i++) {
+        int u = -1, minn = inf;
+        for(int j = 0; j < n; j++) {
+            if(visit[j] == false && minn > Time[j]) {
+                u = j;
+                minn = Time[j];
+            }
+        }
+        if(u == -1) break;
+        visit[u] = true;
+        for(int v = 0; v < n; v++) {
+            if(visit[v] == false && w[u][v] != inf) {
+                if(w[u][v] + Time[u] < Time[v]) {
+                    Time[v] = w[u][v] + Time[u];
+                    Timepre[v]= u;
+                    NodeNum[v]=NodeNum[u]+1;
+                } else if(w[u][v] + Time[u] == Time[v]&&NodeNum[u]+1<NodeNum[v]) {
+                    Timepre[v]= u;
+                    NodeNum[v]=NodeNum[u]+1;
+                }
+            }
+        }
+    }
+    dfsTimepath(fin);
+    printf("Distance = %d", dis[fin]);
+    if(dispath == Timepath) {
+        printf("; Time = %d: ", Time[fin]);
+    } else {
+        printf(": ");
+        for(int i = dispath.size() - 1; i >= 0; i--) {
+            printf("%d", dispath[i]);
+            if(i != 0) printf(" -> ");
+        }
+        printf("\nTime = %d: ", Time[fin]);
+    }
+    for(int i = Timepath.size() - 1; i >= 0; i--) {
+        printf("%d", Timepath[i]);
+        if(i != 0) printf(" -> ");
+    }
+    return 0;
+}
+```
+
+
+## 1112 Stucked Keyboard (20 分)
+
+翻译：给一个字符串，检查哪些键卡住了。
+
+思路：字符串处理，map标记。
+
+答案：
+
+```
+#include <iostream>
+#include <map>
+#include <cstdio>
+#include <set>
+
+using namespace std;
+bool sureNoBroken[256];
+
+int main() {
+    int k, cnt = 1;
+    
+	scanf("%d", &k);
+    string s;
+    
+	cin >> s;
+    map<char, bool> m;
+    set<char> printed;
+    char pre = '#';
+    s = s + '#';
+    
+	for(int i = 0; i < s.length(); i++) {
+        if(s[i] == pre) {
+            cnt++;
+        } else {
+            if(cnt % k != 0) {
+                sureNoBroken[pre] = true;
+            }
+            cnt = 1;
+        }
+        if(i != s.length() - 1) m[s[i]] = (cnt % k == 0);
+        pre = s[i];
+    }
+    
+	for(int i = 0; i < s.length() - 1; i++) {
+        if(sureNoBroken[s[i]] == true)
+            m[s[i]] = false;
+    }
+    
+	for(int i = 0; i < s.length() - 1; i++) {
+        if(m[s[i]] && printed.find(s[i]) == printed.end()) {
+            printf("%c", s[i]);
+            printed.insert(s[i]);
+        }
+    }
+    
+	printf("\n");
+    
+	for(int i = 0; i < s.length() - 1; i++) {
+        printf("%c", s[i]);
+        if(m[s[i]])
+            i = i + k - 1;
+    }
+    
+	return 0;
+}
+```
+
+## 1113 Integer Set Partition (25 分)
+
+翻译：一个数列分为两个，使得两个集合的元素个数相差最小的前提下，两个集合的总和之差最大。
+
+思路：排序后分成一半。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+int main() {
+    int n, sum = 0, halfsum = 0;
+    scanf("%d", &n);
+    vector<int> v(n);
+    for(int i = 0; i < n; i++) {
+        scanf("%d", &v[i]);
+        sum += v[i];
+    }
+    sort(v.begin(), v.end());
+    for(int i = 0; i < n / 2; i++)
+        halfsum += v[i];
+    printf("%d %d", n % 2, sum - 2 * halfsum);
+    return 0;
+}
+```
+
+## 1114 Family Property (25 分)
+
+翻译：给出许多信息，问一个家庭的平均资产。
+
+思路：并查集。
+
+答案：
+
+```
+#include <cstdio>
+#include <algorithm>
+using namespace std;
+struct DATA {
+    int id, fid, mid, num, area;
+    int cid[10];
+}data[1005];
+struct node {
+    int id, people;
+    double num, area;
+    bool flag = false;
+}ans[10000];
+int father[10000];
+bool visit[10000];
+int find(int x) {
+    while(x != father[x])
+        x = father[x];
+    return x;
+}
+void Union(int a, int b) {
+    int faA = find(a);
+    int faB = find(b);
+    if(faA > faB)
+        father[faA] = faB;
+    else if(faA < faB)
+        father[faB] = faA;
+}
+int cmp1(node a, node b) {
+    if(a.area != b.area)
+        return a.area > b.area;
+    else
+        return a.id < b.id;
+}
+int main() {
+    int n, k, cnt = 0;
+    scanf("%d", &n);
+    for(int i = 0; i < 10000; i++)
+        father[i] = i;
+    for(int i = 0; i < n; i++) {
+        scanf("%d %d %d %d", &data[i].id, &data[i].fid, &data[i].mid, &k);
+        visit[data[i].id] = true;
+        if(data[i].fid != -1) {
+            visit[data[i].fid] = true;
+            Union(data[i].fid, data[i].id);
+        }
+        if(data[i].mid != -1) {
+            visit[data[i].mid] = true;
+            Union(data[i].mid, data[i].id);
+        }
+        for(int j = 0; j < k; j++) {
+            scanf("%d", &data[i].cid[j]);
+            visit[data[i].cid[j]] = true;
+            Union(data[i].cid[j], data[i].id);
+        }
+        scanf("%d %d", &data[i].num, &data[i].area);
+    }
+    for(int i = 0; i < n; i++) {
+        int id = find(data[i].id);
+        ans[id].id = id;
+        ans[id].num += data[i].num;
+        ans[id].area += data[i].area;
+        ans[id].flag = true;
+    }
+    for(int i = 0; i < 10000; i++) {
+        if(visit[i])
+            ans[find(i)].people++;
+        if(ans[i].flag)
+            cnt++;
+    }
+    for(int i = 0; i < 10000; i++) {
+        if(ans[i].flag) {
+            ans[i].num = (double)(ans[i].num * 1.0 / ans[i].people);
+            ans[i].area = (double)(ans[i].area * 1.0 / ans[i].people);
+        }
+    }
+    sort(ans, ans + 10000, cmp1);
+    printf("%d\n", cnt);
+    for(int i = 0; i < cnt; i++)
+        printf("%04d %d %.3f %.3f\n", ans[i].id, ans[i].people, ans[i].num, ans[i].area);
+    return 0;
+}
+```
+
+## 1115 Counting Nodes in a BST (30 分)
+
+翻译：给一棵BST，计算最后两层的节点总数。
+
+思路：二叉树的遍历，dfs
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+using namespace std;
+struct node {
+    int v;
+    struct node *left, *right;
+};
+node* build(node *root, int v) {
+    if(root == NULL) {
+        root = new node();
+        root->v = v;
+        root->left = root->right = NULL;
+    } else if(v <= root->v)
+        root->left = build(root->left, v);
+    else
+        root->right = build(root->right, v);
+    return root;
+}
+vector<int> num(1000);
+int maxdepth = -1;
+void dfs(node *root, int depth) {
+    if(root == NULL) {
+        maxdepth = max(depth, maxdepth);
+        return ;
+    }
+    num[depth]++;
+    dfs(root->left, depth + 1);
+    dfs(root->right, depth + 1);
+    
+}
+int main() {
+    int n, t;
+    scanf("%d", &n);
+    node *root = NULL;
+    for(int i = 0; i < n; i++) {
+        scanf("%d", &t);
+        root = build(root, t);
+    }
+    dfs(root, 0);
+    printf("%d + %d = %d", num[maxdepth-1], num[maxdepth-2], num[maxdepth-1] + num[maxdepth-2]);
+    return 0;
+}
+```
+
+## 1116 Come on! Let's C (20 分)
+
+翻译：第一名得到“神秘大奖”，素数名得到小黄人，其他得到巧克力。
+
+思路：map应用。
+
+答案：
+
+```
+#include <iostream>
+#include <set>
+#include <cmath>
+using namespace std;
+int ran[10000];
+bool isprime(int a) {
+    if(a <= 1) return false;
+    int Sqrt = sqrt((double)a);
+    for(int i = 2; i <= Sqrt; i++) {
+        if(a % i == 0)
+            return false;
+    }
+    return true;
+}
+int main() {
+    int n, k;
+    scanf("%d", &n);
+    for(int i = 0; i < n; i++) {
+        int id;
+        scanf("%d", &id);
+        ran[id] = i + 1;
+    }
+    scanf("%d", &k);
+    set<int> ss;
+    for(int i = 0; i < k; i++) {
+        int id;
+        scanf("%d", &id);
+        printf("%04d: ", id);
+        if(ran[id] == 0) {
+            printf("Are you kidding?\n");
+            continue;
+        }
+        if(ss.find(id) == ss.end()) {
+            ss.insert(id);
+        } else {
+            printf("Checked\n");
+            continue;
+        }
+        if(ran[id] == 1) {
+            printf("Mystery Award\n");
+        }else if(isprime(ran[id])) {
+            printf("Minion\n");
+        }else {
+            printf("Chocolate\n");
+        }
+    }
+    return 0;
+}
+```
+
+## 1117 Eddington Number (25 分)
+
+翻译：E为E天骑车超过E英里。
+
+思路：排序，逻辑题。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+using namespace std;
+int a[1000000];
+int main() {
+    int n, e = 0;
+    scanf("%d", &n);
+    for(int i = 0; i < n; i++)
+        scanf("%d", &a[i]);
+    sort(a, a+n, greater<int>());
+    while(e < n && a[e] > e+1) e++;
+    printf("%d", e);
+    return 0;
+}
+```
+
+## 1118 Birds in Forest (25 分)
+
+翻译：问两个鸟是否是在同一颗树上。
+
+思路：并查集
+
+答案：
+
+```
+#include <iostream>
+using namespace std;
+int n, m, k;
+const int maxn = 10010;
+int fa[maxn] = {0}, cnt[maxn] = {0};
+int findFather(int x) {
+    int a = x;
+    while(x != fa[x])
+        x = fa[x];
+    while(a != fa[a]) {
+        int z = a;
+        a = fa[a];
+        fa[z] = x;
+    }
+    return x;
+}
+void Union(int a, int b) {
+    int faA = findFather(a);
+    int faB = findFather(b);
+    if(faA != faB) fa[faA] = faB;
+}
+bool exist[maxn];
+int main() {
+    scanf("%d", &n);
+    for(int i = 1; i <= maxn; i++)
+        fa[i] = i;
+    int id, temp;
+    for(int i = 0; i < n; i++) {
+        scanf("%d%d", &k, &id);
+        exist[id] = true;
+        for(int j = 0; j < k-1; j++) {
+            scanf("%d", &temp);
+            Union(id, temp);
+            exist[temp] = true;
+        }
+    }
+    for(int i = 1; i <= maxn; i++) {
+        if(exist[i] == true) {
+            int root = findFather(i);
+            cnt[root]++;
+        }
+    }
+    int numTrees = 0, numBirds = 0;
+    for(int i = 1; i <= maxn; i++) {
+        if(exist[i] == true && cnt[i] != 0) {
+            numTrees++;
+            numBirds += cnt[i];
+        }
+    }
+    printf("%d %d\n", numTrees, numBirds);
+    scanf("%d", &m);
+    int ida, idb;
+    for(int i = 0; i < m; i++) {
+        scanf("%d%d", &ida, &idb);
+        printf("%s\n", (findFather(ida) == findFather(idb)) ? "Yes" : "No");
+    }
+    return 0;
+}
+```
+
+## 1119 **Pre- and Post-order Traversals (30 分)
+
+翻译：前序遍历与后序遍历不能确定一棵树，请你确定下，如果不唯一，输出no，再输出其中一个的中序遍历。
+
+思路：树的遍历。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+using namespace std;
+vector<int> in, pre, post;
+bool unique = true;
+void getIn(int preLeft, int preRight, int postLeft, int postRight) {
+    if(preLeft == preRight) {
+        in.push_back(pre[preLeft]);
+        return;
+    }
+    if (pre[preLeft] == post[postRight]) {
+        int i = preLeft + 1;
+        while (i <= preRight && pre[i] != post[postRight-1]) i++;
+        if (i - preLeft > 1)
+            getIn(preLeft + 1, i - 1, postLeft, postLeft + (i - preLeft - 1) - 1);
+        else
+            unique = false;
+        in.push_back(post[postRight]);
+        getIn(i, preRight, postLeft + (i - preLeft - 1), postRight - 1);
+    }
+}
+int main() {
+    int n;
+    scanf("%d", &n);
+    pre.resize(n), post.resize(n);
+    for (int i = 0; i < n; i++)
+        scanf("%d", &pre[i]);
+    for (int i = 0; i < n; i++)
+        scanf("%d", &post[i]);
+    getIn(0, n-1, 0, n-1);
+    printf("%s\n%d", unique == true ? "Yes" : "No", in[0]);
+    for (int i = 1; i < in.size(); i++)
+        printf(" %d", in[i]);
+    printf("\n");
+    return 0;
+}
+```
+
+## 1120 Friend Numbers (20 分)
+
+翻译：把所有位数相加相同的称为朋友数字。查有多少个朋友数字，分别是什么。
+
+思路：字符串转数字处理。map应用。
+
+答案：
+
+```
+#include <iostream>
+#include <set>
+using namespace std;
+int getFriendNum(int num) {
+    int sum = 0;
+    while(num != 0) {
+        sum += num % 10;
+        num /= 10;
+    }
+    return sum;
+}
+int main() {
+    set<int> s;
+    int n, num;
+    scanf("%d", &n);
+    for(int i = 0; i < n; i++) {
+        scanf("%d", &num);
+        s.insert(getFriendNum(num));
+    }
+    printf("%d\n", s.size());
+    for(auto it = s.begin(); it != s.end(); it++) {
+        if(it != s.begin()) printf(" ");
+        printf("%d", *it);
+    }
+    return 0;
+}
+```
+
+## 1121 Damn Single (25 分)
+
+翻译：寻找单身的人。
+
+思路：map应用，逻辑题。
+
+答案：
+
+```
+#include <iostream>
+#include <set>
+#include <vector>
+using namespace std;
+int main() {
+    int n, a, b, m;
+    scanf("%d", &n);
+    vector<int> couple(100000);
+    for (int i = 0; i < 100000; i++)
+        couple[i] = -1;
+    for (int i = 0; i < n; i++) {
+        scanf("%d%d", &a, &b);
+        couple[a] = b;
+        couple[b] = a;
+    }
+    scanf("%d", &m);
+    vector<int> guest(m), isExist(100000);
+    for (int i = 0; i < m; i++) {
+        scanf("%d", &guest[i]);
+        if (couple[guest[i]] != -1)
+            isExist[couple[guest[i]]] = 1;
+    }
+    set<int> s;
+    for (int i = 0; i < m; i++)
+        if (!isExist[guest[i]]) s.insert(guest[i]);
+    printf("%d\n", s.size());
+    for (auto it = s.begin(); it != s.end(); it++) {
+        if (it != s.begin()) printf(" ");
+        printf("%05d", *it);
+    }
+    return 0;
+}
+```
+
+## 1122 **Hamiltonian Cycle (25 分)
+
+翻译：给出一个图，判断给定的路径是不是哈密尔顿路径
+
+思路： 不知道考点。
+
+答案：
+
+```
+#include <iostream>
+#include <set>
+#include <vector>
+using namespace std;
+int main() {
+    int n, m, cnt, k, a[210][210] = {0};
+    cin >> n >> m;
+    for(int i = 0; i < m; i++) {
+        int t1, t2;
+        scanf("%d%d", &t1, &t2);
+        a[t1][t2] = a[t2][t1] = 1;
+    }
+    cin >> cnt;
+    while(cnt--) {
+        cin >> k;
+        vector<int> v(k);
+        set<int> s;
+        int flag1 = 1, flag2 = 1;
+        for(int i = 0; i < k; i++) {
+            scanf("%d", &v[i]);
+            s.insert(v[i]);
+        }
+        if(s.size() != n || k - 1 != n || v[0] != v[k-1]) flag1 = 0;
+        for(int i = 0; i < k - 1; i++)
+            if(a[v[i]][v[i+1]] == 0) flag2 = 0;
+        printf("%s",flag1 && flag2 ? "YES\n" : "NO\n");
+    }
+    return 0;
+}
+```
+
+## 1123 **Is It a Complete AVL Tree (30 分)
+
+翻译：给数据，插入为AVL树，并输出其层序排列，并判断是不是完全二叉树。
+
+思路：AVL树，层序遍历，完全二叉树。
+
+较为综合的题目。自己做一遍。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+struct node {
+    int val;
+    struct node *left, *right;
+};
+node* leftRotate(node *tree) {
+    node *temp = tree->right;
+    tree->right = temp->left;
+    temp->left = tree;
+    return temp;
+}
+node* rightRotate(node *tree) {
+    node *temp = tree->left;
+    tree->left = temp->right;
+    temp->right = tree;
+    return temp;
+}
+node* leftRightRotate(node *tree) {
+    tree->left = leftRotate(tree->left);
+    return rightRotate(tree);
+}
+node* rightLeftRotate(node *tree) {
+    tree->right = rightRotate(tree->right);
+    return leftRotate(tree);
+}
+int getHeight(node *tree) {
+    if (tree == NULL) return 0;
+    int l = getHeight(tree->left);
+    int r = getHeight(tree->right);
+    return max(l, r) + 1;
+}
+node* insert(node *tree, int val) {
+    if (tree == NULL) {
+        tree = new node();
+        tree->val = val;
+    }else if (tree->val > val) {
+        tree->left = insert(tree->left, val);
+        int l = getHeight(tree->left), r = getHeight(tree->right);
+        if (l - r >= 2) {
+            if (val < tree->left->val)
+                tree = rightRotate(tree);
+            else
+                tree = leftRightRotate(tree);
+        }
+    } else {
+        tree->right = insert(tree->right, val);
+        int l = getHeight(tree->left), r = getHeight(tree->right);
+        if (r - l >= 2) {
+            if (val > tree->right->val)
+                tree = leftRotate(tree);
+            else
+                tree = rightLeftRotate(tree);
+        }
+    }
+    return tree;
+}
+int isComplete = 1, after = 0;
+vector<int> levelOrder(node *tree) {
+    vector<int> v;
+    queue<node *> queue;
+    queue.push(tree);
+    while (!queue.empty()) {
+        node *temp = queue.front();
+        queue.pop();
+        v.push_back(temp->val);
+        if (temp->left != NULL) {
+            if (after) isComplete = 0;
+            queue.push(temp->left);
+        } else {
+            after = 1;
+        }
+        if (temp->right != NULL) {
+            if (after) isComplete = 0;
+            queue.push(temp->right);
+        } else {
+            after = 1;
+        }
+    }
+    return v;
+}
+int main() {
+    int n, temp;
+    scanf("%d", &n);
+    node *tree = NULL;
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &temp);
+        tree = insert(tree, temp);
+    }
+    vector<int> v = levelOrder(tree);
+    for (int i = 0; i < v.size(); i++) {
+        if (i != 0) printf(" ");
+        printf("%d", v[i]);
+    }
+    printf("\n%s", isComplete ? "YES" : "NO");
+    return 0;
+}
+```
+
+## 1124 Raffle for Weibo Followers (20 分)
+
+翻译：微博抽奖，每隔几个人选一个中奖的。
+
+思路：map应用
+
+答案：
+
+```
+#include <iostream>
+#include <map>
+using namespace std;
+int main() {
+    int m, n, s;
+    scanf("%d%d%d", &m, &n, &s);
+    string str;
+    map<string, int> mapp;
+    bool flag = false;
+    for (int i = 1; i <= m; i++) {
+        cin >> str;
+        if (mapp[str] == 1) s = s + 1;
+        if (i == s && mapp[str] == 0) {
+            mapp[str] = 1;
+            cout << str << endl;
+            flag = true;
+            s = s + n;
+        }
+    }
+    if (flag == false) cout << "Keep going...";
+    return 0;
+}
+```
+
+## 1125 Chain the Ropes (25 分)
+
+翻译：先加入的绳子需要对折。
+
+思路：读懂题目
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+int main() {
+    int n;
+    scanf("%d", &n);
+    vector<int> v(n);
+    for (int i = 0; i < n; i++)
+        scanf("%d", &v[i]);
+    sort(v.begin(), v.end());
+    int result = v[0];
+    for (int i = 1; i < n; i++)
+        result = (result + v[i]) / 2;
+    printf("%d", result);
+    return 0;
+}
+```
+
+
+
+
+
+
 
 
