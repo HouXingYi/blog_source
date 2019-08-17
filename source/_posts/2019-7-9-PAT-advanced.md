@@ -4578,7 +4578,7 @@ int main(){
 
 翻译：计算有理分式之和
 
-思路： 上机训练实战指南P203 分数的四则运算。
+思路： 上机训练实战指南P203，分数的四则运算。
 
 答案：
 
@@ -6854,7 +6854,7 @@ int main() {
 
 翻译：给出一个图，判断给定的路径是不是哈密尔顿路径
 
-思路： 不知道考点。
+思路：不知道考点。
 
 答案：
 
@@ -7063,10 +7063,1579 @@ int main() {
 }
 ```
 
+## 1126 **Eulerian Path (25 分)
+
+翻译：判断是否是Eulerian, semi-Eulerian, 还是 non-Eulerian.
+
+思路：没看懂
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+using namespace std;
+vector<vector<int> > v;
+vector<bool> visit;
+int cnt = 0;
+void dfs(int index) {
+    visit[index] = true;
+    cnt++;
+    for (int i = 0; i < v[index].size(); i++)
+        if (visit[v[index][i]] == false)
+            dfs(v[index][i]);
+}
+int main() {
+    int n, m, a, b, even = 0;
+    scanf("%d%d", &n, &m);
+    v.resize(n + 1);
+    visit.resize(n + 1);
+    for (int i = 0; i < m; i++) {
+        scanf("%d%d", &a, &b);
+        v[a].push_back(b);
+        v[b].push_back(a);
+    }
+    for (int i = 1; i <= n; i++) {
+        if (i != 1) printf(" ");
+        printf("%d", v[i].size());
+        if (v[i].size() % 2 == 0) even++;
+    }
+    printf("\n");
+    dfs(1);
+    if (even == n && cnt == n)
+        printf("Eulerian");
+    else if(even == n - 2 && cnt == n)
+        printf("Semi-Eulerian");
+    else
+        printf("Non-Eulerian");
+    return 0;
+}
+```
+
+
+## 1127 **ZigZagging on a Tree (30 分)
+
+翻译：对一棵树迂回层序遍历。
+
+思路：中间进行保存。树的遍历。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+vector<int> in, post, result[35];
+int n, tree[35][2], root;
+struct node {
+    int index, depth;
+};
+void dfs(int &index, int inLeft, int inRight, int postLeft, int postRight) {
+    if (inLeft > inRight) return;
+    index = postRight;
+    int i = 0;
+    while (in[i] != post[postRight]) i++;
+    dfs(tree[index][0], inLeft, i - 1, postLeft, postLeft + (i - inLeft) - 1);
+    dfs(tree[index][1], i + 1, inRight, postLeft + (i - inLeft), postRight - 1);
+}
+void bfs() {
+    queue<node> q;
+    q.push(node{root, 0});
+    while (!q.empty()) {
+        node temp = q.front();
+        q.pop();
+        result[temp.depth].push_back(post[temp.index]);
+        if (tree[temp.index][0] != 0)
+            q.push(node{tree[temp.index][0], temp.depth + 1});
+        if (tree[temp.index][1] != 0)
+            q.push(node{tree[temp.index][1], temp.depth + 1});
+    }
+}
+int main() {
+    cin >> n;
+    in.resize(n + 1), post.resize(n + 1);
+    for (int i = 1; i <= n; i++) cin >> in[i];
+    for (int i = 1; i <= n; i++) cin >> post[i];
+    dfs(root, 1, n, 1, n);
+    bfs();
+    printf("%d", result[0][0]);
+    for (int i = 1; i < 35; i++) {
+        if (i % 2 == 1) {
+            for (int j = 0; j < result[i].size(); j++)
+                printf(" %d", result[i][j]);
+        } else {
+            for (int j = result[i].size() - 1; j >= 0; j--)
+                printf(" %d", result[i][j]);
+        }
+    }
+    return 0;
+}
+```
+
+## 1128 N Queens Puzzle (20 分)
+
+翻译：八皇后问题，皇后要不同行，不同列，与不同对角。问给出的数据是否符合。
+
+思路：已知不同列，判断是否同行与同对角。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+int main() {
+    int k, n;
+    cin >> k;
+    for (int i = 0; i < k; i++) {
+        cin >> n;
+        vector<int> v(n);
+        bool result = true;
+        for (int j = 0; j < n; j++) {
+            cin >> v[j];
+            for (int t = 0; t < j; t++) {
+                if (v[j] == v[t] || abs(v[j]-v[t]) == abs(j-t)) {
+                    result = false;
+                    break;
+                }
+            }
+        }
+        cout << (result == true ? "YES\n" : "NO\n");
+    }
+    return 0;
+}
+```
+
+## 1129 **Recommendation System (25 分)
+
+翻译：根据查询次数和index显示推荐。
+
+思路：记录与比较
+
+柳神采用set，理解下，看下自己有没有什么想法。
+
+答案：
+
+```
+#include <cstdio>
+#include <set>
+using namespace std;
+int book[50001];
+struct node {
+    int value, cnt;
+    node(int a, int b):value(a), cnt(b){}
+    bool operator < (const node &a) const {
+        return (cnt != a.cnt) ? cnt > a.cnt : value < a.value;
+    }
+};
+int main() {
+    int n, k, num;
+    scanf("%d%d", &n, &k);
+    set<node> s;
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &num);
+        if (i != 0) {
+            printf("%d:", num);
+            int tempCnt = 0;
+            for(auto it = s.begin(); tempCnt < k && it != s.end(); it++) {
+                printf(" %d", it->value);
+                tempCnt++;
+            }
+            printf("\n");
+        }
+        auto it = s.find(node(num, book[num]));
+        if (it != s.end()) s.erase(it);
+        book[num]++;
+        s.insert(node(num, book[num]));
+    }
+    return 0;
+}
+```
+
+## 1130 Infix Expression (25 分)
+
+翻译：输出中缀表达式
+
+思路：dfs，树的遍历。
+
+答案：
+
+```
+#include <iostream>
+using namespace std;
+struct node {
+    string data;
+    int l, r;
+}a[100];
+string dfs(int root) {
+    if(a[root].l == -1 && a[root].r == -1) return a[root].data;
+    if(a[root].l == -1 && a[root].r != -1)  return "(" +  a[root].data + dfs(a[root].r) + ")";
+    if(a[root].l != -1 && a[root].r != -1) return "(" +  dfs(a[root].l) + a[root].data + dfs(a[root].r) + ")";
+}
+int main() {
+    int have[100] = {0}, n, root = 1;
+    cin >> n;
+    for(int i  = 1; i <= n; i++) {
+        cin >> a[i].data >> a[i].l >> a[i].r;
+        if(a[i].l != -1) have[a[i].l] = 1;
+        if(a[i].r != -1) have[a[i].r] = 1;
+    }
+    while(have[root] == 1) root++;
+    string ans = dfs(root);
+    if(ans[0] == '(') ans = ans.substr(1,ans.size()-2);
+    cout << ans;
+    return 0;
+}
+```
+
+## 1131 **Subway Map (30 分)
+
+翻译：找出一条路线，使得对任何给定的起点和终点，可以找出中途经停站最少的路线；如果经停站一样多，则取需要换乘线路次数最少的路线
+
+思路：图的遍历，DFS。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+using namespace std;
+vector<vector<int>> v(10000);
+int visit[10000], minCnt, minTransfer, start, end1;
+unordered_map<int, int> line;
+vector<int> path, tempPath;
+int transferCnt(vector<int> a) {
+    int cnt = -1, preLine = 0;
+    for (int i = 1; i < a.size(); i++) {
+        if (line[a[i-1]*10000+a[i]] != preLine) cnt++;
+        preLine = line[a[i-1]*10000+a[i]];
+    }
+    return cnt;
+}
+void dfs(int node, int cnt) {
+    if (node == end1 && (cnt < minCnt || (cnt == minCnt && transferCnt(tempPath) < minTransfer))) {
+        minCnt = cnt;
+        minTransfer = transferCnt(tempPath);
+        path = tempPath;
+    }
+    if (node == end1) return;
+    for (int i = 0; i < v[node].size(); i++) {
+        if (visit[v[node][i]] == 0) {
+            visit[v[node][i]] = 1;
+            tempPath.push_back(v[node][i]);
+            dfs(v[node][i], cnt + 1);
+            visit[v[node][i]] = 0;
+            tempPath.pop_back();
+        }
+    }
+}
+int main() {
+    int n, m, k, pre, temp;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
+        scanf("%d%d", &m, &pre);
+        for (int j = 1; j < m; j++) {
+            scanf("%d", &temp);
+            v[pre].push_back(temp);
+            v[temp].push_back(pre);
+            line[pre*10000+temp] = line[temp*10000+pre] = i + 1;
+            pre = temp;
+        }
+    }
+    scanf("%d", &k);
+    for (int i = 0; i < k; i++) {
+        scanf("%d%d", &start, &end1);
+        minCnt = 99999, minTransfer = 99999;
+        tempPath.clear();
+        tempPath.push_back(start);
+        visit[start] = 1;
+        dfs(start, 0);
+        visit[start] = 0;
+        printf("%d\n", minCnt);
+        int preLine = 0, preTransfer = start;
+        for (int j = 1; j < path.size(); j++) {
+            if (line[path[j-1]*10000+path[j]] != preLine) {
+                if (preLine != 0) printf("Take Line#%d from %04d to %04d.\n", preLine, preTransfer, path[j-1]);
+                preLine = line[path[j-1]*10000+path[j]];
+                preTransfer = path[j-1];
+            }
+        }
+        printf("Take Line#%d from %04d to %04d.\n", preLine, preTransfer, end1);
+    }
+    return 0;
+}
+```
+
+## 1132 Cut Integer (20 分)
+
+翻译：从中间砍一半再除，是否能除的净
+
+思路：数字转字符串，字符串转数字。
+
+答案：
+
+```
+#include <iostream>
+using namespace std;
+int main() {
+    int n, num;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &num);
+        string s = to_string(num);
+        int len = s.length();
+        int a = stoi(s.substr(0, len/2));
+        int b = stoi(s.substr(len/2));
+        if (a * b != 0 && num % (a * b) == 0)
+            printf("Yes\n");
+        else
+            printf("No\n");
+    }
+    return 0;
+}
+```
+
+## 1133 Splitting A Linked List (25 分)
+
+翻译：首先负数，之后0到k，最后剩下的。
+
+思路：直接数组先排，之后按链表输出。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+using namespace std;
+struct node {
+    int id, data, next;
+};
+int main() {
+    int begin, n, k, s, d, e;
+    scanf("%d%d%d", &begin, &n, &k);
+    node a[100010];
+    vector<node> v, ans;
+    for (int i = 0; i < n; i++) {
+        scanf("%d%d%d", &s, &d, &e);
+        a[s] = {s, d, e};
+    }
+    for (; begin != -1; begin = a[begin].next)
+        v.push_back(a[begin]);
+    for (int i = 0; i < v.size(); i++)
+        if (v[i].data < 0) ans.push_back(v[i]);
+    for (int i = 0; i < v.size(); i++)
+        if (v[i].data >= 0 && v[i].data <= k) ans.push_back(v[i]);
+    for (int i = 0; i < v.size(); i++)
+        if (v[i].data > k) ans.push_back(v[i]);
+    for (int i = 0; i < ans.size() - 1; i++)
+        printf("%05d %d %05d\n", ans[i].id, ans[i].data, ans[i + 1].id);
+    printf("%05d %d -1\n", ans[ans.size() - 1].id, ans[ans.size() - 1].data);
+    return 0;
+}
+```
+
+## 1134 **Vertex Cover (25 分)
+
+翻译：给n个结点m条边，再给k个集合。对这k个集合逐个进行判断。每个集合S里面的数字都是结点编号，求问整个图所有的m条边两端的结点，是否至少一个结点出自集合S中。如果是，输出Yes否则输出No
+
+思路：map应用。图遍历。
+
+题有点没读懂。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+using namespace std;
+int main() {
+    int n, m, k, nv, a, b, num;
+    scanf("%d%d", &n, &m);
+    vector<int> v[n];
+    for (int i = 0;i < m; i++) {
+        scanf("%d%d", &a, &b);
+        v[a].push_back(i);
+        v[b].push_back(i);
+    }
+    scanf("%d", &k);
+    for (int i = 0; i < k; i++) {
+        scanf("%d", &nv);
+        int flag = 0;
+        vector<int> hash(m, 0);
+        for (int j = 0; j < nv; j++) {
+            scanf("%d", &num);
+            for (int t = 0; t < v[num].size(); t++)
+                hash[v[num][t]] = 1;
+        }
+        for (int j = 0; j < m; j++) {
+            if (hash[j] == 0) {
+                printf("No\n");
+                flag = 1;
+                break;
+            }
+        }
+        if (flag == 0) printf("Yes\n");
+    }
+    return 0;
+}
+```
+
+## 1135 **Is It A Red-Black Tree (30 分)
+
+翻译：判断是否是红黑树。
+
+思路：读懂题意。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+vector<int> arr;
+struct node {
+    int val;
+    struct node *left, *right;
+};
+node* build(node *root, int v) {
+    if(root == NULL) {
+        root = new node();
+        root->val = v;
+        root->left = root->right = NULL;
+    } else if(abs(v) <= abs(root->val))
+        root->left = build(root->left, v);
+    else
+        root->right = build(root->right, v);
+    return root;
+}
+bool judge1(node *root) {
+    if (root == NULL) return true;
+    if (root->val < 0) {
+        if (root->left != NULL && root->left->val < 0) return false;
+        if (root->right != NULL && root->right->val < 0) return false;
+    }
+    return judge1(root->left) && judge1(root->right);
+}
+int getNum(node *root) {
+    if (root == NULL) return 0;
+    int l = getNum(root->left);
+    int r = getNum(root->right);
+    return root->val > 0 ? max(l, r) + 1 : max(l, r);
+}
+bool judge2(node *root) {
+    if (root == NULL) return true;
+    int l = getNum(root->left);
+    int r = getNum(root->right);
+    if(l != r) return false;
+    return judge2(root->left) && judge2(root->right);
+}
+int main() {
+    int k, n;
+    scanf("%d", &k);
+    for (int i = 0; i < k; i++) {
+        scanf("%d", &n);
+        arr.resize(n);
+        node *root = NULL;
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &arr[j]);
+            root = build(root, arr[j]);
+        }
+        if (arr[0] < 0 || judge1(root) == false || judge2(root) == false)
+            printf("No\n");
+        else
+            printf("Yes\n");
+    }
+    return 0;
+}
+```
+
+## 1136 A Delayed Palindrome (20 分)
+
+翻译：判断是否是回文数。
+
+思路：字符串与数字转化。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+using namespace std;
+string rev(string s) {
+    reverse(s.begin(), s.end());
+    return s;
+}
+string add(string s1, string s2) {
+    string s = s1;
+    int carry = 0;
+    for (int i = s1.size() - 1; i >= 0; i--) {
+        s[i] = (s1[i] - '0' + s2[i] - '0' + carry) % 10 + '0';
+        carry = (s1[i] - '0' + s2[i] - '0' + carry) / 10;
+    }
+    if (carry > 0) s = "1" + s;
+    return s;
+}
+int main() {
+    string s, sum;
+    int n = 10;
+    cin >> s;
+    if (s == rev(s)) {
+        cout << s << " is a palindromic number.\n";
+        return 0;
+    }
+    while (n--) {
+        sum = add(s, rev(s));
+        cout << s << " + " << rev(s) << " = " << sum << endl;
+        if (sum == rev(sum)) {
+            cout << sum << " is a palindromic number.\n";
+            return 0;
+        }
+        s = sum;
+    }
+    cout << "Not found in 10 iterations.\n";
+    return 0;
+}
+```
+
+## 1137 Final Grading (25 分)
+
+翻译：算MOOC的总分。
+
+思路：排序应用。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <map>
+using namespace std;
+struct node {
+    string name;
+    int gp, gm, gf, g;
+};
+bool cmp(node a, node b) {
+    return a.g != b.g ? a.g > b.g : a.name < b.name;
+}
+map<string, int> idx;
+int main() {
+    int p, m, n, score, cnt = 1;
+    cin >> p >> m >> n;
+    vector<node> v, ans;
+    string s;
+    for (int i = 0; i < p; i++) {
+        cin >> s >> score;
+        if (score >= 200) {
+            v.push_back(node{s, score, -1, -1, 0});
+            idx[s] = cnt++;
+        }
+    }
+    for (int i = 0; i < m; i++) {
+        cin >> s >> score;
+        if (idx[s] != 0) v[idx[s] - 1].gm = score;
+    }
+    for (int i = 0; i < n; i++) {
+        cin >> s >> score;
+        if (idx[s] != 0) {
+            int temp = idx[s] - 1;
+            v[temp].gf = v[temp].g = score;
+            if (v[temp].gm > v[temp].gf) v[temp].g = int(v[temp].gm * 0.4 + v[temp].gf * 0.6 + 0.5);
+        }
+    }
+    for (int i = 0; i < v.size(); i++)
+        if (v[i].g >= 60) ans.push_back(v[i]);
+    sort(ans.begin(), ans.end(), cmp);
+    for (int i = 0; i < ans.size(); i++)
+        printf("%s %d %d %d %d\n", ans[i].name.c_str(), ans[i].gp, ans[i].gm, ans[i].gf, ans[i].g);
+    return 0;
+}
+```
+
+## 1138 Postorder Traversal (25 分)
+
+翻译：前序中序转后序
+
+思路：前序中序转后序，树的遍历
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+using namespace std;
+vector<int> pre, in;
+bool flag = false;
+void postOrder(int prel, int inl, int inr) {
+    if (inl > inr || flag == true) return;
+    int i = inl;
+    while (in[i] != pre[prel]) i++;
+    postOrder(prel+1, inl, i-1);
+    postOrder(prel+i-inl+1, i+1, inr);
+    if (flag == false) {
+        printf("%d", in[i]);
+        flag = true;
+    }
+}
+int main() {
+    int n;
+    scanf("%d", &n);
+    pre.resize(n);
+    in.resize(n);
+    for (int i = 0; i < n; i++) scanf("%d", &pre[i]);
+    for (int i = 0; i < n; i++) scanf("%d", &in[i]);
+    postOrder(0, 0, n-1);
+    return 0;
+}
+```
+
+## 1139 **First Contact (30 分)
+
+翻译：
+
+思路：没理解题意，无法分类。
+
+答案：
+
+```
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <unordered_map>
+using namespace std;
+unordered_map<int, bool> arr;
+struct node {
+    int a, b;
+};
+bool cmp(node x, node y) {
+    return x.a != y.a ? x.a < y.a : x.b < y.b;
+}
+int main() {
+    int n, m, k;
+    scanf("%d%d", &n, &m);
+    vector<int> v[10000];
+    for (int i = 0; i < m; i++) {
+        string a, b;
+        cin >> a >> b;
+        if (a.length() == b.length()) {
+            v[abs(stoi(a))].push_back(abs(stoi(b)));
+            v[abs(stoi(b))].push_back(abs(stoi(a)));
+        }
+        arr[abs(stoi(a)) * 10000 + abs(stoi(b))] = arr[abs(stoi(b)) * 10000 + abs(stoi(a))] = true;
+    }
+    scanf("%d", &k);
+    for (int i = 0; i < k; i++) {
+        int c, d;
+        cin >> c >> d;
+        vector<node> ans;
+        for (int j = 0; j < v[abs(c)].size(); j++) {
+            for (int k = 0; k < v[abs(d)].size(); k++) {
+                if (v[abs(c)][j] == abs(d) || abs(c) == v[abs(d)][k]) continue;
+                if (arr[v[abs(c)][j] * 10000 + v[abs(d)][k]] == true)
+                    ans.push_back(node{v[abs(c)][j], v[abs(d)][k]});
+            }
+        }
+        sort(ans.begin(), ans.end(), cmp);
+        printf("%d\n", int(ans.size()));
+        for(int j = 0; j < ans.size(); j++)
+            printf("%04d %04d\n", ans[j].a, ans[j].b);
+    }
+    return 0;
+}
+```
+
+## 1140 Look-and-say Sequence (20 分)
+
+翻译：给两个数字D和n，第一个序列是D，后一个序列描述前一个序列的所有数字以及这个数字出现的次数，比如D出现了1次，那么第二个序列就是D1，对于第二个序列D1，第三个序列这样描述：D出现1次，1出现1次，所以是D111……以此类推，输出第n个序列
+
+思路：按照题意那样做。
+
+答案：
+
+```
+#include <iostream>
+using namespace std;
+int main() {
+    string s;
+    int n, j;
+    cin >> s >> n;
+    for (int cnt = 1; cnt < n; cnt++) {
+        string t;
+        for (int i = 0; i < s.length(); i = j) {
+            for (j = i; j < s.length() && s[j] == s[i]; j++);
+            t += s[i] + to_string(j - i);
+        }
+        s = t;
+    }
+    cout << s;
+    return 0;
+}
+```
+
+## 1141 PAT Ranking of Institutions (25 分)
+
+翻译：各个学校的排名
+
+思路：排序题。
+
+答案：
+
+```
+#include <iostream>
+#include <algorithm>
+#include <cctype>
+#include <vector>
+#include <unordered_map>
+using namespace std;
+struct node {
+    string school;
+    int tws, ns;
+};
+bool cmp(node a, node b) {
+    if (a.tws != b.tws)
+        return a.tws > b.tws;
+    else if (a.ns != b.ns)
+        return a.ns < b.ns;
+    else
+        return a.school < b.school;
+}
+int main() {
+    int n;
+    scanf("%d", &n);
+    unordered_map<string, int> cnt;
+    unordered_map<string, double> sum;
+    for (int i = 0; i < n; i++) {
+        string id, school;
+        cin >> id;
+        double score;
+        scanf("%lf", &score);
+        cin >> school;
+        for (int j = 0; j < school.length(); j++)
+            school[j] = tolower(school[j]);
+        if (id[0] == 'B')
+            score = score / 1.5;
+        else if (id[0] == 'T')
+            score = score * 1.5;
+        sum[school] += score;
+        cnt[school]++;
+    }
+    vector<node> ans;
+    for (auto it = cnt.begin(); it != cnt.end(); it++)
+        ans.push_back(node{it->first, (int)sum[it->first], cnt[it->first]});
+    sort(ans.begin(), ans.end(), cmp);
+    int rank = 0, pres = -1;
+    printf("%d\n", (int)ans.size());
+    for (int i = 0; i < ans.size(); i++) {
+        if (pres != ans[i].tws) rank = i + 1;
+        pres = ans[i].tws;
+        printf("%d ", rank);
+        cout << ans[i].school;
+        printf(" %d %d\n", ans[i].tws, ans[i].ns);
+    }
+    return 0;
+}
+```
+
+## 1142 **Maximal Clique (25 分)
+
+翻译：
+
+思路：
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+using namespace std;
+int e[210][210];
+int main() {
+    int nv, ne, m, ta, tb, k;
+    scanf("%d %d", &nv, &ne);
+    for (int i = 0; i < ne; i++) {
+        scanf("%d %d", &ta, &tb);
+        e[ta][tb] = e[tb][ta] = 1;
+    }
+    scanf("%d", &m);
+    for (int i = 0; i < m; i++) {
+        scanf("%d", &k);
+        vector<int> v(k);
+        int hash[210] = {0}, isclique = 1, isMaximal = 1;
+        for (int j = 0; j < k; j++) {
+            scanf("%d", &v[j]);
+            hash[v[j]] = 1;
+        }
+        for (int j = 0; j < k; j++) {
+            if (isclique == 0) break;
+            for (int l = j + 1; l < k; l++) {
+                if (e[v[j]][v[l]] == 0) {
+                    isclique = 0;
+                    printf("Not a Clique\n");
+                    break;
+                }
+            }
+        }
+        if (isclique == 0) continue;
+        for (int j = 1; j <= nv; j++) {
+            if (hash[j] == 0) {
+                for (int l = 0; l < k; l++) {
+                    if (e[v[l]][j] == 0) break;
+                    if (l == k - 1) isMaximal = 0;
+                }
+            }
+            if (isMaximal == 0) {
+                printf("Not Maximal\n");
+                break;
+            }
+        }
+        if (isMaximal == 1) printf("Yes\n");
+    }
+    return 0;
+}
+```
+
+## 1143 **Lowest Common Ancestor (30 分)
+
+翻译：给出一棵二叉搜索树的前序遍历，问结点u和v的共同最低祖先是谁
+
+思路：
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <map>
+using namespace std;
+map<int, bool> mp;
+int main() {
+    int m, n, u, v, a;
+    scanf("%d %d", &m, &n);
+    vector<int> pre(n);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &pre[i]);
+        mp[pre[i]] = true;
+    }
+    for (int i = 0; i < m; i++) {
+        scanf("%d %d", &u, &v);
+        for(int j = 0; j < n; j++) {
+            a = pre[j];
+            if ((a >= u && a <= v) || (a >= v && a <= u)) break;
+        } 
+        if (mp[u] == false && mp[v] == false)
+            printf("ERROR: %d and %d are not found.\n", u, v);
+        else if (mp[u] == false || mp[v] == false)
+            printf("ERROR: %d is not found.\n", mp[u] == false ? u : v);
+        else if (a == u || a == v)
+            printf("%d is an ancestor of %d.\n", a, a == u ? v : u);
+        else
+            printf("LCA of %d and %d is %d.\n", u, v, a);
+    }
+    return 0;
+}
+```
+
+## 1144 The Missing Number (20 分)
+
+翻译：寻找最小的失踪的正整数。
+
+思路：map应用
+
+答案：
+
+```
+#include <iostream>
+#include <map>
+using namespace std;
+int main() {
+    int n, a, num = 0;
+    cin >> n;
+    map<int, int> m;
+    for (int i = 0; i < n; i++) {
+        cin >> a;
+        m[a]++;
+    }
+    while(++num)
+        if (m[num] == 0) break;
+    cout << num;
+    return 0;
+}
+```
+
+## 1145 Hashing - Average Search Time (25 分)
+
+翻译：给定一个序列，用平方探测法解决哈希冲突，然后给出m个数字，如果这个数字不能够被插入就输出”X cannot be inserted.”，然后输出这m个数字的平均查找时间
+
+思路：hash，平方探测法。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+using namespace std;
+bool isprime(int n) {
+    for (int i = 2; i * i <= n; i++)
+        if (n % i == 0) return false;
+    return true;
+}
+int main() {
+    int tsize, n, m, a;
+    scanf("%d %d %d", &tsize, &n, &m);
+    while(!isprime(tsize)) tsize++;
+    vector<int> v(tsize);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &a);
+        int flag = 0;
+        for (int j = 0; j < tsize; j++) {
+            int pos = (a + j * j) % tsize;
+            if (v[pos] == 0) {
+                v[pos] = a;
+                flag = 1;
+                break;
+            }
+        }
+        if (!flag) printf("%d cannot be inserted.\n", a);
+    }
+    int ans = 0;
+    for (int i = 0; i < m; i++) {
+        scanf("%d", &a);
+        for (int j = 0; j <= tsize; j++) {
+            ans++;
+            int pos = (a + j * j) % tsize;
+            if (v[pos] == a || v[pos] == 0) break;
+        }
+    }
+    printf("%.1lf\n", ans * 1.0 / m);
+    return 0;
+}
+```
+
+## 1146 Topological Order (25 分)
+
+翻译：给一个有向图，判断给定序列是否是拓扑序列
+
+思路：拓扑序列
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+using namespace std;
+int main() {
+    int n, m, a, b, k, flag = 0, in[1010];
+    vector<int> v[1010];
+    scanf("%d %d", &n, &m);
+    for (int i = 0; i < m; i++) {
+        scanf("%d %d", &a, &b);
+        v[a].push_back(b);
+        in[b]++;
+    }
+    scanf("%d", &k);
+    for (int i = 0; i < k; i++) {
+        int judge = 1;
+        vector<int> tin(in, in+n+1);
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &a);
+            if (tin[a] != 0) judge = 0;
+            for (int it : v[a]) tin[it]--;
+        }
+        if (judge == 1) continue;
+        printf("%s%d", flag == 1 ? " ": "", i);
+        flag = 1;
+    }
+    return 0;
+}
+```
+
+## 1147 Heaps (30 分)
+
+翻译：给一个树的层序遍历，判断它是不是堆，是大顶堆还是小顶堆。输出这个树的后序遍历
+
+思路：堆
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+using namespace std;
+int m, n;
+vector<int> v;
+void postOrder(int index) {
+    if (index >= n) return;
+    postOrder(index * 2 + 1);
+    postOrder(index * 2 + 2);
+    printf("%d%s", v[index], index == 0 ? "\n" : " ");
+}
+int main() {
+    scanf("%d%d", &m, &n);
+    v.resize(n);
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) scanf("%d", &v[j]);
+        int flag = v[0] > v[1] ? 1 : -1;
+        for (int j = 0; j <= (n-1) / 2; j++) {
+            int left = j * 2 + 1, right = j * 2 + 2;
+            if (flag == 1 && (v[j] < v[left] || (right < n && v[j] < v[right]))) flag = 0;
+            if (flag == -1 && (v[j] > v[left] || (right < n && v[j] > v[right]))) flag = 0;
+        }
+        if (flag == 0) printf("Not Heap\n");
+        else printf("%s Heap\n", flag == 1 ? "Max" : "Min");
+        postOrder(0);
+    }
+    return 0;
+}
+```
+
+## 1148 **Werewolf - Simple Version (20 分)
+
+翻译：已知 N 名玩家中有 2 人扮演狼人角色，有 2 人说的不是实话，有狼人撒谎但并不是所有狼人都在撒谎。要求你找出扮演狼人角色的是哪几号玩家，如果有解，在一行中按递增顺序输出 2 个狼人的编号；如果解不唯一，则输出最小序列解；若无解则输出 No Solution
+
+思路：逻辑题，据说当时难倒了好多人。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+int main() {
+    int n;
+    cin >> n;
+    vector<int> v(n+1);
+    for (int i = 1; i <= n; i++) cin >> v[i];
+    for (int i = 1; i <= n; i++) {
+        for (int j = i + 1; j <= n; j++) {
+            vector<int> lie, a(n + 1, 1);
+            a[i] = a[j] = -1;
+            for (int k = 1; k <= n; k++)
+                if (v[k] * a[abs(v[k])] < 0) lie.push_back(k);
+            if (lie.size() == 2 && a[lie[0]] + a[lie[1]] == 0) {
+                cout << i << " " << j;
+                return 0;
+            }
+        }
+    }
+    cout << "No Solution";
+    return 0;
+}
+```
+
+## 1149 Dangerous Goods Packaging (25 分)
+
+翻译：不相容的货物不能放在一起
+
+思路：map应用，逻辑题。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <map>
+using namespace std;
+int main() {
+    int n, k, t1, t2;
+    map<int,vector<int>> m;
+    scanf("%d%d", &n, &k);
+    for (int i = 0; i < n; i++) {
+        scanf("%d%d", &t1, &t2);
+        m[t1].push_back(t2);
+        m[t2].push_back(t1);
+    }
+    while (k--) {
+        int cnt, flag = 0, a[100000] = {0};
+        scanf("%d", &cnt);
+        vector<int> v(cnt);
+        for (int i = 0; i < cnt; i++) {
+            scanf("%d", &v[i]);
+            a[v[i]] = 1;
+        }
+        for (int i = 0; i < v.size(); i++)
+            for (int j = 0; j < m[v[i]].size(); j++)
+                if (a[m[v[i]][j]] == 1) flag = 1;
+        printf("%s\n",flag ? "No" :"Yes");
+    }
+    return 0;
+}
+```
+
+## 1150 Travelling Salesman Problem (25 分)
+
+翻译：给出一条路径，判断这条路径是这个图的旅行商环路、简单旅行商环路还是非旅行商环路
+
+思路：图论
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <set>
+using namespace std;
+int e[300][300], n, m, k, ans = 99999999, ansid;
+vector<int> v;
+void check(int index) {
+    int sum = 0, cnt, flag = 1;
+    scanf("%d", &cnt);
+    set<int> s;
+    vector<int> v(cnt);
+    for (int i = 0; i < cnt; i++) {
+        scanf("%d", &v[i]);
+        s.insert(v[i]);
+    }
+    for (int i = 0; i < cnt - 1; i++) {
+        if(e[v[i]][v[i+1]] == 0) flag = 0;
+        sum += e[v[i]][v[i+1]];
+    }
+    if (flag == 0) {
+        printf("Path %d: NA (Not a TS cycle)\n", index);
+    } else if(v[0] != v[cnt-1] || s.size() != n) {
+        printf("Path %d: %d (Not a TS cycle)\n", index, sum);
+    } else if(cnt != n + 1) {
+        printf("Path %d: %d (TS cycle)\n", index, sum);
+        if (sum < ans) {
+            ans = sum;
+            ansid = index;
+        }
+    } else {
+        printf("Path %d: %d (TS simple cycle)\n", index, sum);
+        if (sum < ans) {
+            ans = sum;
+            ansid = index;
+        }
+    }
+}
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 0; i < m; i++) {
+        int t1, t2, t;
+        scanf("%d%d%d", &t1, &t2, &t);
+        e[t1][t2] = e[t2][t1] = t;
+    }
+    scanf("%d", &k);
+    for (int i = 1; i <= k; i++) check(i);
+    printf("Shortest Dist(%d) = %d\n", ansid, ans);
+    return 0;
+}
+```
+
+## 1151 LCA in a Binary Tree (30 分)
+
+翻译：The lowest common ancestor
+
+给出中序序列和先序序列，再给出两个点，求这两个点的最近公共祖先
+
+思路：1143 **Lowest Common Ancestor (30 分)
+
+树，中序序列，先序序列。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <map>
+using namespace std;
+map<int, int> pos;
+vector<int> in, pre;
+void lca(int inl, int inr, int preRoot, int a, int b) {
+    if (inl > inr) return;
+    int inRoot = pos[pre[preRoot]], aIn = pos[a], bIn = pos[b];
+    if (aIn < inRoot && bIn < inRoot)
+        lca(inl, inRoot-1, preRoot+1, a, b);
+    else if ((aIn < inRoot && bIn > inRoot) || (aIn > inRoot && bIn < inRoot))
+        printf("LCA of %d and %d is %d.\n", a, b, in[inRoot]);
+    else if (aIn > inRoot && bIn > inRoot)
+        lca(inRoot+1, inr, preRoot+1+(inRoot-inl), a, b);
+    else if (aIn == inRoot)
+            printf("%d is an ancestor of %d.\n", a, b);
+    else if (bIn == inRoot)
+            printf("%d is an ancestor of %d.\n", b, a);
+}
+int main() {
+    int m, n, a, b;
+    scanf("%d %d", &m, &n);
+    in.resize(n + 1), pre.resize(n + 1);
+    for (int i = 1; i <= n; i++) {
+        scanf("%d", &in[i]);
+        pos[in[i]] = i;
+    }
+    for (int i = 1; i <= n; i++) scanf("%d", &pre[i]);
+    for (int i = 0; i < m; i++) {
+        scanf("%d %d", &a, &b);
+        if (pos[a] == 0 && pos[b] == 0)
+            printf("ERROR: %d and %d are not found.\n", a, b);
+        else if (pos[a] == 0 || pos[b] == 0)
+            printf("ERROR: %d is not found.\n", pos[a] == 0 ? a : b);
+        else
+            lca(1, n, 1, a, b);
+    }
+    return 0;
+}
+```
+
+## 1152 Google Recruitment (20 分)
+
+翻译：给出一个l长度的字符串，求出其中第一个k位的素数
+
+思路：素数。字符串转数字，数字转字符串。
+
+答案：
+
+```
+#include <iostream>
+#include <string>
+using namespace std;
+bool isPrime(int n) {
+    if (n == 0 || n == 1) return false;
+    for (int i = 2; i * i <= n; i++)
+        if (n % i == 0) return false;
+    return true;
+}
+int main() {
+    int l, k;
+    string s;
+    cin >> l >> k >> s;
+    for (int i = 0; i <= l - k; i++) {
+        string t = s.substr(i, k);
+        int num = stoi(t);
+        if (isPrime(num)) {
+            cout << t;
+            return 0;
+        }
+    }
+    cout << "404\n";
+    return 0;
+}
+```
+
+## 1153 Decode Registration Card of PAT (25 分)
+
+翻译：给出一组学生的准考证号和成绩，准考证号包含了等级(乙甲顶)，考场号，日期，和个人编号信息，并有三种查询方式
+
+思路：map，排序，查询
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+using namespace std;
+struct node {
+    string t;
+    int value;
+};
+bool cmp(const node &a, const node &b) {
+    return a.value != b.value ? a.value > b.value : a.t < b.t;
+}
+int main() {
+    int n, k, num;
+    string s;
+    cin >> n >> k;
+    vector<node> v(n);
+    for (int i = 0; i < n; i++)
+        cin >> v[i].t >> v[i].value;
+    for (int i = 1; i <= k; i++) {
+        cin >> num >> s;
+        printf("Case %d: %d %s\n", i, num, s.c_str());
+        vector<node> ans;
+        int cnt = 0, sum = 0;
+        if (num == 1) {
+            for (int j = 0; j < n; j++)
+                if (v[j].t[0] == s[0]) ans.push_back(v[j]);
+        } else if (num == 2) {
+            for (int j = 0; j < n; j++) {
+                if (v[j].t.substr(1, 3) == s) {
+                    cnt++;
+                    sum += v[j].value;
+                }
+            }
+            if (cnt != 0) printf("%d %d\n", cnt, sum);
+        } else if (num == 3) {
+            unordered_map<string, int> m;
+            for (int j = 0; j < n; j++)
+                if (v[j].t.substr(4, 6) == s) m[v[j].t.substr(1, 3)]++;
+            for (auto it : m) ans.push_back({it.first, it.second});
+        }
+        sort(ans.begin(), ans.end(),cmp);
+        for (int j = 0; j < ans.size(); j++)
+            printf("%s %d\n", ans[j].t.c_str(), ans[j].value);
+        if (((num == 1 || num == 3) && ans.size() == 0) || (num == 2 && cnt == 0)) printf("NA\n");
+    }
+    return 0;
+}
+```
+
+## 1154 Vertex Coloring (25 分)
+
+翻译：给出一个图（先给出所有边，后给出每个点的颜色），问是否满足：所有的边的两个点的颜色不相同
+
+思路：图论，逻辑题。
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+#include <set>
+using namespace std;
+struct node {int t1, t2;};
+int main() {
+    int n, m, k;
+    cin >> n >> m;
+    vector<node> v(m);
+    for (int i = 0; i < m; i++)
+        scanf("%d %d", &v[i].t1, &v[i].t2);
+    cin >> k;
+    while (k--) {
+        int a[10009] = {0};
+        bool flag = true;
+        set<int> se;
+        for (int i = 0; i < n; i++) {
+            scanf("%d", &a[i]);
+            se.insert(a[i]);
+        }
+        for (int i = 0; i < m; i++) {
+            if (a[v[i].t1] == a[v[i].t2]) {
+                flag = false;
+                break;
+            }
+        }
+        if (flag) 
+            printf("%d-coloring\n", se.size());
+        else 
+            printf("No\n");
+    }
+    return 0;
+}
+```
+
+## 1155 Heap Paths (30 分)
+
+翻译：给出一颗完全二叉树，打印出从根节点到所有叶节点的路径，打印顺序先右后左，即先序遍历的镜像。然后判断该树是大顶堆、小顶堆或者不是堆
+
+思路：堆问题
+
+答案：
+
+```
+#include <iostream>
+#include <vector>
+using namespace std;
+vector<int> v;
+int a[1009], n, isMin = 1, isMax = 1;
+void dfs(int index) {
+    if (index * 2 > n && index * 2 + 1 > n) {
+        if (index <= n) {
+            for (int i = 0; i < v.size(); i++)
+                printf("%d%s", v[i], i != v.size() - 1 ? " " : "\n");
+        }
+    } else {
+        v.push_back(a[index * 2 + 1]);
+        dfs(index * 2 + 1);
+        v.pop_back();
+        v.push_back(a[index * 2]);
+        dfs(index * 2);
+        v.pop_back();
+    }
+}
+int main() {
+    cin >> n;
+    for (int i = 1; i <= n; i++)
+        scanf("%d", &a[i]);
+    v.push_back(a[1]);
+    dfs(1);
+    for (int i = 2; i <= n; i++) {
+        if (a[i/2] > a[i]) isMin = 0;
+        if (a[i/2] < a[i]) isMax = 0;
+    }
+    if (isMin == 1)
+        printf("Min Heap");
+    else 
+        printf("%s", isMax == 1 ? "Max Heap" : "Not Heap"); 
+    return 0;
+}
+```
 
 
 
 
 
+
+
+
+
+# 分类整理
+
+---------------------------------------------------------------------------
+## 数学问题
+
+### 多项式
+
+1002，1009
+
+### 素数
+
+1015，1059，1152
+
+### 进制转换
+
+1015，1019，1027，1058，1100
+
+### 大整数计算
+
+1023，1024
+
+### 科学计数法
+
+1060，1073
+
+### 分数的四则运算
+
+1081，1088
+
+--------------------------------------------------------------------------
+
+## 逻辑问题
+
+### 暂定逻辑题
+
+1006，1007，1008，1010，1011，1031，1032，1036，1042，1044
+
+1046，1049，1056，1063，1065，1082，1085，1091，1096，1101
+
+1103，1104，1105，1108，1109，1113，1125，1126，1128，1139
+
+1140，1142，1148，1154
+
+### map思想
+
+1022，1039，1041，1047，1048，1050，1054，1071，1092，1112，1116，1117，1120
+
+1121，1124，1144，1149
+
+### 分类排序题
+
+1012，1025，1028，1038，1055，1062，1070，1075，1080，1083，1095，1129
+
+1137，1141，1153
+
+### two pointers
+
+1029
+
+### 贪心算法
+
+1033，1037，1067
+
+### 动态规划
+
+1040，1045，1068
+
+--------------------------------------------------------------------------
+
+## 排队等待问题
+
+1014，1016，1017，1026
+
+--------------------------------------------------------------------------
+## 字符串处理
+
+### 数字与字符串相互转化
+
+1001，1005，1069，1132
+
+### 字符串单纯处理
+
+1035，1061，1077，1084，1093，1136
+
+
+--------------------------------------------------------------------------
+
+## hash算法
+
+1078，1145
+
+--------------------------------------------------------------------------
+## 线性表
+
+### 链表
+
+1052，1074，1097，1133
+
+### 栈
+
+1051，1057
+
+--------------------------------------------------------------------------
+
+## 排序
+
+1089，1098
+
+--------------------------------------------------------------------------
+## 树
+
+### 树的遍历，先序，中序，后序，层序
+
+1004，1090，1094，1102，1110，1115，1119，1127，1130
+
+1135，1143，1151
+
+### 两个序列确定一棵树
+
+1020，1086，1138
+
+### BST（二叉搜索树）
+
+1043，1064，1099
+
+### AVL树
+
+1066，1123
+
+--------------------------------------------------------------------------
+## 图
+
+### 最短路径，Dijkstra算法
+
+1003，1018，1030，1072，1111
+
+### 图的遍历，DFS，BFS
+
+1018，1021，1030，1053，1076，1079，1087，1106，1131，1134
+
+1122，1150
+
+### 连通分量
+
+1013，1021，1034
+
+--------------------------------------------------------------------------
+
+## 并查集
+
+1107，1114，1118
+
+--------------------------------------------------------------------------
+
+## 拓扑排序
+
+1146
+
+--------------------------------------------------------------------------
+## 堆
+
+1147，1155
 
 
