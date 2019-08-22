@@ -38,11 +38,13 @@ https://gitee.com/branches/PAT
 
 https://pintia.cn/problem-sets/994805342720868352/problems/994805528788582400
 
-翻译：计算a+b并以标准格式输出和，格式为数字必须每三个用逗号隔开（除非四位数以下）
+翻译：计算 a + b 并以标准格式输出和，格式为数字必须每三个用逗号隔开（除非四位数以下）
 
 思路：将数字转化为字符串处理（to_string）。之后处理字符串即可。
 
 答案：
+
+柳神写的：
 
 ```
 #include <iostream>
@@ -73,6 +75,46 @@ int main() {
 }
 ```
 
+自己写的：
+
+```
+#include <cstdio>
+#include <iostream>
+
+using namespace std;
+
+int main () {
+	
+	int a, b;
+	
+	scanf("%d %d", &a, &b);
+	
+	string s = to_string(a + b);
+	
+	int len = s.length();
+	
+	for (int i = 0; i < len; i++) {
+		
+		char t = s[i];
+		
+		cout << t;
+		
+		if (t == '-') {
+			continue;
+		}
+		
+		// 当前位的下标i满足(i + 1) % 3 == len % 3并且i不是最后一位 
+        if ((i + 1) % 3 == len % 3 && i != len - 1) {
+			cout << ",";
+		}	
+		
+	}
+	
+	
+	return 0;
+} 
+```
+
 ## 1002 A+B for Polynomials (25 分)
 
 https://pintia.cn/problem-sets/994805342720868352/problems/994805526272000000
@@ -83,6 +125,7 @@ https://pintia.cn/problem-sets/994805342720868352/problems/994805526272000000
 
 答案：
 
+柳神：
 ```
 #include <iostream>
 using namespace std;
@@ -96,7 +139,7 @@ int main() {
     // 第一个多项式 
     scanf("%d", &m);
     for (int i = 0; i < m; i++) {
-        scanf("%d%f", &t, &num); // 指数，系数 
+        scanf("%d%f", &t, &num); // 指数，系数
         c[t] += num; // 指数相等的，系数相加 
     }
     
@@ -119,6 +162,52 @@ int main() {
     }
     return 0;
 }
+```
+
+
+自己写的：
+```
+#include <cstdio>
+
+using namespace std;
+
+int main () {
+	
+	float p[1001] = { 0 }; // key为次数，value为系数 
+	int m, n;
+	
+	int k; // 次数
+	float v; // 系数 
+	
+	scanf("%d", &m);
+	for (int i = 0; i < m; i++) {
+		scanf("%d%f", &k, &v);
+		p[k] += v;
+	}
+	
+	scanf("%d", &n);
+	for (int i = 0; i < n; i++) {
+		scanf("%d%f", &k, &v);
+		p[k] += v;
+	}
+	
+	int count = 0;
+	for (int i = 0; i < 1001; i++) {
+		if (p[i] != 0.0) {
+			count++;
+		}
+	}
+	
+	printf("%d", count);
+	for (int i = 1000; i >= 0; i--) {
+		if (p[i] != 0.0) {
+			printf(" %d", i);
+			printf(" %.1f", p[i]);
+		}
+	}
+	
+	return 0;
+} 
 ```
 
 ## 1003 Emergency (25 分)
@@ -363,7 +452,11 @@ https://pintia.cn/problem-sets/994805342720868352/problems/994805516654460928
 
 翻译：输入一批人signIn与signOut的时间，找出最早signIn与最晚signOut的人的id。
 
-思路：遍历，对比保存最早signIn与最晚signOut的人的id。
+思路：
+
+00:00:00 作为起点，统一转化为秒数。
+
+遍历，对比保存最早signIn与最晚signOut的人的id。
 
 答案：
 
@@ -371,8 +464,9 @@ https://pintia.cn/problem-sets/994805342720868352/problems/994805516654460928
 #include<string>
 #include<cstdio>
 #include<iostream>
-#include <climits>
+
 using namespace std;
+
 int main() {
     int n, minn = 9999999999999, maxn = -1;
     scanf("%d", &n);
@@ -390,12 +484,12 @@ int main() {
         int tempOut = h2 * 3600 + m2 * 60 + s2;
         // 更新最早signIn与最晚signOut 
         if (tempIn < minn) {
-            minn = tempIn;
-            unlocked = t;
+            minn = tempIn; // 最早时间 
+            unlocked = t; // id 
         }
         if (tempOut > maxn) {
-            maxn = tempOut;
-            locked = t;
+            maxn = tempOut; // 最晚时间 
+            locked = t; // id 
         }
     }
     
@@ -620,7 +714,9 @@ https://pintia.cn/problem-sets/994805342720868352/problems/994805504927186944
 
 翻译：给出三个比赛的W，T，L的数据，根据公式计算出最后的收益
 
-思路：不用太理解说什么，直接按照题目给的公式计算就好了。
+思路：
+
+每一排中选最大的，再按照公式计算。
 
 答案：
 
@@ -638,8 +734,10 @@ double fmax(double a, double b, double c) {
 }
 
 int main() {
+	
 	double w, t, l, ans = 1;
 	int k = 0;
+	
 	for(int i = 0; i < 3; i++) {
 		scanf("%lf %lf %lf", &w, &t, &l);
 		if(fmax(w,t,l) == w) {
@@ -653,7 +751,8 @@ int main() {
 			ans *= l;
 		}
 	}
-	ans = (ans*0.65-1)*2;
+	
+	ans = (ans * 0.65 - 1) * 2;
 	printf("%.2lf\n", ans);
 	return 0;
 }
@@ -690,10 +789,10 @@ int main() {
     int n, m, id;
     scanf("%d %d", &n, &m);
     
-	// 收录学生的各科成绩，并计算出平均分同时收录 
+	// 收录学生的各科成绩，并计算出平均分同时收录
     for(int i = 0; i < n; i++) {
         scanf("%d %d %d %d", &stu[i].id, &stu[i].score[1], &stu[i].score[2], &stu[i].score[3]);
-        stu[i].score[0] = (stu[i].score[1] + stu[i].score[2] + stu[i].score[3]) / 3.0 + 0.5;
+        stu[i].score[0] = (stu[i].score[1] + stu[i].score[2] + stu[i].score[3]) / 3.0 + 0.5; // 四舍五入，+0.5取整 
     }
     
     // flag为科目 
@@ -710,6 +809,7 @@ int main() {
         }
     }
     
+    // 寻找每个学生最好排名的科目。 
     for(int i = 0; i < n; i++) {
         exist[stu[i].id] = i + 1; // 对存在的学生标记，存在的有编号
         // 默认平均成绩最优先 
@@ -724,6 +824,7 @@ int main() {
         }
     }
     
+    
     char c[5] = {'A', 'C', 'M', 'E'};
     for(int i = 0; i < m; i++) {
         scanf("%d", &id);
@@ -731,11 +832,12 @@ int main() {
         if(temp) {
         	// 打印最好排名的科目 
             int best = stu[temp-1].best;
-            printf("%d %c\n", stu[temp-1].rank[best], c[best]);
+            printf("%d %c\n", stu[temp-1].rank[best], c[best]); // 打印科目排名与科目名称。 
         } else {
-            printf("N/A\n");
+            printf("N/A\n"); // 不存在此id 
         }
     }
+    
     return 0;
 }
 ```
@@ -804,9 +906,13 @@ https://pintia.cn/problem-sets/994805342720868352/problems/994805498207911936
 
 翻译：N个窗口，每个窗口可以排M个人，8点开始服务，17点关门。队都排满了在黄线外等候，若有空位，则进入最短的队，若同时则选最小的窗口。求某个人的服务结束时间。
 
-思路：首先理解题目。利用队列模拟。
+思路：
+
+首先理解题目。
 
 答案：
+
+柳神写的：
 
 ```
 #include <iostream>
@@ -890,11 +996,104 @@ int main() {
 }
 ```
 
+自己写的：
+
+```
+#include <cstdio>
+#include <queue>
+#include <vector>
+
+using namespace std;
+
+struct Window {
+	int poptime, endtime; // 队首的人结束的时间，队尾的人结束的时间
+	queue<int> q; 
+};
+
+int main () {
+	
+	int n, m, k, q; // 窗口的数量，每个窗口的容量，游客的数量，查询的数量
+	
+	scanf("%d %d %d %d", &n, &m, &k, &q);
+	
+	vector<int> pTime(k + 1), fTime(k + 1); // 处理时间，结束时间（时间单位为分钟，从0开始） 
+	vector<bool> sorry(k + 1, false);
+	
+	// 客人编号从1到k 
+	for (int i = 1; i < k + 1; i ++) {
+		scanf("%d", &pTime[i]);
+	}
+	
+	vector<Window> window(n + 1); // 窗口 
+	
+	int index = 1; // 客人编号 
+	// 从左到右，从小到大 
+	for (int i = 1; i < m + 1; i++) { // 层
+		for (int j = 1; j < n + 1; j++) { // 列（从左到右） 
+			if (index <= k) {
+				window[j].q.push(pTime[index]); // 压入处理时间 
+                if(window[j].endtime >= 540) { // 这个列已经时间排满了 
+					sorry[index] = true;
+				}
+                window[j].endtime += pTime[index];
+                if(i == 1) { // 第一层 
+					window[j].poptime = window[j].endtime; // 最前头的顾客的结束时间 
+				}
+                fTime[index] = window[j].endtime; // 第index个顾客的结束时间确定 
+                index++;
+			} 
+		}
+	}
+	
+	// 黄线以外等待的
+	while (index <= k) {
+		
+		// 找最先有人出队的窗口
+		int tempmin = window[1].poptime, tempwindow = 1;
+        for(int i = 2; i <= n; i++) {
+            if(window[i].poptime < tempmin) {
+                tempwindow = i;
+                tempmin = window[i].poptime;
+            }
+        }
+        // 当前窗口的人出队，并计算时间 
+        window[tempwindow].q.pop();
+        window[tempwindow].q.push(pTime[index]); // 当前index顾客入队 
+        window[tempwindow].poptime +=  window[tempwindow].q.front();
+        // 超过时间 
+        if(window[tempwindow].endtime >= 540) {
+        	sorry[index] = true;
+		}
+        window[tempwindow].endtime += pTime[index];
+        // 记录最新的进队的人的结束时间
+        fTime[index] = window[tempwindow].endtime;  
+        index++;
+	} 
+	
+	
+	// 查询 
+	for (int i = 1; i < q + 1; i++) {
+		int query, minute;
+        scanf("%d", &query);
+        minute = fTime[query];
+        if(sorry[query] == true) {
+            printf("Sorry\n");
+        } else {
+            printf("%02d:%02d\n", (minute + 480) / 60, (minute + 480) % 60); // 从8:00（8*60）开始算起 
+        }	
+	} 
+	
+	return 0;
+}
+```
+
 ## 1015 Reversible Primes (20 分)
 
 https://pintia.cn/problem-sets/994805342720868352/problems/994805495863296000
 
 翻译：可翻转的素数是，本身是个素数，在某种进制下翻转后还是素数。
+
+先转化为某种进制，翻转，再转化为十进制，看是否是素数
 
 思路：先检查本身是否是素数，接着把数字转化为指定的进制，翻转后，再转化为10进制，查看是否为素数。
 
@@ -902,6 +1101,7 @@ https://pintia.cn/problem-sets/994805342720868352/problems/994805495863296000
 
 答案：
 
+柳神答案：
 ```
 #include <cmath>
 #include <cstdio> 
@@ -942,6 +1142,69 @@ int main() {
         printf("%s", isprime(n) ? "Yes\n" : "No\n");
     }
     return 0;
+}
+```
+
+自己写的
+
+```
+#include <cstdio>
+#include <cmath>
+
+using namespace std;
+
+bool isPrime (int n) {
+	if (n <= 1) {
+		return false;
+	}
+	int sqr = int(sqrt(1.0 * n));
+	for (int i = 2; i <= sqr; i++) {
+		if (n % i == 0) {
+			return false; // 能够除净，不是素数 
+		}
+	}
+	return true;
+}
+
+int main () {
+	
+	while (1) {
+		
+		int n = 0;
+		int d = 0;
+		scanf("%d", &n); // 数字 
+		if (n < 0) {
+			break;
+		}
+		scanf("%d", &d); // 进制 
+		
+		if (!isPrime(n)) {
+			printf("No\n");
+			continue;
+		}
+		
+		int res[1000], len = 0;
+		
+		// 转化为d进制 
+		while (n != 0) {
+			res[len++] = n % d;
+			n = n / d;
+		}
+		
+		int j = 0;
+		// d进制翻转转化为十进制 
+		for (int i = len - 1; i >= 0; i--) {
+			n += res[i] * pow(d, j);
+			j++;
+		} 
+
+//		printf(" n:%d ", n);
+		
+		printf("%s", isPrime(n) ? "Yes\n" : "No\n");
+		
+	} 
+	
+	return 0;
 }
 ```
 
@@ -1407,11 +1670,15 @@ int main() {
 
 翻译：模拟电子图书馆查询，给出n本书的信息，信息分类有m种。查询的时候根据信息分类来对应查询ID，有多个ID的递增输出ID。
 
-思路：考察map的思想，一个分类给一个map。
+思路：
+
+考察map的思想，一个分类给一个map。
 
 自己动手做一遍
 
 答案：
+
+柳神写的：
 
 ```
 #include <iostream>
@@ -1479,14 +1746,110 @@ int main() {
 }
 ```
 
+自己写的：
+
+```
+#include <cstdio>
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+map<string, set<int> > title, author, keyWord, pub, pubYear;
+
+// 查询与输出结果 
+void query (map<string, set<int> > &m, string &str) { // 引用输入 
+	if (m.find(str) != m.end()) {
+		// 遍历输出set内的数据 
+		for (auto it = m[str].begin(); it != m[str].end(); it++) {
+			printf("%07d\n", *it); // 7位数字，0补全 
+		}
+	} else {
+		cout << "Not Found\n"
+	}
+} 
+
+int main () {
+	
+	int n;
+	scanf("%d", &n);
+	
+	string ttitle, tauthor, tkeyWord, tpub, tpubYear;
+	
+	// 输入 
+	for (int i = 0; i < n; i++) {
+		
+		int id;
+		scanf("%d\n", id);
+		
+		// 标题 
+		getline(cin, ttitle);
+		title[ttitle].insert(id);
+		
+		// 作者 
+		getline(cin, tauthor);
+		title[tauthor].insert(id);
+		
+		// 关键字
+		while (cin >> tkeyWord) {
+			keyWord[tkeyWord].insert(id);
+			char c = getchar();
+			if (c == '\n') break;
+		} 
+		
+		// 出版商 
+		getline(cin, tpub);
+		pub[tpub].insert(id);
+		
+		// 出版年份 
+		getline(cin, tpubYear);
+		pubYear[tpubYear].insert(id);
+		 
+	}
+	
+	// 查询 
+	int m;
+	scanf("%d", &m);
+	
+	for (int i = 0; i < m; i++) {
+		
+		// 查询编号 
+		int num;
+		scanf("%d: ", &num);
+		
+		// 查询字符串 
+		string tempStr;
+		getline(cin, tempStr);
+		
+		// 重复输出查询数据 
+		cout << num << ": " << temp << "\n";
+		
+		if(num == 1) query(title, tempStr); // 书名 
+        else if(num == 2) query(author, tempStr); // 作者  
+        else if(num == 3) query(key, tempStr); // 关键字 
+        else if(num == 4) query(pub, tempStr); // 出版商 
+        else if(num ==5) query(year, tempStr); // 出版年份 
+		
+	}
+	
+	return 0;
+}
+```
+
 ## 1023 Have Fun with Numbers (20 分)
 
 翻译：翻倍一个k位数的数字，看是否翻倍的数字中的数字排列是否和原来的一样。
 
-思路：大整数计算。理解题意。
+思路：
+
+题目给出，不超过20位，即超过了long long 的范围，判断用大整数计算。
+
+大整数计算。理解题意。
 
 答案：
 
+
+柳神写的
 ```
 #include <cstdio>
 #include <string.h>
@@ -1523,6 +1886,80 @@ int main() {
     if(flag == 1) printf("1"); // 最高一位有进1 
     printf("%s", num);
     return 0;
+}
+```
+
+自己写的：
+
+```
+#include <cstdio>
+#include <string>
+#include <iostream>
+
+using namespace std;
+
+int main () {
+	
+	string a;
+	
+	int count[100] = { 0 }; // 计数用 
+	
+	int output[100] = { 0 }; // 结果 
+	
+	cin >> a;
+	
+	int len = a.length();
+	
+	int add = 0; // 进位 
+	
+	for (int i = len - 1; i >= 0; i--) {
+		
+		int temp = a[i] - '0';
+		
+		// 计数 
+		count[temp]++;
+		
+		// 相加 
+		int res = temp * 2 + add;
+		// 是否进位 
+		if (res > 9) {
+			res = res - 10;
+			add = 1;
+		} else {
+			add = 0;
+		}
+		
+		output[i] = res; // 存入结果
+		
+		// 反向计数 
+		count[res]--; 
+		
+	} 
+	
+	int flag = 0;
+	
+	for (int i = 0; i < 10; i++) {
+		if (count[i] != 0) {
+			flag = 1;
+		}
+	}
+	
+	if (flag == 1 || add == 1) {
+		printf("No\n");
+	} else {
+		printf("Yes\n");
+	}
+	
+	// 最后有进位
+	if (add == 1) {
+		printf("1");
+	}
+		
+	for (int i = 0; i < len; i++) {
+		printf("%d", output[i]);
+	}
+	
+	return 0;
 }
 ```
 
@@ -2080,9 +2517,13 @@ int main() {
 
 思路：先遍历第一个单词，再遍历第二个单词，初次遇到的相同的单词即为所求单词。
 
-疑问：柳这种方式全面吗？王道P56页有不同的做法。
+疑问：柳这种方式全面吗？
+
+答：全面，因为字母可能相同，但是重合的尾巴的前驱地址肯定相同。
 
 答案：
+
+柳神的答案：
 
 ```
 #include <cstdio>
@@ -2121,6 +2562,50 @@ int main() {
     printf("-1");
     return 0;
 }
+```
+
+自己写的：
+
+```
+#include <cstdio>
+
+using namespace std;
+
+struct {
+	char data;
+	int next;
+	bool flag;
+} node[100000];
+
+int main () {
+	
+	int start1, start2, n;
+	
+	scanf("%d %d %d", &start1, &start2, &n);
+	
+	for (int i = 0; i < n; i++) {
+		int address, next;
+		char data;
+		scanf("%d %c %d", &address, &data, &next);
+		node[address] = { data, next, false }; // 初始化 
+	}
+	
+	// 第一次标记 
+	for (int i = start1; i != -1; i = node[i].next) {
+		node[i].flag = true;
+	}
+	
+	for (int i = start2; i != -1; i = node[i].next) {
+		if (node[i].flag == true) {
+			printf("%05d", i);
+			return 0;
+		}
+	}
+	
+	printf("-1");
+	
+	return 0;
+} 
 ```
 
 ## 1033 **To Fill or Not to Fill (25 分)
@@ -2371,9 +2856,11 @@ int main() {
 using namespace std;
 
 int main() {
-    int n;
+    
+	int n;
     scanf("%d", &n); // 学生的总数 
-    string female, male;
+    
+	string female, male;
     int femalescore = -1, malescore = 101;
     for(int i = 0; i < n; i++) {
         string name, sex, num;
@@ -2391,18 +2878,22 @@ int main() {
                 male = name + " " + num;
             }
     }
+    
     if(femalescore != -1)
         cout << female << endl;
     else
         printf("Absent\n");
+        
     if(malescore != 101)
         cout << male << endl;
     else
         printf("Absent\n");
+        
     if(femalescore != -1 && malescore != 101)
         printf("%d", femalescore - malescore);
     else
         printf("NA");
+        
     return 0;
 }
 ```
@@ -2624,6 +3115,8 @@ int main() {
 翻译：洗牌机器将顺序的牌组打乱。
 
 思路：按照给的数据简单模拟即可。
+
+设置一个scan作为映射，并分别保留开始和结束的数列
 
 答案：
 
@@ -3033,7 +3526,13 @@ int main() {
 
 翻译：链表按照key从小到大排序，修改next
 
-思路：直接将链表放到数组中，用sort排序，最后输出的时候有点技巧
+思路：
+
+注意有可能有无效的节点，注意其处理方式。
+
+return a.flag > b.flag // 意味着，flag为true的放在前面
+
+直接将链表放到数组中，用sort排序，最后输出的时候有点技巧。
 
 答案：
 
@@ -3050,6 +3549,7 @@ struct NODE {
 
 int cmp1(NODE a, NODE b) {
 	// 无效的节点往后移，有效的节点按key从小到大排 
+	// a.flag > b.flag意味着flag为true的放在前面 
     return !a.flag || !b.flag ? a.flag > b.flag : a.key < b.key;
 }
 
@@ -3405,12 +3905,16 @@ int main() {
 using namespace std;
 
 int main() {
+	
     long long a, b, c, d, e, f;
     scanf("%lld.%lld.%lld %lld.%lld.%lld", &a, &b, &c, &d, &e, &f);
-    long long num = c + b * 29 + a * 29 * 17 + f + e * 29 + d * 29 * 17;
+    
+	long long num = c + b * 29 + a * 29 * 17 + f + e * 29 + d * 29 * 17; // 全部转化为最低的单位相加 
+	
     long long g = num / (17 * 29);
     num = num % (17 * 29);
     printf("%lld.%lld.%lld", g, num / 29, num % 29);
+    
     return 0;
 }
 ```
@@ -3475,11 +3979,16 @@ int main() {
 ```
 #include <iostream>
 #include <cstring>
+
 using namespace std;
+
 int main() {
     int n, p = 0, q = 0;
     char a[10000], b[10000], A[10000], B[10000];
-    scanf("%d%s%s", &n, a, b);
+
+    scanf("%d%s%s", &n, a, b); // 有效数字，a数，b数 
+	
+	// 寻找a与b"."的位置 
     int cnta = strlen(a), cntb = strlen(b);
     for(int i = 0; i < strlen(a); i++) {
         if(a[i] == '.') {
@@ -3493,35 +4002,50 @@ int main() {
             break;
         }
     }
+    
+    // 考虑到可能前面有多余的零，用 p 和 q 通过扫描字符串使 p q 开始于第一个非0（且非小数点）处的下标
+	// 即有效数字的开头 
     int indexa = 0, indexb = 0;
     while(a[p] == '0' || a[p] == '.') p++;
     while(b[q] == '0' || b[q] == '.') q++;
-    if(cnta >= p)
-        cnta = cnta - p;
-    else
-        cnta = cnta - p + 1;
-    if(cntb >= q)
-        cntb = cntb - q;
-    else
-        cntb = cntb - q + 1;
+    
+    // 小数点在第一个有效数字的左边还是右边 
+    if (cnta >= p) {
+    	cnta = cnta - p;
+	}
+    else {
+    	cnta = cnta - p + 1;
+	}
+    // 小数点在第一个有效数字的左边还是右边 
+    if(cntb >= q) {
+    	cntb = cntb - q;
+	}
+    else {
+    	cntb = cntb - q + 1;
+	}
+    // 字符串是0的情况 
     if(p == strlen(a))
         cnta = 0;
     if(q == strlen(b))
         cntb = 0;
+    
+    
     while(indexa < n) {
         if(a[p] != '.' && p < strlen(a))
-            A[indexa++] = a[p];
+            A[indexa++] = a[p]; // 按原有顺序排列 
         else if(p >= strlen(a))
-            A[indexa++] = '0';
+            A[indexa++] = '0'; // 补零 
         p++;
     }
     while(indexb < n) {
         if(b[q] != '.' && q < strlen(b))
-            B[indexb++] = b[q];
+            B[indexb++] = b[q]; // 按原有顺序排列
         else if(q >= strlen(b))
-            B[indexb++] = '0';
+            B[indexb++] = '0'; // 补零
         q++;
     }
+    
+    // strcmp：若str1=str2，则返回零；若str1<str2，则返回负数；若str1>str2，则返回正数
     if(strcmp(A, B) == 0 && cnta == cntb)
         printf("YES 0.%s*10^%d", A, cnta);
     else
@@ -3973,21 +4497,28 @@ int main() {
 #include <iostream>
 #include <algorithm>
 #include <vector>
+
 using namespace std;
+
 struct mooncake{
     float mount, price, unit;
 };
+
 int cmp(mooncake a, mooncake b) {
-    return a.unit > b.unit;
+    return a.unit > b.unit; // 单价高的排在前面 
 }
+
 int main() {
+
     int n, need;
-    cin >> n >> need;
+    cin >> n >> need; // 月饼种类数，月饼市场需求 
+
     vector<mooncake> a(n);
-    for (int i = 0; i < n; i++) scanf("%f", &a[i].mount);
-    for (int i = 0; i < n; i++) scanf("%f", &a[i].price);
+    for (int i = 0; i < n; i++) scanf("%f", &a[i].mount); // 库存 
+    for (int i = 0; i < n; i++) scanf("%f", &a[i].price); // 总售价 
     for (int i = 0; i < n; i++) a[i].unit = a[i].price / a[i].mount; // 算出单价 
     sort(a.begin(), a.end(), cmp); // 单价由高到低排列 
+    
     float result = 0.0;
     for (int i = 0; i < n; i++) {
         if (a[i].mount <= need) { // 单价高的先全部卖出去 
@@ -3998,6 +4529,7 @@ int main() {
         }
         need = need - a[i].mount;
     }
+    
     printf("%.2f",result);
     return 0;
 }
@@ -4363,7 +4895,11 @@ int main() {
 
 翻译：求几句话中相同的日语语气词
 
-思路：即求相同的后缀
+思路：
+
+即求相同的后缀
+
+翻转字符串求相同的字符片段
 
 答案：
 
@@ -4585,32 +5121,58 @@ int main(){
 ```
 #include <iostream>
 #include <cstdlib>
+
 using namespace std;
+
+// 最大公约数 
 long long gcd(long long a, long long b) {return b == 0 ? abs(a) : gcd(b, a % b);}
+
 int main() {
     long long n, a, b, suma = 0, sumb = 1, gcdvalue;
     scanf("%lld", &n);
-    for(int i = 0; i < n; i++) {
-        scanf("%lld/%lld", &a, &b);
+    
+	for(int i = 0; i < n; i++) {
+        scanf("%lld/%lld", &a, &b); // 分子，分母 
         gcdvalue = gcd(a, b);
+        
+        // 化简 
         a = a / gcdvalue;
         b = b / gcdvalue;
-        suma = a * sumb + suma * b;
+        
+        // suma/sumb + a/b
+		suma = a * sumb + suma * b;
         sumb = b * sumb;
+        
+        // 化简suma/sumb 
         gcdvalue = gcd(suma, sumb);
         sumb = sumb / gcdvalue;
         suma = suma / gcdvalue;
     }
-    long long integer = suma / sumb;
+    
+    // 整数部分 
+	long long integer = suma / sumb;
+	
+	// 分数部分 
     suma = suma - (sumb * integer);
+    
+    
+    // 打印整数部分 
     if(integer != 0) {
         printf("%lld", integer);
         if(suma != 0) printf(" ");
     }
-    if(suma != 0)
-        printf("%lld/%lld", suma, sumb);
-    if(integer == 0 && suma == 0)
-        printf("0");
+    
+    // 打印分数部分 
+    if(suma != 0) {
+    	printf("%lld/%lld", suma, sumb);
+	}
+        
+    
+    // 为0的情况 
+	if(integer == 0 && suma == 0) {
+    	printf("0");
+	}
+        
     return 0;
 }
 ```
@@ -5080,25 +5642,32 @@ int main() {
 
 using namespace std;
 int n, maxdepth = 0, maxnum = 0, temp, root;
-vector<int> v[100010];
+vector<int> v[100010]; // vector数组 
 
-void dfs(int index, int depth) {
-    if(v[index].size() == 0) {
-        if(maxdepth == depth)
-            maxnum++;
+// dfs算法 
+void dfs(int index, int depth) { // 节点编号，深度 
+    if(v[index].size() == 0) { // index节点没有子节点 
+        if(maxdepth == depth) {
+        	maxnum++;
+		}
         if(maxdepth < depth) {
             maxdepth = depth;
             maxnum = 1;
         }
         return ;
     }
-    for(int i = 0; i < v[index].size(); i++)
-        dfs(v[index][i], depth + 1);
+    // 从小到大递归其子树 
+    for(int i = 0; i < v[index].size(); i++) {
+		dfs(v[index][i], depth + 1);
+	}
 }
 
 int main() {
+	
     double p, r;
-    scanf("%d %lf %lf", &n, &p, &r); // 人数，根节点价格，利润 
+    scanf("%d %lf %lf", &n, &p, &r); // 人数，根节点价格，利润
+    
+    // temp为第i个人的供应商 
     for(int i = 0; i < n; i++) {
         scanf("%d", &temp);
         if(temp == -1)
@@ -5106,8 +5675,10 @@ int main() {
         else
             v[temp].push_back(i);
     }
-    dfs(root, 0);
-    printf("%.2f %d", p * pow(1 + r/100, maxdepth), maxnum);
+    
+	dfs(root, 0);
+    
+	printf("%.2f %d", p * pow(1 + r/100, maxdepth), maxnum);
     return 0;
 }
 ```
@@ -5261,6 +5832,8 @@ int main() {
 
 典型题。
 
+与1004及其相似
+
 答案：
 
 DFS
@@ -5342,6 +5915,62 @@ int main() {
     printf("%d %d", maxnum, maxlevel);
     return 0;
 }
+```
+
+自己写的
+
+```
+#include <cstdio>
+#include <vector> 
+ 
+using namespace std;
+
+vector<int> tree[100];
+
+vector<int> count(100, 0);
+
+void dfs (int index, int level) {
+	
+	count[level]++;
+	
+	for (int i = 0; i < tree[index].size(); i++) {
+		
+		dfs(tree[index][i], level + 1);
+		
+	} 
+	
+}
+
+int main () {
+	
+	int n, m;
+	
+	scanf("%d %d", &n, &m); // 节点总数，非叶节点数
+	
+	for (int i = 0; i < m; i++) {
+		int index, cNum; // 节点编号，节点子树数 
+		scanf("%d %d", &index, &cNum);
+		for (int j = 0; j < cNum; j++) {
+			int temp;
+			scanf("%d", &temp);
+			tree[index].push_back(temp);	
+		}
+	}
+	
+	dfs(1, 1);
+	
+	int levelIndex = 1, levelMaxNum = 0;
+	for (int i = 1; i < 100; i++) {
+		if (count[i] > levelMaxNum) {
+			levelIndex = i;
+			levelMaxNum = count[i];
+		} 
+	}
+	
+	printf("%d %d", levelMaxNum, levelIndex);
+	
+	return 0;
+} 
 ```
 
 ## 1095 **Cars on Campus (30 分)
@@ -5737,7 +6366,9 @@ int main() {
 
 证明你可以翻转二叉树。输出翻转后的层序遍历与中序遍历。
 
-思路：反转二叉树就是存储的时候所有左右结点都交换，接着有层序遍历算法与中序遍历算法。
+思路：
+
+反转二叉树就是存储的时候所有左右结点都交换，接着有层序遍历算法与中序遍历算法。
 
 综合性比较强的一题。
 
@@ -6210,9 +6841,18 @@ int main() {
 
 ## 1111 **Online Map (30 分)
 
-翻译：求路径的最短距离和最快距离
+翻译：
 
-思路：Dijkstra算法。
+求路径的“最短距离”和“最快距离”
+
+思路：
+
+1. 节点序号从0到N-1
+
+2. 1是单向，0是双向
+
+
+Dijkstra算法。
 
 比较复杂，自己做做看。
 
@@ -6222,96 +6862,129 @@ int main() {
 #include <iostream>
 #include <algorithm>
 #include <vector>
+
 using namespace std;
+
 const int inf = 999999999;
-int dis[510], Time[510], e[510][510], w[510][510], dispre[510],Timepre[510], weight[510],NodeNum[510];
+int dis[510], Time[510], e[510][510], w[510][510], dispre[510], Timepre[510], weight[510], NodeNum[510];
 bool visit[510];
 vector<int> dispath, Timepath, temppath;
 int st, fin, minnode = inf;
+
+// 通过dispre追溯路径 
 void dfsdispath(int v) {
     dispath.push_back(v);
     if(v == st) return ;
     dfsdispath(dispre[v]);
 }
+
 void dfsTimepath(int v) {
     Timepath.push_back(v);
     if(v == st) return ;
     dfsTimepath(Timepre[v]);
 }
+
 int main() {
+
     fill(dis, dis + 510, inf);
     fill(Time, Time + 510, inf);
     fill(weight, weight + 510, inf);
-    fill(e[0], e[0] + 510 * 510, inf);
-    fill(w[0], w[0] + 510 * 510, inf);
+    fill(e[0], e[0] + 510 * 510, inf); // 边长度 
+    fill(w[0], w[0] + 510 * 510, inf); // 边时间 
     int n, m;
-    scanf("%d %d", &n, &m);
+
+    scanf("%d %d", &n, &m); // 节点的个数，边的个数 
+ 
     int a, b, flag, len, t;
     for(int i = 0; i < m; i++) {
+    	// V1，V2，是否单向（1为单向），长度，时间 
         scanf("%d %d %d %d %d", &a, &b, &flag, &len, &t);
         e[a][b] = len;
         w[a][b] = t;
-        if(flag != 1) {
+        if(flag != 1) { // 如果为双向 
             e[b][a] = len;
             w[b][a] = t;
         }
     }
-    scanf("%d %d", &st, &fin);
-    dis[st] = 0;
-    for(int i = 0; i < n; i++)
-        dispre[i] = i;
+    
+    // 出发点与目的地 
+    scanf("%d %d", &st, &fin); // 有出发点，是单源最短路径 
+    
+    
+    // 第一个Dijkstra，求长度最短路径 
+    dis[st] = 0; // dis为st到其他各点的最短路径 
     for(int i = 0; i < n; i++) {
+    	dispre[i] = i; // 最短距离前驱节点 
+	}
+    for(int i = 0; i < n; i++) {
+    	// 找一个未访问的，距离st最短的节点 
         int u = -1, minn = inf;
         for(int j = 0; j < n; j++) {
             if(visit[j] == false && dis[j] < minn) {
-                u = j;
+                // 找到该节点，把该节点赋给u 
+				u = j;
                 minn = dis[j];
             }
         }
-        if(u == -1) break;
+        if(u == -1) break; // u没找到，结束算法 
         visit[u] = true;
         for(int v = 0; v < n; v++) {
+        	// 没有被访问的，并且与u相邻（有边）的节点 
             if(visit[v] == false && e[u][v] != inf) {
-                if(e[u][v] + dis[u] < dis[v]) {
-                    dis[v] = e[u][v] + dis[u];
+            	// 如果经过u使得该节点路径更短了，则更新路径 
+                if(e[u][v] + dis[u] < dis[v]) { // 加入u更短 
+                    dis[v] = e[u][v] + dis[u]; // 更新路径 
                     dispre[v] = u;
-                    weight[v] = weight[u] + w[u][v];
-                } else if(e[u][v] + dis[u] == dis[v] && weight[v] > weight[u] + w[u][v]) {
+                    weight[v] = weight[u] + w[u][v]; // 更新时间 
+                } else if(e[u][v] + dis[u] == dis[v] && weight[v] > weight[u] + w[u][v]) { // 如果相同求时间最短的那条 
                     weight[v] = weight[u] + w[u][v];
                     dispre[v] = u;
                 }
             }
         }
     }
+    
+    // 通过dispre追溯路径
     dfsdispath(fin);
+    
+    
+    // 第二个Dijkstra，求时间最短路径
     Time[st] = 0;
-    fill(visit, visit + 510, false);
+    fill(visit, visit + 510, false); // 重置 
     for(int i = 0; i < n; i++) {
+    	// 找一个未访问的，距离st时间最短的节点
         int u = -1, minn = inf;
         for(int j = 0; j < n; j++) {
             if(visit[j] == false && minn > Time[j]) {
-                u = j;
+                // 该节点为u 
+				u = j;
                 minn = Time[j];
             }
         }
-        if(u == -1) break;
+        if(u == -1) break; // 未找到该节点，退出算法 
         visit[u] = true;
         for(int v = 0; v < n; v++) {
+        	// 没有被访问的，并且与u相邻（有边）的节点
             if(visit[v] == false && w[u][v] != inf) {
+            	// 如果经过u使得该节点时间路径更短了，则更新路径
                 if(w[u][v] + Time[u] < Time[v]) {
-                    Time[v] = w[u][v] + Time[u];
-                    Timepre[v]= u;
-                    NodeNum[v]=NodeNum[u]+1;
-                } else if(w[u][v] + Time[u] == Time[v]&&NodeNum[u]+1<NodeNum[v]) {
-                    Timepre[v]= u;
-                    NodeNum[v]=NodeNum[u]+1;
+                    Time[v] = w[u][v] + Time[u]; // 更新路径 
+                    Timepre[v] = u;
+                    NodeNum[v] = NodeNum[u] + 1;
+                } else if(w[u][v] + Time[u] == Time[v]&&NodeNum[u]+1<NodeNum[v]) { // 如果相同求结点数最小的那条 
+                    Timepre[v] = u;
+                    NodeNum[v] = NodeNum[u]+1;
                 }
             }
         }
     }
+    // 通过Timepre追溯路径
     dfsTimepath(fin);
+    
+    
+    // 打印结果 
     printf("Distance = %d", dis[fin]);
-    if(dispath == Timepath) {
+    if(dispath == Timepath) { // 如果两个路径完全相同 
         printf("; Time = %d: ", Time[fin]);
     } else {
         printf(": ");
@@ -6325,6 +6998,7 @@ int main() {
         printf("%d", Timepath[i]);
         if(i != 0) printf(" -> ");
     }
+    
     return 0;
 }
 ```
@@ -6574,7 +7248,11 @@ int main() {
 
 翻译：第一名得到“神秘大奖”，素数名得到小黄人，其他得到巧克力。
 
-思路：map应用。
+思路：
+
+map应用。
+
+素数检测
 
 答案：
 
@@ -6582,8 +7260,10 @@ int main() {
 #include <iostream>
 #include <set>
 #include <cmath>
+
 using namespace std;
 int ran[10000];
+
 bool isprime(int a) {
     if(a <= 1) return false;
     int Sqrt = sqrt((double)a);
@@ -6593,30 +7273,37 @@ bool isprime(int a) {
     }
     return true;
 }
+
 int main() {
+
     int n, k;
-    scanf("%d", &n);
+    scanf("%d", &n); // 参赛人数 
+
     for(int i = 0; i < n; i++) {
         int id;
         scanf("%d", &id);
-        ran[id] = i + 1;
+        ran[id] = i + 1; // 从1开始 
     }
-    scanf("%d", &k);
+
+    scanf("%d", &k); // k个查询 
     set<int> ss;
+    
     for(int i = 0; i < k; i++) {
         int id;
         scanf("%d", &id);
         printf("%04d: ", id);
-        if(ran[id] == 0) {
+        if(ran[id] == 0) { // 不存在 
             printf("Are you kidding?\n");
             continue;
         }
+        // 检测是否重复查询 
         if(ss.find(id) == ss.end()) {
             ss.insert(id);
         } else {
             printf("Checked\n");
             continue;
         }
+        // 分别打印结果 
         if(ran[id] == 1) {
             printf("Mystery Award\n");
         }else if(isprime(ran[id])) {
@@ -7177,7 +7864,13 @@ int main() {
 
 翻译：八皇后问题，皇后要不同行，不同列，与不同对角。问给出的数据是否符合。
 
-思路：已知不同列，判断是否同行与同对角。
+思路：
+
+已知不同列
+
+判断是否同行与同对角。
+
+abs的应用
 
 答案：
 
@@ -8475,34 +9168,164 @@ int main() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 分类整理
+
+理解并自己写代码替换柳神的
+
+*编号*：代表理解的比较到位，自己写过一遍了
+**编号**：代表理解的不够到位，需要再次理解
 
 ---------------------------------------------------------------------------
 ## 数学问题
 
 ### 多项式
 
-1002，1009
+多项式加法为，次数相同，系数相加
+
+多项式乘法为，系数相乘，次数相加，逐项累乘并相加
+
+*1002*
+
+次数相等，系数相加，printf("%.1f") 打印小数点技巧
+
+1009
 
 ### 素数
 
-1015，1059，1152
+bool isprime(int n) {
+    if(n <= 1) return false;
+    int sqr = int(sqrt(n * 1.0));
+    for(int i = 2; i <= sqr; i++) {
+        if(n % i == 0) {
+			return false;
+		}
+    }
+    return true;
+}
+
+*1015*
+
+模板代码判断是否是素数
+
+1059
+
+1152
 
 ### 进制转换
 
-1015，1019，1027，1058，1100
+p进制转化为十进制，`n += res[i] * pow(d, j)`
+
+十进制转化为p进制，除基取余法，`res[len++] = n % d; n = n / d;`
+
+*1015*
+
+两种相互转化都用到了，还判断了素数
+
+1019
+
+1027
+
+*1058*
+
+这题准确来说不是进制，这题考的是单位转化
+
+1100
 
 ### 大整数计算
 
-1023，1024
+int最高10位，long long最高18位，超过这个位数，考虑用大整数计算。
+
+存储：低位的在数组的低位，高位的在数组的高位，这样便于进位
+
+四则运算：加法（进位），减法（借位），乘法（进位），除法（从高位开始）
+
+*1023*
+
+加法，从低位向高位加
+
+1024
 
 ### 科学计数法
 
-1060，1073
+数字的顺序不会改变，关注“.”的位置，以及推算10的次数。
+
+**1060**，1073
 
 ### 分数的四则运算
 
-1081，1088
+算法笔记P156 分数的四则运算
+
+分数的表示：结构体，fraction，up，down
+
+分数的化简：
+
+1. down为负数，分子分母相反
+2. up为0，down则为1
+3. 分子分母约去最大公约数，gcd
+
+分数的四则运算：常识计算即可
+
+分数的化简：up>down 假分数 即 up/down up%down / down
+
+最大公约数代码
+
+```
+// 辗转相除法
+int gcd (int a, int b) {
+    if (b == 0) return a;
+    else return gcd(b, a % b);
+}
+```
+
+**1081**，1088
 
 --------------------------------------------------------------------------
 
@@ -8510,23 +9333,112 @@ int main() {
 
 ### 暂定逻辑题
 
-1006，1007，1008，1010，1011，1031，1032，1036，1042，1044
+*1006*，1007，*1008*，1010，*1011*，1031，*1036*，*1042*，1044
 
-1046，1049，1056，1063，1065，1082，1085，1091，1096，1101
+1046，1049，1056，
 
-1103，1104，1105，1108，1109，1113，1125，1126，1128，1139
+*1063*
+
+set的使用方式
+
+1065，1082，1085，1091，1096，1101
+
+1103，1104，1105，1108，1109，1113，1125，1126
+
+*1128*
+
+检测是否符合八皇后
+
+列不同，检测行是否相同，或者对角是否相同
+
+abs应用
+
+1139
 
 1140，1142，1148，1154
 
 ### map思想
 
-1022，1039，1041，1047，1048，1050，1054，1071，1092，1112，1116，1117，1120
+输入输出总结：
+
+1. stdio.h
+
+```
+scanf("%d:%d:%d", &a, &b, &c); // 格式输入
+
+常见格式，%d，%lld，%f，%lf，%c，%s
+
+注：遇到空格直接跳过，%s则是遇到空格停止输入，注意区别。
+
+printf("%d", a); // 格式输出
+
+特殊实用格式：%5d（空格对齐5），%05d（零对齐5），%.2f（浮点数小数点后两位）
+```
+
+```
+getchar() // 输入单个字符
+putchar() // 输出单个字符
+```
+
+```
+sscanf(str, "%d", &n); // 从左赋到右，字符串变为int
+sprintf(str, "%d", n); // 从右赋到左，int变为字符串
+```
+
+2. 标准输入输出流
+
+```
+cin >> n; // 自动判定为n申请的变量类型
+cout << n;
+getline(cin, str) // 当str为string类型的时候
+```
+
+*1022*，1039，1041，1047，1048，1050，1054，1071，1092，1112
+
+*1116*
+
+1. map应用
+
+2. 用set来筛选是否是重复
+
+3. 素数检测
+
+1117，1120
 
 1121，1124，1144，1149
 
 ### 分类排序题
 
-1012，1025，1028，1038，1055，1062，1070，1075，1080，1083，1095，1129
+1. 结构体的写法
+
+```
+struct Node {
+    int a;
+    char b;
+    bool c;
+} node[10000];
+
+// 注：
+1. Node为该结构体的类型名，可以类似于int类型那样使用
+2. node为该结构体的一个实体变量，可写。
+```
+
+2. 排序算法cmp
+
+```
+sort默认从小到大排列
+
+return a > b // 可以理解为当 a > b 时把a放在b前面
+```
+
+
+**1012**，1025，1028，1038，1055，1062
+
+*1070*
+
+单价高的先买，利润最高化
+
+1075，1080，1083，1095，1129
 
 1137，1141，1153
 
@@ -8546,18 +9458,33 @@ int main() {
 
 ## 排队等待问题
 
-1014，1016，1017，1026
+*1014*，1016，1017，1026
 
 --------------------------------------------------------------------------
 ## 字符串处理
 
 ### 数字与字符串相互转化
 
-1001，1005，1069，1132
+*1001*，1005，1069，1132
 
 ### 字符串单纯处理
 
-1035，1061，1077，1084，1093，1136
+*1035*，1061，
+
+*1077*
+
+翻转字符串
+
+```
+#include <algorithm>
+
+using namespace std;
+
+string s;
+reverse(s.begin(), s.end()); // 翻转
+```
+
+1084，1093，1136
 
 
 --------------------------------------------------------------------------
@@ -8571,7 +9498,37 @@ int main() {
 
 ### 链表
 
-1052，1074，1097，1133
+*1052*：
+
+1. return a.flag > b.flag // 意味着，flag为true的放在前面，注意这个排序技巧，
+
+2. 将链表放在结构数组中排序的技巧，这样就可以使用sort函数了
+
+1074
+
+1097
+
+1133
+
+*1032*: 
+
+1. 链表的表示方式
+
+```
+struct NODE {
+    char key;
+    int next;
+    bool flag;
+} list[100000];
+```
+
+2. 遍历技巧
+
+```
+for(int i = s1; i != -1; i = node[i].next) {
+	// 操作
+}
+```
 
 ### 栈
 
@@ -8584,11 +9541,38 @@ int main() {
 1089，1098
 
 --------------------------------------------------------------------------
+## 堆
+
+1147，1155
+
+--------------------------------------------------------------------------
 ## 树
 
 ### 树的遍历，先序，中序，后序，层序
 
-1004，1090，1094，1102，1110，1115，1119，1127，1130
+图的dfs可类比为树的先序遍历
+
+图的bfs可类比为树的层序遍历
+
+*1004*，*1094*
+
+这两个及其相似
+
+vector数组，可以用于记录树及其子树
+
+```
+vector<int> v[100]
+```
+
+*1090*
+
+dfs算法，及其这题的树的表示法。
+
+**1102**
+
+是道很好的题目综合性很强。
+
+1110，1115，1119，1127，1130
 
 1135，1143，1151
 
@@ -8609,7 +9593,13 @@ int main() {
 
 ### 最短路径，Dijkstra算法
 
-1003，1018，1030，1072，1111
+1003，1018，1030，1072
+
+**1111**
+
+复杂题：Dijkstra + DFS
+
+最主要要理解Dijkstra，接着就是重复两个Dijkstra，但是权值不同而已
 
 ### 图的遍历，DFS，BFS
 
@@ -8632,10 +9622,5 @@ int main() {
 ## 拓扑排序
 
 1146
-
---------------------------------------------------------------------------
-## 堆
-
-1147，1155
 
 
