@@ -614,7 +614,7 @@ int main() {
     for(int i = 0; i < n2; i++) {
         scanf("%d %lf", &a, &b);
         for(int j = 0; j < 1001; j++) {
-			ans[j + a] += arr[j] * b; // 系数相乘，指数相加 
+			ans[j + a] += arr[j] * b; // 系数相乘，指数相加，不存在的项系数为0 
 		}
     }
     
@@ -3389,6 +3389,8 @@ int main() {
 
 思路：从小到大，寻找是否能有数补上后等于m（商品的价格）。
 
+用map标记其互补的那个是否存在
+
 答案：
 
 ```
@@ -3939,16 +3941,20 @@ int main() {
     for(int i = 2; i * i < 500000; i++)
         for(int j = 2; j * i < 500000; j++)
             prime[j * i] = 0;
+            
     long int a;
-    scanf("%ld", &a);
+    scanf("%ld", &a); // 需要分解的数 
+    
     printf("%ld=", a);
+    
     if(a == 1) printf("1");
     bool state = false;
-    for(int i = 2; a >= 2;i++) {
+    
+	for(int i = 2; a >= 2;i++) {
         int cnt = 0, flag = 0;
         // 一直除当前的素数，直到除不净为止 
         while(prime[i] == 1 && a % i == 0) {
-            cnt++;
+            cnt++; // 记录当前素数除的次数 
             a = a / i;
             flag = 1;
         }
@@ -3962,7 +3968,8 @@ int main() {
         if(cnt >= 2)
             printf("^%d", cnt);
     }
-    return 0;
+    
+	return 0;
 }
 ```
 
@@ -4466,19 +4473,27 @@ int main() {
 ```
 #include <iostream>
 #include <algorithm>
+
 using namespace std;
-bool cmp(char a, char b) {return a > b;}
+
+bool cmp(char a, char b) {
+	return a > b; // 大的排前面 
+}
+
 int main() {
+	
     string s;
     cin >> s;
-    s.insert(0, 4 - s.length(), '0');
-    do {
+    
+	s.insert(0, 4 - s.length(), '0'); // 不满四的补0 
+    
+	do {
         string a = s, b = s;
         sort(a.begin(), a.end(), cmp);
         sort(b.begin(), b.end());
         int result = stoi(a) - stoi(b);
         s = to_string(result);
-        s.insert(0, 4 - s.length(), '0');
+        s.insert(0, 4 - s.length(), '0'); // 不满四的补0
         cout << a << " - " << b << " = " << s << endl;
     } while (s != "6174" && s != "0000");
     return 0;
@@ -5591,29 +5606,44 @@ int main() {
 ```
 #include <iostream>
 #include <algorithm>
+
 using namespace std;
+
 int main() {
+
     int n, a[100], b[100], i, j;
-    cin >> n;
+    cin >> n; // 序列长度 
+
+	// 初始序列 
     for (int i = 0; i < n; i++)
         cin >> a[i];
+
+	// 中间序列 
     for (int i = 0; i < n; i++)
         cin >> b[i];
+	
+	// 前半部分有序 
     for (i = 0; i < n - 1 && b[i] <= b[i + 1]; i++);
+	// 后半部分与初始序列相同 
     for (j = i + 1; a[j] == b[j] && j < n; j++);
+	
+	// 符合上面两种情况的为插入排序 
     if (j == n) {
         cout << "Insertion Sort" << endl;
-        sort(a, a + i + 2);
-    } else {
+        sort(a, a + i + 2); // 打印插入排序下一步 
+    } else { 
+    	// 归并排序 
         cout << "Merge Sort" << endl;
         int k = 1, flag = 1;
         while(flag) {
             flag = 0;
+            // 检测是否与中间序列吻合 
             for (i = 0; i < n; i++) {
                 if (a[i] != b[i])
                     flag = 1;
             }
             k = k * 2;
+            // 非递归归并排序过程 
             for (i = 0; i < n / k; i++)
                 sort(a + i * k, a + (i + 1) * k);
             sort(a + n / k * k, a + n);
@@ -5621,7 +5651,7 @@ int main() {
     }
     for (j = 0; j < n; j++) {
         if (j != 0) printf(" ");
-        printf("%d", a[j]);
+        printf("%d", a[j]); // 打印归并排序下一步 
     }
     return 0;
 }
@@ -6170,13 +6200,17 @@ int main() {
 
 考点为排序算法。
 
+堆排序部分没看懂
+
 答案：
 
 ```
 #include <iostream>
 #include <algorithm>
 #include <vector>
+
 using namespace std;
+
 void downAdjust(vector<int> &b, int low, int high) {
     int i = 1, j = i * 2;
     while(j <= high) {
@@ -6186,19 +6220,32 @@ void downAdjust(vector<int> &b, int low, int high) {
         i = j; j = i * 2;
     }
 }
+
 int main() {
+
     int n, p = 2;
-    scanf("%d", &n);
+    scanf("%d", &n); // 序列长度 
+
     vector<int> a(n + 1), b(n + 1);
+	
+	// 初始序列 
     for(int i = 1; i <= n; i++) scanf("%d", &a[i]);
+	
+	// 中间序列 
     for(int i = 1; i <= n; i++) scanf("%d", &b[i]);
+	
+	// 前半段有序 
     while(p <= n && b[p - 1] <= b[p]) p++;
     int index = p;
+    // 后半段与初始序列相同 
     while(p <= n && a[p] == b[p]) p++;
+    
+    // 符合以上两点即为插入排序 
     if(p == n + 1) {
         printf("Insertion Sort\n");
         sort(b.begin() + 1, b.begin() + index + 1);
     } else {
+    	// 堆排序 
         printf("Heap Sort\n");
         p = n;
         while(p > 2 && b[p] >= b[1]) p--;
@@ -6589,13 +6636,16 @@ int main() {
 #include <cstdio>
 #include <vector>
 #include <cmath>
+
 using namespace std;
 vector<int> v[100005];
 int mindepth = 99999999, minnum = 1;
+
 void dfs(int index, int depth) {
-    if(mindepth < depth)
+    if(mindepth < depth) // 如果深度大于最短深度，那没必要往下找了 
         return ;
-    if(v[index].size() == 0) {
+    if(v[index].size() == 0) { // 叶节点
+		// 寻找深度最短的叶节点 
         if(mindepth == depth)
             minnum++;
         else if(mindepth > depth) {
@@ -6603,13 +6653,19 @@ void dfs(int index, int depth) {
             minnum = 1;
         }
     }
+    // dfs递归 
     for(int i = 0; i < v[index].size(); i++)
         dfs(v[index][i], depth + 1);
 }
+
 int main() {
+	
     int n, k, c;
     double p, r;
-    scanf("%d %lf %lf", &n, &p, &r);
+    
+    scanf("%d %lf %lf", &n, &p, &r); // 节点总数，根节点价格，利润率 
+    
+    // 构成树 
     for(int i = 0; i < n; i++) {
         scanf("%d", &k);
         for(int j = 0; j < k; j++) {
@@ -6617,7 +6673,9 @@ int main() {
             v[i].push_back(c);
         }
     }
+    
     dfs(0, 0);
+    
     printf("%.4f %d", p * pow(1 + r/100, mindepth), minnum);
     return 0;
 }
@@ -6797,12 +6855,18 @@ int main() {
 
 ```
 #include <iostream>
+
 using namespace std;
+
 struct node{
     int l, r;
-}a[100];
+} a[100];
+
 int maxn = -1, ans;
+
+// dfs算法 
 void dfs(int root, int index) {
+	// 遍历中更新maxn 
     if(index > maxn) {
         maxn = index;
         ans = root;
@@ -6810,12 +6874,16 @@ void dfs(int root, int index) {
     if(a[root].l != -1) dfs(a[root].l, index * 2);
     if(a[root].r != -1) dfs(a[root].r, index * 2 + 1);
 }
+
 int main() {
-    int n, root = 0, have[100] = {0};
-    cin >> n;
+
+    int n, root = 0, have[100] = { 0 };
+
+    cin >> n; // 节点总数 
+
     for (int i = 0; i < n; i++) {
         string l, r;
-        cin >> l >> r;
+        cin >> l >> r; // 左子树，右子树 
         if (l == "-") {
             a[i].l = -1;
         } else {
@@ -6829,8 +6897,13 @@ int main() {
             have[stoi(r)] = 1;
         }
     }
+    
+    // 根节点为 0 到 n-1 中 
     while (have[root] != 0) root++;
-    dfs(root, 1);
+    
+    // index从1开始 
+	dfs(root, 1);
+	
     if (maxn == n)
         cout << "YES " << ans;
     else
@@ -7505,34 +7578,51 @@ int main() {
 ```
 #include <iostream>
 #include <set>
-#include <vector>
+#include <vector>3
+
 using namespace std;
+
 int main() {
+
     int n, a, b, m;
-    scanf("%d", &n);
+    scanf("%d", &n); // couple的对数 
     vector<int> couple(100000);
+	
+	// couple初始化 
     for (int i = 0; i < 100000; i++)
         couple[i] = -1;
+	
+	// couple互相标记 
     for (int i = 0; i < n; i++) {
         scanf("%d%d", &a, &b);
         couple[a] = b;
         couple[b] = a;
     }
+	
+	// m个查询 
     scanf("%d", &m);
+
     vector<int> guest(m), isExist(100000);
+	
+	// 首先标记一遍有配偶的人的配偶标记为1 
     for (int i = 0; i < m; i++) {
         scanf("%d", &guest[i]);
         if (couple[guest[i]] != -1)
             isExist[couple[guest[i]]] = 1;
     }
     set<int> s;
+	
+	// 找出所有没有配偶的 
     for (int i = 0; i < m; i++)
         if (!isExist[guest[i]]) s.insert(guest[i]);
     printf("%d\n", s.size());
+	
+	// 打印所有没有配偶的 
     for (auto it = s.begin(); it != s.end(); it++) {
         if (it != s.begin()) printf(" ");
         printf("%05d", *it);
     }
+
     return 0;
 }
 ```
@@ -7754,17 +7844,25 @@ int main() {
 
 翻译：判断是否是Eulerian, semi-Eulerian, 还是 non-Eulerian.
 
-思路：没看懂
+思路：
+
+理解题意。
+
+Eulerian：所有节点有偶的度
+
+semi-Eulerian：除了两个结点的度是奇数其他都是偶数
 
 答案：
 
 ```
 #include <iostream>
 #include <vector>
+
 using namespace std;
 vector<vector<int> > v;
 vector<bool> visit;
 int cnt = 0;
+
 void dfs(int index) {
     visit[index] = true;
     cnt++;
@@ -7772,29 +7870,41 @@ void dfs(int index) {
         if (visit[v[index][i]] == false)
             dfs(v[index][i]);
 }
+
 int main() {
+
     int n, m, a, b, even = 0;
-    scanf("%d%d", &n, &m);
+    scanf("%d%d", &n, &m); // 节点数，边的数 
+
     v.resize(n + 1);
     visit.resize(n + 1);
+	
+	// 输入图 
     for (int i = 0; i < m; i++) {
-        scanf("%d%d", &a, &b);
+        scanf("%d%d", &a, &b); // 两个节点，双向边 
         v[a].push_back(b);
         v[b].push_back(a);
     }
+	
+	// 依照升序打印节点的度 
     for (int i = 1; i <= n; i++) {
         if (i != 1) printf(" ");
         printf("%d", v[i].size());
-        if (v[i].size() % 2 == 0) even++;
+        if (v[i].size() % 2 == 0) even++; // 记录度为偶数的节点数 
     }
+
     printf("\n");
+	
+	// 遍历，记录有连接的节点数 
     dfs(1);
+
     if (even == n && cnt == n)
         printf("Eulerian");
     else if(even == n - 2 && cnt == n)
         printf("Semi-Eulerian");
     else
-        printf("Non-Eulerian");
+        printf("Non-Eulerian"); // 不是连通图也是Non-Eulerian 
+
     return 0;
 }
 ```
@@ -7806,52 +7916,80 @@ int main() {
 
 思路：中间进行保存。树的遍历。
 
+1. 中序后序构建出树
+
+2. 层序遍历
+
+3. 每层一个数组，分为奇层与偶层
+
 答案：
 
 ```
 #include <iostream>
 #include <vector>
 #include <queue>
+
 using namespace std;
+
 vector<int> in, post, result[35];
 int n, tree[35][2], root;
+
 struct node {
     int index, depth;
 };
+
+// 中序：左根右 后序：左右根 
+// 注意index为引用，直接改变的tree与root的值了 
 void dfs(int &index, int inLeft, int inRight, int postLeft, int postRight) {
     if (inLeft > inRight) return;
-    index = postRight;
+    index = postRight; // 后序中的根 
     int i = 0;
-    while (in[i] != post[postRight]) i++;
+    while (in[i] != post[postRight]) i++; // 通过后序中的根找到中序中的根
+	// 遍历左子树 
     dfs(tree[index][0], inLeft, i - 1, postLeft, postLeft + (i - inLeft) - 1);
-    dfs(tree[index][1], i + 1, inRight, postLeft + (i - inLeft), postRight - 1);
+    // 遍历右子树 
+	dfs(tree[index][1], i + 1, inRight, postLeft + (i - inLeft), postRight - 1);
 }
+
+// 层序遍历 
 void bfs() {
     queue<node> q;
     q.push(node{root, 0});
     while (!q.empty()) {
         node temp = q.front();
         q.pop();
+        
+        // 每一层是一个vector 
         result[temp.depth].push_back(post[temp.index]);
+        
         if (tree[temp.index][0] != 0)
             q.push(node{tree[temp.index][0], temp.depth + 1});
         if (tree[temp.index][1] != 0)
             q.push(node{tree[temp.index][1], temp.depth + 1});
     }
 }
+
 int main() {
-    cin >> n;
+	
+    cin >> n; // 序列长度 
+    
+    // 输入中序序列与后序序列 
     in.resize(n + 1), post.resize(n + 1);
-    for (int i = 1; i <= n; i++) cin >> in[i];
+    for (int i = 1; i <= n; i++) cin >> in[i];  
     for (int i = 1; i <= n; i++) cin >> post[i];
+    
+    // 通过两个序列构建出树 
     dfs(root, 1, n, 1, n);
-    bfs();
-    printf("%d", result[0][0]);
+    
+    // 层序遍历 
+	bfs();
+    
+	printf("%d", result[0][0]); // 根 
     for (int i = 1; i < 35; i++) {
-        if (i % 2 == 1) {
+        if (i % 2 == 1) { // 奇数行 
             for (int j = 0; j < result[i].size(); j++)
                 printf(" %d", result[i][j]);
-        } else {
+        } else { // 偶数行
             for (int j = result[i].size() - 1; j >= 0; j--)
                 printf(" %d", result[i][j]);
         }
@@ -7957,28 +8095,46 @@ int main() {
 
 ```
 #include <iostream>
+
 using namespace std;
+
 struct node {
     string data;
     int l, r;
-}a[100];
+} a[100];
+
 string dfs(int root) {
+	// 没有左右子树 
     if(a[root].l == -1 && a[root].r == -1) return a[root].data;
-    if(a[root].l == -1 && a[root].r != -1)  return "(" +  a[root].data + dfs(a[root].r) + ")";
-    if(a[root].l != -1 && a[root].r != -1) return "(" +  dfs(a[root].l) + a[root].data + dfs(a[root].r) + ")";
+    // 只有右子树 // data为符号的情况 // 没有只有左子树的情况 
+	if(a[root].l == -1 && a[root].r != -1)  return "(" +  a[root].data + dfs(a[root].r) + ")";
+    // 左右子树都有的情况 
+	if(a[root].l != -1 && a[root].r != -1) return "(" +  dfs(a[root].l) + a[root].data + dfs(a[root].r) + ")";
 }
+
 int main() {
+
     int have[100] = {0}, n, root = 1;
-    cin >> n;
+    cin >> n; // 总节点数 
+	
+	// 输入树 
     for(int i  = 1; i <= n; i++) {
         cin >> a[i].data >> a[i].l >> a[i].r;
         if(a[i].l != -1) have[a[i].l] = 1;
         if(a[i].r != -1) have[a[i].r] = 1;
     }
+	
+	// 找到根节点 
     while(have[root] == 1) root++;
+	
+	// 遍历 
     string ans = dfs(root);
+	
+	// 最外层的括号，去除 
     if(ans[0] == '(') ans = ans.substr(1,ans.size()-2);
+
     cout << ans;
+
     return 0;
 }
 ```
@@ -8095,36 +8251,55 @@ int main() {
 
 翻译：首先负数，之后0到k，最后剩下的。
 
-思路：直接数组先排，之后按链表输出。
+思路：
+
+分成不同的区间排序，push进vector，再按顺序输出。
 
 答案：
 
 ```
 #include <iostream>
 #include <vector>
+
 using namespace std;
+
 struct node {
     int id, data, next;
 };
+
 int main() {
+
     int begin, n, k, s, d, e;
-    scanf("%d%d%d", &begin, &n, &k);
+    scanf("%d%d%d", &begin, &n, &k); // 初始地址，总节点数，k区间 
+
     node a[100010];
     vector<node> v, ans;
+
     for (int i = 0; i < n; i++) {
-        scanf("%d%d%d", &s, &d, &e);
+        scanf("%d%d%d", &s, &d, &e); // address data next 
         a[s] = {s, d, e};
     }
+	
+	// 链表按顺序压入v 
     for (; begin != -1; begin = a[begin].next)
         v.push_back(a[begin]);
+	
+	// 首先是小于0的 
     for (int i = 0; i < v.size(); i++)
         if (v[i].data < 0) ans.push_back(v[i]);
+	
+	// 接下来为0到k之间 
     for (int i = 0; i < v.size(); i++)
         if (v[i].data >= 0 && v[i].data <= k) ans.push_back(v[i]);
+	
+	// 接下来是大于k的 
     for (int i = 0; i < v.size(); i++)
         if (v[i].data > k) ans.push_back(v[i]);
+	
+	// 打印结果 
     for (int i = 0; i < ans.size() - 1; i++)
         printf("%05d %d %05d\n", ans[i].id, ans[i].data, ans[i + 1].id);
+	// 最后一个节点 
     printf("%05d %d -1\n", ans[ans.size() - 1].id, ans[ans.size() - 1].data);
     return 0;
 }
@@ -8257,30 +8432,39 @@ int main() {
 ```
 #include <iostream>
 #include <algorithm>
+
 using namespace std;
+
+// 翻转 
 string rev(string s) {
     reverse(s.begin(), s.end());
     return s;
 }
+
+// 两数相加 （大整数加法）
 string add(string s1, string s2) {
     string s = s1;
     int carry = 0;
     for (int i = s1.size() - 1; i >= 0; i--) {
-        s[i] = (s1[i] - '0' + s2[i] - '0' + carry) % 10 + '0';
-        carry = (s1[i] - '0' + s2[i] - '0' + carry) / 10;
+        s[i] = (s1[i] - '0' + s2[i] - '0' + carry) % 10 + '0'; // - '0' 变为int + '0' 变为char 
+        carry = (s1[i] - '0' + s2[i] - '0' + carry) / 10; // 进位 
     }
     if (carry > 0) s = "1" + s;
     return s;
 }
+
 int main() {
+	
     string s, sum;
     int n = 10;
-    cin >> s;
-    if (s == rev(s)) {
+    cin >> s; // 初始数字 
+    
+	if (s == rev(s)) {
         cout << s << " is a palindromic number.\n";
         return 0;
     }
-    while (n--) {
+    
+	while (n--) {
         sum = add(s, rev(s));
         cout << s << " + " << rev(s) << " = " << sum << endl;
         if (sum == rev(sum)) {
@@ -8751,7 +8935,11 @@ int main() {
 
 翻译：给一个树的层序遍历，判断它是不是堆，是大顶堆还是小顶堆。输出这个树的后序遍历
 
-思路：堆
+思路：
+
+给你层序遍历序列，判断是否是堆
+
+如果是，输出堆的后序遍历
 
 答案：
 
@@ -8827,35 +9015,47 @@ int main() {
 
 思路：map应用，逻辑题。
 
+与1121是相同的题型
+
 答案：
 
 ```
 #include <iostream>
 #include <vector>
 #include <map>
+
 using namespace std;
+
 int main() {
+
     int n, k, t1, t2;
     map<int,vector<int>> m;
-    scanf("%d%d", &n, &k);
+
+    scanf("%d%d", &n, &k); // 不相容产品的对数，货品组的个数 
+	
+	// 互相标记不相容的产品 
     for (int i = 0; i < n; i++) {
         scanf("%d%d", &t1, &t2);
         m[t1].push_back(t2);
         m[t2].push_back(t1);
     }
+
     while (k--) {
-        int cnt, flag = 0, a[100000] = {0};
-        scanf("%d", &cnt);
+        int cnt, flag = 0, a[100000] = { 0 };
+        scanf("%d", &cnt); // 这组货的个数 
         vector<int> v(cnt);
+        // 首先标记有可能的违禁品
         for (int i = 0; i < cnt; i++) {
             scanf("%d", &v[i]);
             a[v[i]] = 1;
         }
+        // 对每个货物 // 在清单中查找是否有不相容的 
         for (int i = 0; i < v.size(); i++)
             for (int j = 0; j < m[v[i]].size(); j++)
                 if (a[m[v[i]][j]] == 1) flag = 1;
         printf("%s\n",flag ? "No" :"Yes");
     }
+
     return 0;
 }
 ```
@@ -9119,38 +9319,56 @@ int main() {
 
 思路：堆问题
 
+输出路径dfs
+
 答案：
 
 ```
 #include <iostream>
 #include <vector>
+
 using namespace std;
 vector<int> v;
 int a[1009], n, isMin = 1, isMax = 1;
+
+// 打印路径 
 void dfs(int index) {
-    if (index * 2 > n && index * 2 + 1 > n) {
+    if (index * 2 > n && index * 2 + 1 > n) { // 走到头了，将路径打印出来 
         if (index <= n) {
             for (int i = 0; i < v.size(); i++)
                 printf("%d%s", v[i], i != v.size() - 1 ? " " : "\n");
         }
     } else {
-        v.push_back(a[index * 2 + 1]);
+    	// 一直向右走
+        v.push_back(a[index * 2 + 1]);  
         dfs(index * 2 + 1);
-        v.pop_back();
+        v.pop_back(); // 将向右走的弹出来 
+        
+        // 转向左走 
         v.push_back(a[index * 2]);
         dfs(index * 2);
-        v.pop_back();
+        v.pop_back(); // 将左的弹出来 
     }
 }
+
 int main() {
-    cin >> n;
-    for (int i = 1; i <= n; i++)
-        scanf("%d", &a[i]);
-    v.push_back(a[1]);
-    dfs(1);
-    for (int i = 2; i <= n; i++) {
-        if (a[i/2] > a[i]) isMin = 0;
-        if (a[i/2] < a[i]) isMax = 0;
+    
+	cin >> n; // 序列长度 
+    
+    // 输入层序遍历序列，从一开始 
+    for (int i = 1; i <= n; i++) {
+		scanf("%d", &a[i]);
+	}
+        
+    v.push_back(a[1]); // 压入根节点 
+    
+    // 打印路径 
+	dfs(1);
+    
+    // 判断最大堆还是最小堆 
+	for (int i = 2; i <= n; i++) {
+        if (a[i/2] > a[i]) isMin = 0; // 父节点大，不是最小堆 
+        if (a[i/2] < a[i]) isMax = 0; // 父节点小，不是最大堆
     }
     if (isMin == 1)
         printf("Min Heap");
@@ -9158,6 +9376,7 @@ int main() {
         printf("%s", isMax == 1 ? "Max Heap" : "Not Heap"); 
     return 0;
 }
+
 ```
 
 
@@ -9236,7 +9455,9 @@ int main() {
 
 次数相等，系数相加，printf("%.1f") 打印小数点技巧
 
-1009
+*1009*
+
+乘法，系数相乘，指数相加
 
 ### 素数
 
@@ -9255,7 +9476,14 @@ bool isprime(int n) {
 
 模板代码判断是否是素数
 
-1059
+*1059*
+
+```
+// 建立素数表，即prime[] = 1的为素数，即不是由相乘得到的即为素数。
+for(int i = 2; i * i < 500000; i++)
+        for(int j = 2; j * i < 500000; j++)
+            prime[j * i] = 0;
+```
 
 1152
 
@@ -9291,7 +9519,9 @@ int最高10位，long long最高18位，超过这个位数，考虑用大整数�
 
 加法，从低位向高位加
 
-1024
+*1024*
+
+reverse() // string反转
 
 ### 科学计数法
 
@@ -9335,7 +9565,13 @@ int gcd (int a, int b) {
 
 *1006*，1007，*1008*，1010，*1011*，1031，*1036*，*1042*，1044
 
-1046，1049，1056，
+1046，
+
+**1049（30分）**
+
+找规律，智力题，没搞懂
+
+1056
 
 *1063*
 
@@ -9343,7 +9579,9 @@ set的使用方式
 
 1065，1082，1085，1091，1096，1101
 
-1103，1104，1105，1108，1109，1113，1125，1126
+1103，1104，1105，1108，1109，1113，1125
+
+
 
 *1128*
 
@@ -9355,7 +9593,11 @@ abs应用
 
 1139
 
-1140，1142，1148，1154
+1140
+
+1142
+
+1148，1154
 
 ### map思想
 
@@ -9393,7 +9635,18 @@ cout << n;
 getline(cin, str) // 当str为string类型的时候
 ```
 
-*1022*，1039，1041，1047，1048，1050，1054，1071，1092，1112
+*1022*，1039，1041，1047
+
+
+*1048（25分）*
+
+用map标记
+
+1050，1054
+
+*1071（25分）*
+
+1092，1112
 
 *1116*
 
@@ -9405,7 +9658,16 @@ getline(cin, str) // 当str为string类型的时候
 
 1117，1120
 
-1121，1124，1144，1149
+
+1124，1144，
+
+*1121（25分）*
+
+双向标记
+
+*1149（25分）*
+
+双向标记
 
 ### 分类排序题
 
@@ -9458,14 +9720,30 @@ return a > b // 可以理解为当 a > b 时把a放在b前面
 
 ## 排队等待问题
 
-*1014*，1016，1017，1026
+*1014（30分）*
+
+1016，1017
+
+**1026（30分）**
+
+排队等待问题，与1014对比，同一类型，加入vip，超难
 
 --------------------------------------------------------------------------
 ## 字符串处理
 
 ### 数字与字符串相互转化
 
-*1001*，1005，1069，1132
+*1001*，1005，
+
+*1069*
+
+stoi() // string转int
+
+to_string() // int转string
+
+s.insert(0, 4 - s.length(), '0') // string插入
+
+1132
 
 ### 字符串单纯处理
 
@@ -9484,7 +9762,25 @@ string s;
 reverse(s.begin(), s.end()); // 翻转
 ```
 
-1084，1093，1136
+1084，1093，
+
+*1136*
+
+回文数
+
+1. char与int转化
+
+```
+char - '0' // char转化为int
+int + '0' // int转化为char 
+```
+
+2. string 翻转
+
+reverse(s.begin(), s.end());
+
+3. 大整数加法
+
 
 
 --------------------------------------------------------------------------
@@ -9508,7 +9804,9 @@ reverse(s.begin(), s.end()); // 翻转
 
 1097
 
-1133
+*1133（25分）*
+
+分成不同的区间
 
 *1032*: 
 
@@ -9538,12 +9836,63 @@ for(int i = s1; i != -1; i = node[i].next) {
 
 ## 排序
 
-1089，1098
+排序分类：
+
+1. 选择排序 --> 堆排序
+
+选择排序：从i到N-1中选择一个最小的，与第i个位置交换。重复n-1趟，完成排序。
+
+堆排序：通过最大堆排序。
+
+2. 插入排序 --> 希尔排序
+
+插入排序：整理扑克牌
+
+希尔排序：间隔的插入排序，再缩小间隔直到0
+
+3. 冒泡排序 --> 快速排序
+
+冒泡排序：一趟通过交换将最小的交换到第一个，再通过 n - 1趟，完成排序
+
+快速排序：分而治之，选一个主元，整个序列，左边小于主元，右边大于主元。后面左边再递归，右边再递归。
+
+4. 归并排序
+
+归并排序：分而治之，通过 two pointer的merge函数，将序列分成多份后merge。
+
+**1089**（25分）
+
+插入排序
+
+归并排序
+
+**1098**（25分）
+
+插入排序
+
+堆排序
+
+堆排序部分没看懂
+
 
 --------------------------------------------------------------------------
 ## 堆
 
-1147，1155
+堆：完全二叉树存储（数组），最大堆（根大），最小堆（根小）
+
+堆的插入：通过对比，将新的数交换到对应的位置
+
+完全二叉树：父节点为i/2，左子树为2i，右子树为2i+1（起始为0，则index * 2 + 1为左子树，index * 2 + 2为右子树）
+
+*1147*（30分）
+
+给一个树的层序遍历，判断它是不是堆，是大顶堆还是小顶堆。输出这个树的后序遍历
+
+*1155*（30分）
+
+输出路径
+
+
 
 --------------------------------------------------------------------------
 ## 树
@@ -9568,17 +9917,39 @@ vector<int> v[100]
 
 dfs算法，及其这题的树的表示法。
 
+寻找供应链最高价格的零售商
+
+*1106*
+
+寻找供应链中最便宜的零售商
+
 **1102**
 
 是道很好的题目综合性很强。
 
-1110，1115，1119，1127，1130
+*1110*
+
+若maxn等于n，即为完全二叉树
+
+1115，1119
+
+*1130*
+
+输出中缀表达式。
+
+精华为递归组成答案，一层套一层。
 
 1135，1143，1151
 
 ### 两个序列确定一棵树
 
 1020，1086，1138
+
+*1127*
+
+1. 中序后序构建出树（dfs）
+2. 层序遍历（bfs）
+3. 每层一个数组，分为奇层与偶层
 
 ### BST（二叉搜索树）
 
@@ -9603,9 +9974,15 @@ dfs算法，及其这题的树的表示法。
 
 ### 图的遍历，DFS，BFS
 
-1018，1021，1030，1053，1076，1079，1087，1106，1131，1134
+1018，1021，1030，1053，1076，1079，1087
+
+1131，1134
 
 1122，1150
+
+*1126（25分）*
+
+读懂题意
 
 ### 连通分量
 
