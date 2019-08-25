@@ -3169,34 +3169,48 @@ using namespace std;
 bool isMirror;
 vector<int> pre, post;
 
+// 开头与结尾 
 void getpost(int root, int tail) {
     if(root > tail) return ;
     int i = root + 1, j = tail;
-    if(!isMirror) { // 不是镜像 
+    if(!isMirror) { // 不是镜像
+    	// 左子树全部小于根，找到其结束的位置 
         while(i <= tail && pre[root] > pre[i]) i++;
-        while(j > root && pre[root] <= pre[j]) j--;
+        // 右子树全部大于根，找到其开始的位置
+		while(j > root && pre[root] <= pre[j]) j--;
     } else { // 是镜像 
         while(i <= tail && pre[root] <= pre[i]) i++;
         while(j > root && pre[root] > pre[j]) j--;
     }
-    if(i - j != 1) return ;
+    if(i - j != 1) return ; // 若开始位置与结束的位置不相邻，返回
+	// 遍历左子树 
     getpost(root + 1, j);
-    getpost(i, tail);
+    // 遍历右子树 
+	getpost(i, tail);
+	// 后序遍历，LRN 
     post.push_back(pre[root]);
 }
 
 int main() {
+	
     int n;
     scanf("%d", &n); // 序列长度 
-    pre.resize(n);
-    for(int i = 0; i < n; i++)
-        scanf("%d", &pre[i]); // 先序序列 
-    getpost(0, n - 1);
+    
+	pre.resize(n);
+    
+	for(int i = 0; i < n; i++)
+        scanf("%d", &pre[i]); // 先序序列（NLR）
+    
+    // 转化为后序LRN 
+	getpost(0, n - 1);
+	
+	// 不为n，表明不是先序序列，转化为镜面试试 
     if(post.size() != n) {
         isMirror = true;
         post.clear();
         getpost(0, n - 1);
     }
+    
     if(post.size() == n) {
         printf("YES\n%d", post[0]);
         for(int i = 1; i < n; i++)
@@ -4221,7 +4235,9 @@ int main() {
 
 翻译：给一串构成树的序列，已知该树是完全二叉搜索树，求它的层序遍历的序列
 
-思路：...
+思路：
+
+通过一个完全二叉搜索树的中序序列，求出其层序序列
 
 答案：
 
@@ -4230,27 +4246,43 @@ int main() {
 #include <vector>
 #include <algorithm>
 #include <cmath>
+
 using namespace std;
 vector<int> in, level;
+
 void levelorder(int start, int end, int index) {
     if(start > end) return ;
     int n = end - start + 1;
-    int l = log(n + 1) / log(2); // 除了最后一层的层数
-    int leave = n - (pow(2, l) - 1);// 最后一层的叶子节点数
-    int root = start + (pow(2, l - 1) - 1) + min((int)pow(2, l - 1), leave); // pow(2, l - 1) - 1是除了root结点所在层和最后一层外，左子树的结点个数，pow(2, l - 1) 是l+1层最多拥有的属于根结点左子树的结点个数，min(pow(2, l - 1), leave)是最后一个结点真正拥有的属于根结点左子树上的结点个数
+    int l = log(n + 1) / log(2); // 除了最后一层的层数（深度h） 
+    int leave = n - (pow(2, l) - 1);// 最后一层的叶子节点数（n - (2^h - 1)） 
+    /* 
+		pow(2, l - 1) - 1是除了root结点所在层和最后一层外，左子树的结点个数，
+		pow(2, l - 1) 是l+1层最多拥有的属于根结点左子树的结点个数，
+		min(pow(2, l - 1), leave)是最后一个结点真正拥有的属于根结点左子树上的结点个数
+    */
+	int root = start + (pow(2, l - 1) - 1) + min((int)pow(2, l - 1), leave); // 得到整个的左子树部分 
     level[index] = in[root];
-    levelorder(start, root - 1, 2 * index + 1);
-    levelorder(root + 1, end, 2 * index + 2);
+    levelorder(start, root - 1, 2 * index + 1); // 左子树递归 
+    levelorder(root + 1, end, 2 * index + 2); // 右子树递归 
 }
+
 int main() {
+	
     int n;
-    scanf("%d", &n);
-    in.resize(n);
+    scanf("%d", &n); // 节点个数 
+    
+	in.resize(n);
     level.resize(n);
-    for(int i = 0 ; i < n; i++)
-        scanf("%d", &in[i]);
-    sort(in.begin(), in.end());
+    
+	for(int i = 0 ; i < n; i++) {
+		scanf("%d", &in[i]); // 输入序列 
+	}
+    
+    // BST的中序序列为递增序列 
+	sort(in.begin(), in.end());
+	
     levelorder(0, n - 1, 0);
+    
     printf("%d", level[0]);
     for(int i = 1; i < n; i++)
         printf(" %d", level[i]);
@@ -5330,7 +5362,7 @@ int main() {
 
 思路：两种方法。注意读懂题目，求的是最长的“完美序列的长度”。
 
-分类？？不知道类型
+寻找最长的完美序列
 
 答案：
 
@@ -5342,17 +5374,27 @@ int main() {
 using namespace std;
 
 int main() {
+
     int n;
     long long p;
+
+	// 数的个数，p 
     scanf("%d%lld", &n, &p);
+
     vector<int> v(n);
+
+	// 输入数列 
     for (int i = 0; i < n; i++)
         cin >> v[i];
+	
+	// 递增排序 
     sort(v.begin(), v.end());
+
     int result = 0, temp = 0;
+
     for (int i = 0; i < n; i++) {
         for (int j = i + result; j < n; j++) {
-            if (v[j] <= v[i] * p) {
+            if (v[j] <= v[i] * p) { // v[j]为M，v[i]为m 
                 temp = j - i + 1; // j和i之间的距离为长度 
                 if (temp > result)
                     result = temp;
@@ -6098,23 +6140,31 @@ int main() {
 
 分类到数学问题中。
 
+// 因数的最大上限为sqrt(N) + 1
+
 答案：
 
 ```
 #include <iostream>
 #include <cmath>
+
 using namespace std;
+
 long int num, temp;
+
 int main(){
-    cin >> num;
-    int first = 0, len = 0, maxn = sqrt(num) + 1;
+
+    cin >> num; // 数字 
+    int first = 0, len = 0, maxn = sqrt(num) + 1 // 因数的最大上限为sqrt(N) + 1;
+
     for (int i = 2; i <= maxn; i++) {
         int j; 
         temp = 1;
         for (j = i; j <= maxn; j++) {
-            temp *= j;
-            if (num % temp != 0) break;
+            temp *= j; // 一段连续的序列能够除尽 
+            if (num % temp != 0) break; // 直到除不尽，退出 
         }
+        // 更新 
         if (j - i > len) {
             len = j - i;
             first = i;
@@ -6139,6 +6189,8 @@ int main(){
 
 思路：链表放在数组中排序。数组可以绝对的转化位置。
 
+用map来标记是否重复
+
 答案：
 
 ```
@@ -6151,7 +6203,7 @@ const int maxn = 100000;
 
 struct NODE {
     int address, key, next, num = 2 * maxn;
-}node[maxn];
+} node[maxn];
 bool exist[maxn];
 
 int cmp1(NODE a, NODE b){
@@ -6163,8 +6215,8 @@ int main() {
     scanf("%d%d", &begin, &n); // 开始节点 与 节点数量。
 	 
     for(int i = 0; i < n; i++) {
-        scanf("%d", &a); // 
-        scanf("%d%d", &node[a].key, &node[a].next);
+        scanf("%d", &a); // 地址 
+        scanf("%d%d", &node[a].key, &node[a].next); // 值与next 
         node[a].address = a;
     }
     
@@ -6172,23 +6224,29 @@ int main() {
         if(exist[abs(node[i].key)] == false) { // 第一次出现  
             exist[abs(node[i].key)] = true;
             node[i].num = cnt1;
-            cnt1++;
+            cnt1++; // 第一组序列排序 
         }
         else { // 出现过一次
             node[i].num = maxn + cnt2; // 排到后面去了 
-            cnt2++;
+            cnt2++; // 第二组序列排序 
         }
     }
+    
+	// 按照num标记的进行排序 
     sort(node, node + maxn, cmp1);
-    int cnt = cnt1 + cnt2;
-    for(int i = 0; i < cnt; i++) {
+    
+	int cnt = cnt1 + cnt2;
+    
+    // 链表打印有技巧 
+	for(int i = 0; i < cnt; i++) {
         if(i != cnt1 - 1 && i != cnt - 1) {
             printf("%05d %d %05d\n", node[i].address, node[i].key, node[i+1].address);
         } else {
             printf("%05d %d -1\n", node[i].address, node[i].key);
         }
     }
-    return 0;
+    
+	return 0;
 }
 ```
 
@@ -6265,38 +6323,67 @@ int main() {
 
 思路：二叉搜索树。
 
+数列从小到大排序，排序树的中序遍历一定为递增序列 
+
+以这个性质为线索
+
 答案：
 
 ```
 #include <iostream>
 #include <algorithm>
+
 using namespace std;
+
 int n, cnt, b[100];
+
 struct node {
     int data, l, r, index, lebel;
-}a[110];
+} a[110];
+
+// 层序排列 
 bool cmp(node x, node y) {
+	// 层小的排前面，相同层的index小的排前面 
     if (x.lebel != y.lebel) return x.lebel < y.lebel;
     return x.index < y.index;
 }
+
+// 中序遍历 LNR // index为层序排列用的序号，lebel为层 
 void dfs(int root, int index, int lebel) {
+	// 如果是叶节点 
     if (a[root].l == -1 && a[root].r == -1) {
         a[root] = {b[cnt++], a[root].l, a[root].r, index, lebel};
     } else {
+    	// 向左走（L） 
         if (a[root].l != -1) dfs(a[root].l, index * 2 + 1, lebel + 1);
-        a[root] = {b[cnt++], a[root].l, a[root].r, index, lebel};
-        if (a[root].r != -1) dfs(a[root].r, index * 2 + 2, lebel + 1);
+        // 赋值（N） 
+		a[root] = {b[cnt++], a[root].l, a[root].r, index, lebel};
+        // 向右走（R） 
+		if (a[root].r != -1) dfs(a[root].r, index * 2 + 2, lebel + 1);
     }
 }
+
 int main() {
-    cin >> n;
+
+    cin >> n; // 总节点数 
+	
+	// 数的左右index 
     for (int i = 0; i < n; i++)
         cin >> a[i].l >> a[i].r;
+	
+	// 题目给的数列 
     for (int i = 0; i < n; i++)
         cin >> b[i];
+	
+	// 数列从小到大排序，排序树的中序遍历一定为递增序列 
     sort(b, b + n);
+
+	// 中序遍历
     dfs(0, 0, 0);
+	
+	// 层序排列 
     sort(a, a + n, cmp);
+
     for (int i = 0; i < n; i++) {
         if (i != 0) cout << " ";
         cout << a[i].data;
@@ -6551,6 +6638,14 @@ int main() {
 
 思路：数学问题。逻辑题。
 
+1 * 4 * 0.1 = 0.4
+
+2 * 3 * 0.2 = 1.2
+
+3 * 2 * 0.3 = 1.8
+
+4 * 1 * 0.4 = 1.6
+
 答案：
 
 ```
@@ -6756,20 +6851,32 @@ int main() {
 #include <iostream>
 #include <cstdio>
 #include <string.h>
+
 using namespace std;
+
 int main() {
+
     int n, cnt = 0;
     char a[50], b[50];
     double temp, sum = 0.0;
-    cin >> n;
+
+    cin >> n; // 总输入个数 
+
     for(int i = 0; i < n; i++) {
-        scanf("%s", a);
-        sscanf(a, "%lf", &temp);
-        sprintf(b, "%.2f",temp);
-        int flag = 0;
+        
+		scanf("%s", a); // 输入字符 
+        
+		sscanf(a, "%lf", &temp); // 将a转化为浮点数 
+        
+		sprintf(b, "%.2f", temp); // 将temp转化为b（字符串），保留小数点后两位 
+        
+		int flag = 0;
+		
+		// 经过转化之后，若不相等，则为不合法的浮点数 
         for(int j = 0; j < strlen(a); j++)
             if(a[j] != b[j]) flag = 1;
-        if(flag || temp < -1000 || temp > 1000) {
+        
+		if(flag || temp < -1000 || temp > 1000) {
             printf("ERROR: %s is not a legal number\n", a);
             continue;
         } else {
@@ -6777,6 +6884,7 @@ int main() {
             cnt++;
         }
     }
+
     if(cnt == 1)
         printf("The average of 1 number is %.2f", sum);
     else if(cnt > 1)
@@ -9563,7 +9671,21 @@ int gcd (int a, int b) {
 
 ### 暂定逻辑题
 
-*1006*，1007，*1008*，1010，*1011*，1031，*1036*，*1042*，1044
+*1006（25分）*
+
+*1007（25分）*
+
+最大子列和，在线处理
+
+可以理解为two pointer
+
+*1008*，1010，*1011*，1031
+
+*1036（25分）*
+
+十分简单
+
+*1042*，1044
 
 1046，
 
@@ -9577,9 +9699,37 @@ int gcd (int a, int b) {
 
 set的使用方式
 
-1065，1082，1085，1091，1096，1101
+1065，1082
 
-1103，1104，1105，1108，1109，1113，1125
+**1085（25分）**
+
+从小到大排序，再代入公式。
+
+1091
+
+**1096（因式分解）**
+
+一个数，因数的最大上限为sqrt(N) + 1
+
+1101
+
+1103
+
+*1104（20分）*
+
+找规律，数学问题
+
+1105
+
+*1108（20分）*
+
+```
+sscanf() 与 sprintf() 的用法
+
+// 注意第一个参数，都为字符串，视为屏幕
+```
+
+1109，1113，1125
 
 
 
@@ -9802,7 +9952,9 @@ reverse(s.begin(), s.end());
 
 1074
 
-1097
+*1097（25分）*
+
+用map来标记是否重复
 
 *1133（25分）*
 
@@ -9919,7 +10071,7 @@ dfs算法，及其这题的树的表示法。
 
 寻找供应链最高价格的零售商
 
-*1106*
+*1106（25分）*
 
 寻找供应链中最便宜的零售商
 
@@ -9953,7 +10105,21 @@ dfs算法，及其这题的树的表示法。
 
 ### BST（二叉搜索树）
 
-1043，1064，1099
+BST：二叉搜索树
+
+特点：左子树小于根节点，右子树大于根节点
+
+**1043（25分）**
+
+**1064（30分）**
+
+BST的中序遍历为递增序列
+
+*1099（30分）*
+
+数列从小到大排序，排序树的中序遍历一定为递增序列 
+
+以这个性质为线索
 
 ### AVL树
 
