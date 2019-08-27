@@ -1392,28 +1392,32 @@ bool visit[510];
 vector<int> pre[510], path, temppath;
 
 void dfs(int v) {
-    temppath.push_back(v); // 塞入路径
-	// 到达原点 
+    temppath.push_back(v);
+	// 到达原点（PBMC） 
     if(v == 0) {
+    	// need为需要发出的，back为需要带回的 
         int need = 0, back = 0;
+        // 遍历当前路径 
         for(int i = temppath.size() - 1; i >= 0; i--) {
             int id = temppath[i];
-            if(weight[id] > 0) {
+            if(weight[id] > 0) { // 车站的车多出 
                 back += weight[id];
-            } else {
+            } else { // 车站的车缺少
+				// 带回的够补 
                 if(back > (0 - weight[id])) {
-                    back += weight[id];
-                } else {
-                    need += ((0 - weight[id]) - back);
+                    back += weight[id]; // 全部补上 
+                } else { // 带回的不够补 
+                    need += ((0 - weight[id]) - back); // 需要PBMC支援 
                     back = 0;
                 }
             }
         }
+        // 最少需求的 
         if(need < minNeed) {
             minNeed = need;
             minBack = back;
             path = temppath;
-        } else if(need == minNeed && back < minBack) {
+        } else if(need == minNeed && back < minBack) { // 需求相等情况，选最少带回的 
             minBack = back;
             path = temppath;
         }
@@ -1427,17 +1431,23 @@ void dfs(int v) {
 }
 
 int main() {
-	// 初始化e与dist都为inf 
+	
+	// 初始化e与dist都为inf
     fill(e[0], e[0] + 510 * 510, inf);
     fill(dis, dis + 510, inf);
-    // 每个车站的最大容量，车站的总数，有问题车站的编号，路的数量 
+    
+    // PBMC由编号0代表 
+    
+	// 每个车站的最大容量，车站的总数，有问题车站的编号，路的数量 
     scanf("%d%d%d%d", &cmax, &n, &sp, &m);
-    // 每个车站当前的车的数量 
+    
+	// 每个车站当前的车的数量 （点权） 
     for(int i = 1; i <= n; i++) {
         scanf("%d", &weight[i]);
         weight[i] = weight[i] - cmax / 2; // 比一半大为正，比一半小为负 
     }
-    // 车站与车站之间的边，有权 
+    
+	// 车站与车站之间的边，有权（边权，距离） 
     for(int i = 0; i < m; i++) {
         int a, b;
         scanf("%d%d", &a, &b);
@@ -1445,9 +1455,9 @@ int main() {
         e[b][a] = e[a][b];
     }
     
-    dis[0] = 0; // 初始原点为0 
+    dis[0] = 0; // 初始原点为0，即PBMC
     
-    // Dijkstra求最短路径
+    // Dijkstra求最短路径（单源最短路径，PBMC到SP） 
 	for(int i = 0; i <= n; i++) {
 		// 找dist最近的那个赋给u 
         int u = -1, minn = inf;
@@ -1463,7 +1473,9 @@ int main() {
         for(int v = 0; v <= n; v++) {
             if(visit[v] == false && e[u][v] != inf) {
                 if(dis[v] > dis[u] + e[u][v]) { // 从u走距离更短 
-                    dis[v] = dis[u] + e[u][v];
+                    // 更新dis 
+					dis[v] = dis[u] + e[u][v];
+                    // 更新path 
                     pre[v].clear();
                     pre[v].push_back(u);
                 }else if(dis[v] == dis[u] + e[u][v]) { // 相同长度的路径 
@@ -1546,6 +1558,7 @@ using namespace std;
 vector<int> post, in, level(100000, -1);
 
 // root：后序根节点的位置，start：中序的start，end：中序的end，index：在层序中的序号 
+// 后序LRN，中序LNR 
 void pre(int root, int start, int end, int index) {
     if(start > end) return ;
     int i = start;
@@ -1553,7 +1566,7 @@ void pre(int root, int start, int end, int index) {
     level[index] = post[root];
     // 左子树在后序中根节点的位置，在中序中的start和end，在层序中左子树为2*index+1
     pre(root - 1 - end + i, start, i - 1, 2 * index + 1); 
-    // 右子树在后序中根节点的位置，在中序中的start和end，在层序中左子树为2*index+1
+    // 右子树在后序中根节点的位置，在中序中的start和end，在层序中左子树为2*index+2
     pre(root - 1, i + 1, end, 2 * index + 2);
 }
 
@@ -2390,6 +2403,7 @@ void dfs(int v) {
     if(v == s) { // 从终点一直走到起点
     	// 计算总路费 
         int tempcost = 0;
+        // 遍历当前走的这条路径，计算路费 
         for(int i = temppath.size() - 1; i > 0; i--) {
             int id = temppath[i], nextid = temppath[i-1];
             tempcost += cost[id][nextid];
@@ -2405,13 +2419,14 @@ void dfs(int v) {
     for(int i = 0; i < pre[v].size(); i++) {
 		dfs(pre[v][i]);
 	}
-    temppath.pop_back();
+    temppath.pop_back(); // 这条路走到头了，弹出来 
 }
 
 int main() {
     
 	fill(e[0], e[0] + 510 * 510, inf);
     fill(dis, dis + 510, inf);
+    
     scanf("%d%d%d%d", &n, &m, &s, &d); // 城市数量，边的数量，开始点，结束点
 	 
 	// 输入边与路费 
@@ -2424,7 +2439,7 @@ int main() {
         cost[b][a] = cost[a][b];
     }
     
-    // Dijksta算法开始 
+    // Dijksta算法开始 （生成最短路径） 
     pre[s].push_back(s); // 先压入初始点 
     dis[s] = 0;
     for(int i = 0; i < n; i++) {
@@ -2452,6 +2467,7 @@ int main() {
         }
     }
     
+    // 遍历最短路径，选出最优路径 
     dfs(d);
     
     // 打印结果 
@@ -3624,18 +3640,24 @@ struct NODE {
 vector<NODE> v;
 vector<int> path;
 
+// 初始参数0, 1, v[0].w 
 void dfs(int index, int nodeNum, int sum) {
+	// 大于目标值，不用继续了 
     if(sum > target) return ;
+    // 找到目标值 
     if(sum == target) {
-        if(v[index].child.size() != 0) return;
+        if(v[index].child.size() != 0) return; // 不是叶节点，返回
+		// 顺序打印路径上节点的权值 
         for(int i = 0; i < nodeNum; i++)
             printf("%d%c", v[path[i]].w, i != nodeNum - 1 ? ' ' : '\n');
         return ;
     }
     for(int i = 0; i < v[index].child.size(); i++) {
-        int node = v[index].child[i];
+        // 记录路径 
+		int node = v[index].child[i];
         path[nodeNum] = node;
-        dfs(node, nodeNum + 1, sum + v[node].w);
+        // 递归遍历 
+		dfs(node, nodeNum + 1, sum + v[node].w);
     }
     
 }
@@ -3645,20 +3667,27 @@ int cmp1(int a, int b) {
 }
 
 int main() {
+	
     int n, m, node, k;
     scanf("%d %d %d", &n, &m, &target); // 总节点数，非叶子节点数，目标权值 
-    v.resize(n), path.resize(n);
-    for(int i = 0; i < n; i++)
+    
+	v.resize(n), path.resize(n);
+    
+    // 节点的权值 
+	for(int i = 0; i < n; i++)
         scanf("%d", &v[i].w); // 权值 
-    for(int i = 0; i < m; i++) {
-        scanf("%d %d", &node, &k);
+    
+	for(int i = 0; i < m; i++) {
+        scanf("%d %d", &node, &k); // 节点id，孩子数 
         v[node].child.resize(k);
         for(int j = 0; j < k; j++)
             scanf("%d", &v[node].child[j]);
-        sort(v[node].child.begin(), v[node].child.end(), cmp1);
+        sort(v[node].child.begin(), v[node].child.end(), cmp1); // 孩子权值大的排在前面 
     }
-    dfs(0, 1, v[0].w);
-    return 0;
+    
+	dfs(0, 1, v[0].w);
+    
+	return 0;
 }
 ```
 
@@ -4733,16 +4762,16 @@ int main() {
     string s;
     cin >> s;
     int i = 0;
-    while (s[i] != 'E') i++;
+    while (s[i] != 'E') i++; // E的位置 
     string t = s.substr(1, i-1);
-    int n = stoi(s.substr(i+1));
-    if (s[0] == '-') cout << "-";
-    if (n < 0) {
+    int n = stoi(s.substr(i+1)); // E后面的指数 
+    if (s[0] == '-') cout << "-"; // 正负 
+    if (n < 0) { // 指数<0
         cout << "0.";
         for (int j = 0; j < abs(n) - 1; j++) cout << '0';
         for (int j = 0; j < t.length(); j++)
-            if (t[j] != '.') cout << t[j];
-    } else {
+            if (t[j] != '.') cout << t[j]; // 除了点其他按序输出 
+    } else { // 指数>0
         cout << t[0];
         int cnt, j;
         for (j = 2, cnt = 0; j < t.length() && cnt < n; j++, cnt++) cout << t[j];
@@ -4896,30 +4925,38 @@ vector<vector<int>> v;
 int bfs(node tnode) {
     bool inq[1010] = {false};
     queue<node> q;
+    
     q.push(tnode);
     inq[tnode.id] = true;
     int cnt = 0;
-    while(!q.empty()) {
+    
+	while(!q.empty()) {
         node top = q.front(); // 队列中取一个出来 
         q.pop();
         int topid = top.id;
-        for(int i = 0; i < v[topid].size(); i++) {
-            int nextid = v[topid][i]; // topid的关注者 
+    
+	    for(int i = 0; i < v[topid].size(); i++) {
+            int nextid = v[topid][i]; // topid的关注者
+            // 若这个关注者未被访问过（入队过） 
             if(inq[nextid] == false && top.layer < l) {
-                node next = {nextid, top.layer + 1};
+                // 形成next并压入q 
+				node next = {nextid, top.layer + 1};
                 q.push(next);
-                inq[next.id] = true;
-                cnt++;
+                inq[next.id] = true; // 标记被访问过了 
+                cnt++; // 计数 
             }
         }
     }
-    return cnt;
+    
+	return cnt;
 }
 
 int main() {
+	
     scanf("%d %d", &n, &l); // 用户人数，几层 
     v.resize(n + 1);
-    for(int i = 1; i <= n; i++) {
+    
+	for(int i = 1; i <= n; i++) {
         scanf("%d", &m);
         for(int j = 0; j < m; j++) {
             int temp;
@@ -4927,13 +4964,16 @@ int main() {
             v[temp].push_back(i);
         }
     }
-    scanf("%d", &k);
+    
+	scanf("%d", &k); // k个查询 
     int tid;
+    
     for(int i = 0; i < k; i++) {
         scanf("%d", &tid); // 从tid开始转发 
         node tnode = {tid, 0}; // id，layer 
         printf("%d\n", bfs(tnode));
     }
+    
     return 0;
 }
 ```
@@ -5309,27 +5349,36 @@ int cmp1(stu a, stu b) {
 }
 
 int main() {
+	
     int n, low, high, cnt = 0;
-    scanf("%d", &n);
-    vector<stu> v(n);
+    scanf("%d", &n); // 学生总数 
+    
+	vector<stu> v(n);
     for(int i = 0; i < n; i++) {
         scanf("%s %s %d", v[i].name, v[i].id, &v[i].grade);
     }
-    scanf("%d %d", &low, &high);
-    for(int i = 0; i < n; i++) {
+    
+    scanf("%d %d", &low, &high); // 区间 
+    
+	for(int i = 0; i < n; i++) {
         if(v[i].grade < low || v[i].grade > high) {
-            v[i].grade = -1;
+            v[i].grade = -1; // 区间外的标为-1 
         } else {
             cnt++;
         }
     }
+    
+    // 排序，成绩从大到小 
     sort(v.begin(), v.end(), cmp1);
+    
     for(int i = 0; i < cnt; i++) {
         printf("%s %s\n", v[i].name, v[i].id);
     }
+    
     if(cnt == 0)
         printf("NONE");
-    return 0;
+    
+	return 0;
 }
 ```
 
@@ -5452,38 +5501,51 @@ int main() {
 using namespace std;
 vector<int> pre, in, post,value;
 
+// 先序NLR，中序LNR
+// root为前序中的下标，start与end为中序中的下标 
 void postorder(int root, int start, int end) {
     if (start > end) return;
     int i = start;
+    // 在中序中找到对应的根 
     while (i < end && in[i] != pre[root]) i++;
+    // 对应遍历中序的左子树与右子树，递归 
     postorder(root + 1, start, i - 1);
     postorder(root + 1 + i - start, i + 1, end);
-    post.push_back(pre[root]);
+    post.push_back(pre[root]); // 左右子树遍历完了，push进根 
 }
 
 int main() {
+	
     int n;
     scanf("%d", &n);
-    char str[5];
+    
+	char str[5];
     stack<int> s;
     int key=0;
-    while (~scanf("%s", str)) {
+    
+    // push为先序序列，pop为中序序列
+	// 前中后序中均保存索引值，然后用value存储具体的值 // 因为可能有多个节点的值相同的情况下 
+	while (~scanf("%s", str)) {
         if (strlen(str) == 4) {
             int num;
             scanf("%d", &num);
-            value.push_back(num);
-            pre.push_back(key);
+            value.push_back(num); // value为key对应的索引 
+            pre.push_back(key); // push为前序 
             s.push(key++);
         } else {
-            in.push_back(s.top());
+            in.push_back(s.top()); // pop为中序 
             s.pop();
         }
     }
-    postorder(0, 0, n - 1);
-    printf("%d", value[post[0]]);
-    for (int i = 1; i < n; i++)
+    
+	postorder(0, 0, n - 1);
+    
+	printf("%d", value[post[0]]);
+    
+	for (int i = 1; i < n; i++)
         printf(" %d",value[post[i]]);
-    return 0;
+    
+	return 0;
 }
 ```
 
@@ -5600,11 +5662,15 @@ int main() {
 ```
 #include <iostream>
 #include <cmath>
+
 using namespace std;
 long long a, b, c, d;
+
 long long gcd(long long t1, long long t2) {
     return t2 == 0 ? t1 : gcd(t2, t1 % t2);
 }
+
+// 化简 
 void func(long long m, long long n) {
     if (m * n == 0) {
         printf("%s", n == 0 ? "Inf" : "0");
@@ -5625,8 +5691,12 @@ void func(long long m, long long n) {
     m = m / t; n = n / t;
     printf("%lld/%lld%s", m, n, flag ? ")" : "");
 }
+
 int main() {
+	
+	// 输入两个分数 
     scanf("%lld/%lld %lld/%lld", &a, &b, &c, &d);
+
     func(a, b); printf(" + "); func(c, d); printf(" = "); func(a * d + b * c, b * d); printf("\n");
     func(a, b); printf(" - "); func(c, d); printf(" = "); func(a * d - b * c, b * d); printf("\n");
     func(a, b); printf(" * "); func(c, d); printf(" = "); func(a * c, b * d); printf("\n");
@@ -6403,30 +6473,41 @@ int main() {
 ```
 #include <iostream>
 #include <string>
+
 using namespace std;
+
 string a[13] = {"tret", "jan", "feb", "mar", "apr", "may", "jun", "jly", "aug", "sep", "oct", "nov", "dec"};
 string b[13] = {"####", "tam", "hel", "maa", "huh", "tou", "kes", "hei", "elo", "syy", "lok", "mer", "jou"};
 string s;
 int len;
+
+// 地球数字转化为火星数字 
 void func1(int t) {
-    if (t / 13) cout << b[t / 13];
+    if (t / 13) cout << b[t / 13]; // 第一位 
     if ((t / 13) && (t % 13)) cout << " ";
-    if (t % 13 || t == 0) cout << a[t % 13];
+    if (t % 13 || t == 0) cout << a[t % 13]; // 第二位 
 }
+
+// 火星数字转化为地球数字 
 void func2() {
-    int t1 = 0, t2 = 0;
+    int t1 = 0, t2 = 0;  
     string s1 = s.substr(0, 3), s2;
     if (len > 4) s2 = s.substr(4, 3);
+    // 寻找火星数字对应的t1，t2 
     for (int j = 1; j <= 12; j++) {
         if (s1 == a[j] || s2 == a[j]) t2 = j;
         if (s1 == b[j]) t1 = j;
     }
     cout << t1 * 13 + t2;
 }
+
 int main() {
+
     int n;
-    cin >> n;
+    cin >> n; // 有几个待转化的数字 
+
     getchar();
+
     for (int i = 0; i < n; i++) {
         getline(cin, s);
         len = s.length();
@@ -6436,6 +6517,7 @@ int main() {
             func2();
         cout << endl;
     }
+
     return 0;
 }
 ```
@@ -7383,45 +7465,65 @@ int main() {
 ```
 #include <iostream>
 #include <vector>
+
 using namespace std;
+
 struct node {
     int v;
     struct node *left, *right;
 };
+
 node* build(node *root, int v) {
-    if(root == NULL) {
+    if(root == NULL) { // 插入节点 
         root = new node();
         root->v = v;
         root->left = root->right = NULL;
-    } else if(v <= root->v)
-        root->left = build(root->left, v);
-    else
-        root->right = build(root->right, v);
+    } else if(v <= root->v) { // 小于，向左走 
+		root->left = build(root->left, v);
+	}
+    else { // 大于，向右走 
+		root->right = build(root->right, v);
+	}
     return root;
 }
+
 vector<int> num(1000);
+
 int maxdepth = -1;
+
+// 遍历BST 
 void dfs(node *root, int depth) {
+	// 记录最大的层数 
     if(root == NULL) {
         maxdepth = max(depth, maxdepth);
         return ;
     }
+    // 记录每层的节点个数 
     num[depth]++;
     dfs(root->left, depth + 1);
     dfs(root->right, depth + 1);
     
 }
+
 int main() {
-    int n, t;
-    scanf("%d", &n);
-    node *root = NULL;
-    for(int i = 0; i < n; i++) {
+    
+	int n, t;
+    scanf("%d", &n); // 需要插入的数的数量 
+    
+	node *root = NULL;
+    
+    // 构建树 
+	for(int i = 0; i < n; i++) {
         scanf("%d", &t);
-        root = build(root, t);
+        root = build(root, t); // 插入，返回node root 
     }
-    dfs(root, 0);
-    printf("%d + %d = %d", num[maxdepth-1], num[maxdepth-2], num[maxdepth-1] + num[maxdepth-2]);
-    return 0;
+    
+    // 遍历 
+	dfs(root, 0);
+    
+	printf("%d + %d = %d", num[maxdepth-1], num[maxdepth-2], num[maxdepth-1] + num[maxdepth-2]);
+    
+	return 0;
 }
 ```
 
@@ -7602,36 +7704,63 @@ int main() {
 ```
 #include <iostream>
 #include <vector>
+
 using namespace std;
+
 vector<int> in, pre, post;
 bool unique = true;
+
+// 获取中序序列 // 先序NLR 后序LRN 
 void getIn(int preLeft, int preRight, int postLeft, int postRight) {
-    if(preLeft == preRight) {
-        in.push_back(pre[preLeft]);
-        return;
+    
+	if(preLeft == preRight) {
+        
+		in.push_back(pre[preLeft]);
+        
+		return;
     }
-    if (pre[preLeft] == post[postRight]) {
-        int i = preLeft + 1;
-        while (i <= preRight && pre[i] != post[postRight-1]) i++;
-        if (i - preLeft > 1)
+    
+	// 确定根节点 
+    
+	if (pre[preLeft] == post[postRight]) {
+    
+	    int i = preLeft + 1;
+        // 以后序的根结点的前面一个结点作为参考，寻找这个结点在前序的位置
+    
+	    while (i <= preRight && pre[i] != post[postRight-1]) i++;
+    
+	    if (i - preLeft > 1)
             getIn(preLeft + 1, i - 1, postLeft, postLeft + (i - preLeft - 1) - 1);
         else
             unique = false;
-        in.push_back(post[postRight]);
-        getIn(i, preRight, postLeft + (i - preLeft - 1), postRight - 1);
+    
+	    in.push_back(post[postRight]);
+    
+	    getIn(i, preRight, postLeft + (i - preLeft - 1), postRight - 1);
     }
 }
+
 int main() {
+	
     int n;
-    scanf("%d", &n);
-    pre.resize(n), post.resize(n);
-    for (int i = 0; i < n; i++)
+    scanf("%d", &n); // 序列个数 
+    
+	pre.resize(n), post.resize(n);
+    
+    // 输入先序序列 
+	for (int i = 0; i < n; i++)
         scanf("%d", &pre[i]);
-    for (int i = 0; i < n; i++)
+    
+    // 输入后序序列 
+	for (int i = 0; i < n; i++)
         scanf("%d", &post[i]);
+    
+	// 获取中序序列    
     getIn(0, n-1, 0, n-1);
-    printf("%s\n%d", unique == true ? "Yes" : "No", in[0]);
-    for (int i = 1; i < in.size(); i++)
+    
+	printf("%s\n%d", unique == true ? "Yes" : "No", in[0]);
+    
+	for (int i = 1; i < in.size(); i++)
         printf(" %d", in[i]);
     printf("\n");
     return 0;
@@ -8776,52 +8905,78 @@ int main() {
 #include <cctype>
 #include <vector>
 #include <unordered_map>
+
 using namespace std;
+
 struct node {
     string school;
     int tws, ns;
 };
+
 bool cmp(node a, node b) {
     if (a.tws != b.tws)
-        return a.tws > b.tws;
+        return a.tws > b.tws; // 先按总成绩 
     else if (a.ns != b.ns)
-        return a.ns < b.ns;
+        return a.ns < b.ns; // 再按总人数 
     else
-        return a.school < b.school;
+        return a.school < b.school; // 最后按学校 
 }
+
 int main() {
+
     int n;
-    scanf("%d", &n);
+    scanf("%d", &n); // 数据条数 
+
     unordered_map<string, int> cnt;
     unordered_map<string, double> sum;
+
     for (int i = 0; i < n; i++) {
-        string id, school;
-        cin >> id;
-        double score;
-        scanf("%lf", &score);
+        
+		string id, school;
+        
+		cin >> id; // 输入id 
+        
+		double score;
+        scanf("%lf", &score); // 输入成绩 
+        
+        // 输入学校并化为小写 
         cin >> school;
         for (int j = 0; j < school.length(); j++)
             school[j] = tolower(school[j]);
-        if (id[0] == 'B')
+        
+        // 初级除1.5，顶级乘1.5 
+		if (id[0] == 'B')
             score = score / 1.5;
         else if (id[0] == 'T')
             score = score * 1.5;
-        sum[school] += score;
-        cnt[school]++;
+        
+        sum[school] += score; // 学校总成绩 
+        cnt[school]++; // 学校总人数 
     }
+
     vector<node> ans;
-    for (auto it = cnt.begin(); it != cnt.end(); it++)
-        ans.push_back(node{it->first, (int)sum[it->first], cnt[it->first]});
+
+	// push每个学校 
+    for (auto it = cnt.begin(); it != cnt.end(); it++){
+    	// node为{学校名称，学校总成绩，学校总人数} 
+    	ans.push_back(node{it->first, (int)sum[it->first], cnt[it->first]});
+	}
+        
+	// 按照规则排序 
     sort(ans.begin(), ans.end(), cmp);
+
     int rank = 0, pres = -1;
+
     printf("%d\n", (int)ans.size());
+
     for (int i = 0; i < ans.size(); i++) {
-        if (pres != ans[i].tws) rank = i + 1;
+        if (pres != ans[i].tws) rank = i + 1; // 不等的情况rank + 1 
         pres = ans[i].tws;
         printf("%d ", rank);
         cout << ans[i].school;
         printf(" %d %d\n", ans[i].tws, ans[i].ns);
     }
+
     return 0;
 }
 ```
@@ -8896,31 +9051,47 @@ int main() {
 #include <iostream>
 #include <vector>
 #include <map>
+
 using namespace std;
+
 map<int, bool> mp;
+
 int main() {
+
     int m, n, u, v, a;
-    scanf("%d %d", &m, &n);
+    scanf("%d %d", &m, &n); // 需要被检查的节点对数，BST节点总个数 
+
     vector<int> pre(n);
+
     for (int i = 0; i < n; i++) {
-        scanf("%d", &pre[i]);
-        mp[pre[i]] = true;
+        scanf("%d", &pre[i]); // BST先序遍历 
+        mp[pre[i]] = true; // 标记树中所有出现过的结点 
     }
+
     for (int i = 0; i < m; i++) {
-        scanf("%d %d", &u, &v);
+        scanf("%d %d", &u, &v); // 输入u与v
+		
+		// 如果u与v分别在a的左右（右左），a即为所需要的父节点 
         for(int j = 0; j < n; j++) {
             a = pre[j];
             if ((a >= u && a <= v) || (a >= v && a <= u)) break;
         } 
-        if (mp[u] == false && mp[v] == false)
-            printf("ERROR: %d and %d are not found.\n", u, v);
-        else if (mp[u] == false || mp[v] == false)
-            printf("ERROR: %d is not found.\n", mp[u] == false ? u : v);
-        else if (a == u || a == v)
-            printf("%d is an ancestor of %d.\n", a, a == u ? v : u);
-        else
-            printf("LCA of %d and %d is %d.\n", u, v, a);
+        
+		if (mp[u] == false && mp[v] == false) { // u与v都不存在的情况 
+			printf("ERROR: %d and %d are not found.\n", u, v);
+		}
+        else if (mp[u] == false || mp[v] == false) { // u与v其中一个不存在的情况 
+        	printf("ERROR: %d is not found.\n", mp[u] == false ? u : v);
+		}
+        else if (a == u || a == v) { // 与LCA相等的情况 
+        	printf("%d is an ancestor of %d.\n", a, a == u ? v : u);
+		}
+        else { // 正常情况 
+        	printf("LCA of %d and %d is %d.\n", u, v, a);
+		}
+            
     }
+
     return 0;
 }
 ```
@@ -9244,41 +9415,70 @@ int main() {
 #include <iostream>
 #include <vector>
 #include <map>
+
 using namespace std;
 map<int, int> pos;
 vector<int> in, pre;
+
+// 初始参数1, n, 1, a, b
+// 中序LNR，先序NLR 
 void lca(int inl, int inr, int preRoot, int a, int b) {
     if (inl > inr) return;
     int inRoot = pos[pre[preRoot]], aIn = pos[a], bIn = pos[b];
-    if (aIn < inRoot && bIn < inRoot)
-        lca(inl, inRoot-1, preRoot+1, a, b);
-    else if ((aIn < inRoot && bIn > inRoot) || (aIn > inRoot && bIn < inRoot))
-        printf("LCA of %d and %d is %d.\n", a, b, in[inRoot]);
-    else if (aIn > inRoot && bIn > inRoot)
-        lca(inRoot+1, inr, preRoot+1+(inRoot-inl), a, b);
-    else if (aIn == inRoot)
-            printf("%d is an ancestor of %d.\n", a, b);
-    else if (bIn == inRoot)
-            printf("%d is an ancestor of %d.\n", b, a);
+    
+	// 在中序序列中 
+	// a，b都在root的左边，在左边继续找 
+	if (aIn < inRoot && bIn < inRoot) {
+		lca(inl, inRoot-1, preRoot+1, a, b);
+	} // a，b在一左一右，root即为LCA 
+    else if ((aIn < inRoot && bIn > inRoot) || (aIn > inRoot && bIn < inRoot)) {
+		printf("LCA of %d and %d is %d.\n", a, b, in[inRoot]);
+	} // a，b都在root的右边，在右边继续找
+    else if (aIn > inRoot && bIn > inRoot) {
+		lca(inRoot+1, inr, preRoot+1+(inRoot-inl), a, b);
+	}
+    else if (aIn == inRoot) {
+		printf("%d is an ancestor of %d.\n", a, b);
+	}
+    else if (bIn == inRoot) {
+		printf("%d is an ancestor of %d.\n", b, a);
+	} 
+
 }
+
 int main() {
+
     int m, n, a, b;
-    scanf("%d %d", &m, &n);
+    scanf("%d %d", &m, &n); // 需要被检查的对的个数，树的节点总数 
+
     in.resize(n + 1), pre.resize(n + 1);
+	
+	// 输入中序序列 
     for (int i = 1; i <= n; i++) {
         scanf("%d", &in[i]);
-        pos[in[i]] = i;
+        pos[in[i]] = i; // 记录中序序列的节点位置 
     }
+	
+	// 输入先序序列 
     for (int i = 1; i <= n; i++) scanf("%d", &pre[i]);
+
     for (int i = 0; i < m; i++) {
+    	
+    	// 输入一对数 
         scanf("%d %d", &a, &b);
-        if (pos[a] == 0 && pos[b] == 0)
-            printf("ERROR: %d and %d are not found.\n", a, b);
-        else if (pos[a] == 0 || pos[b] == 0)
-            printf("ERROR: %d is not found.\n", pos[a] == 0 ? a : b);
-        else
-            lca(1, n, 1, a, b);
+        
+		if (pos[a] == 0 && pos[b] == 0) {
+			printf("ERROR: %d and %d are not found.\n", a, b);
+		}
+        else if (pos[a] == 0 || pos[b] == 0) {
+        	printf("ERROR: %d is not found.\n", pos[a] == 0 ? a : b);
+		}
+        else {
+        	lca(1, n, 1, a, b);
+		}
+		
     }
+
     return 0;
 }
 ```
@@ -9294,25 +9494,37 @@ int main() {
 ```
 #include <iostream>
 #include <string>
+#include <cmath>
+
 using namespace std;
+
+// 素数检测 
 bool isPrime(int n) {
     if (n == 0 || n == 1) return false;
-    for (int i = 2; i * i <= n; i++)
+    int sqr = int(sqrt(n * 1.0));
+	for (int i = 2; i <= sqr; i++)
         if (n % i == 0) return false;
     return true;
 }
+
 int main() {
+
     int l, k;
     string s;
-    cin >> l >> k >> s;
+    cin >> l >> k >> s; // 字符串的长度，需要找的第一个连续的素数的长度，题目给的字符串 
+
     for (int i = 0; i <= l - k; i++) {
-        string t = s.substr(i, k);
-        int num = stoi(t);
-        if (isPrime(num)) {
+    	
+        string t = s.substr(i, k); // 截取k长度的字符串
+		int num = stoi(t); // 转化为int        
+        // 检测是否是素数 
+		if (isPrime(num)) {
             cout << t;
             return 0;
         }
-    }
+    
+	}
+
     cout << "404\n";
     return 0;
 }
@@ -9559,11 +9771,11 @@ int main() {
 
 多项式乘法为，系数相乘，次数相加，逐项累乘并相加
 
-*1002*
+*1002（25分）*
 
 次数相等，系数相加，printf("%.1f") 打印小数点技巧
 
-*1009*
+*1009（25分）*
 
 乘法，系数相乘，指数相加
 
@@ -9580,11 +9792,27 @@ bool isprime(int n) {
     return true;
 }
 
-*1015*
+*1015（20分）*
 
 模板代码判断是否是素数
 
-*1059*
+*1152（20分）*
+
+素数检测
+
+string截取
+
+```
+s.substr(i, k)
+```
+
+string转化int
+
+```
+stoi(s)
+```
+
+*1059（25分）*
 
 ```
 // 建立素数表，即prime[] = 1的为素数，即不是由相乘得到的即为素数。
@@ -9593,7 +9821,6 @@ for(int i = 2; i * i < 500000; i++)
             prime[j * i] = 0;
 ```
 
-1152
 
 ### 进制转换
 
@@ -9601,19 +9828,27 @@ p进制转化为十进制，`n += res[i] * pow(d, j)`
 
 十进制转化为p进制，除基取余法，`res[len++] = n % d; n = n / d;`
 
-*1015*
+*1015（20分）*
 
 两种相互转化都用到了，还判断了素数
 
-1019
+*1019（20分）*
 
-1027
+考察除基取余法
 
-*1058*
+*1027（20分）*
+
+十进制转化为十三进制
+
+*1058（20分）*
 
 这题准确来说不是进制，这题考的是单位转化
 
-1100
+技巧为，全部转化为最小的单位
+
+*1100（20分）*
+
+同样考的是单位转化
 
 ### 大整数计算
 
@@ -9623,11 +9858,11 @@ int最高10位，long long最高18位，超过这个位数，考虑用大整数�
 
 四则运算：加法（进位），减法（借位），乘法（进位），除法（从高位开始）
 
-*1023*
+*1023（20分）*
 
 加法，从低位向高位加
 
-*1024*
+*1024（25分）*
 
 reverse() // string反转
 
@@ -9635,7 +9870,15 @@ reverse() // string反转
 
 数字的顺序不会改变，关注“.”的位置，以及推算10的次数。
 
-**1060**，1073
+**1060（25分）**
+
+普通数字转化为科学计数法
+
+*1073（20分）*
+
+科学技术法转化为普通数字
+
+技巧为关注E的位置
 
 ### 分数的四则运算
 
@@ -9663,7 +9906,13 @@ int gcd (int a, int b) {
 }
 ```
 
-**1081**，1088
+**1081（20分）**
+
+**1088（20分）**
+
+给两个分数
+
+分数的和差积商
 
 --------------------------------------------------------------------------
 
@@ -9724,7 +9973,7 @@ set的使用方式
 *1108（20分）*
 
 ```
-sscanf() 与 sprintf() 的用法
+sscanf() 与 sprintf() 的用法，用于清除不合法的数
 
 // 注意第一个参数，都为字符串，视为屏幕
 ```
@@ -9850,9 +10099,23 @@ return a > b // 可以理解为当 a > b 时把a放在b前面
 
 单价高的先买，利润最高化
 
-1075，1080，1083，1095，1129
+1075，1080
 
-1137，1141，1153
+
+*1083*
+
+将区间内外的成绩做标记
+
+
+1095，1129
+
+1137
+
+
+*1141（25分）*
+
+
+1153
 
 ### two pointers
 
@@ -9883,7 +10146,13 @@ return a > b // 可以理解为当 a > b 时把a放在b前面
 
 ### 数字与字符串相互转化
 
-*1001*，1005，
+*1001（20分）*
+
+*1005（20分）*
+
+还得记得每位单词的拼法
+
+zero, one, two, three, four, five, six, seven, eight, nine
 
 *1069*
 
@@ -9893,7 +10162,17 @@ to_string() // int转string
 
 s.insert(0, 4 - s.length(), '0') // string插入
 
-1132
+*1132（20分）*
+
+字符串转化
+
+```
+to_string() // 数字转化为string
+
+s.substr() // 裁切string
+
+stoi() // string转化为数字
+```
 
 ### 字符串单纯处理
 
@@ -10055,7 +10334,9 @@ for(int i = s1; i != -1; i = node[i].next) {
 
 图的bfs可类比为树的层序遍历
 
-*1004*，*1094*
+*1004*
+
+*1094*
 
 这两个及其相似
 
@@ -10083,21 +10364,53 @@ dfs算法，及其这题的树的表示法。
 
 若maxn等于n，即为完全二叉树
 
-1115，1119
+**1119（30分）**
 
-*1130*
+前序遍历与后序遍历确定一棵树
+
+没搞懂，有点难
+
+*1130（25分）*
 
 输出中缀表达式。
 
 精华为递归组成答案，一层套一层。
 
-1135，1143，1151
+**1135（30分）**
+
+判断是否是红黑树，有点难，后面再看
+
+**1143（30分）**
+
+LCA问题
+
+The lowest common ancestor (LCA) 即为U与V最近的共同节点
+
+给出BST的先序序列NLR
+
+从前往后，遍历先序序列若找到在u与v之间的数，可认为是LCA
+
+**1151（30分）**
+
+在中序中LCA即为root的左右的情况
 
 ### 两个序列确定一棵树
 
-1020，1086，1138
+*1020（25分）*
 
-*1127*
+给你后序遍历与中序遍历序列，你给出层序遍历的序列
+
+关键点：可将层序遍历在数组中存放，然后在DFS中按照层序的顺序记录序号。
+
+*1086（25分）*
+
+理解push为先序，pop为中序，从而得到两个序列
+
+1138
+
+*1127（30分）*
+
+迂回层序遍历
 
 1. 中序后序构建出树（dfs）
 2. 层序遍历（bfs）
@@ -10121,6 +10434,10 @@ BST的中序遍历为递增序列
 
 以这个性质为线索
 
+*1115（30分）*
+
+如何通过插入构建一个BST
+
 ### AVL树
 
 1066，1123
@@ -10130,7 +10447,27 @@ BST的中序遍历为递增序列
 
 ### 最短路径，Dijkstra算法
 
-1003，1018，1030，1072
+*1003（25分）*
+
+比较直接的Dijkstra算法
+
+中间有一点点的变形
+
+**1018（30分）**
+
+Dijkstra计算最短路径
+
+DFS计算最短路径中最优的情况
+
+*1030（30分）*
+
+与1018相同题型
+
+Dijkstra计算最短路径
+
+DFS计算最短路径中最优的情况
+
+1072
 
 **1111**
 
@@ -10140,7 +10477,15 @@ BST的中序遍历为递增序列
 
 ### 图的遍历，DFS，BFS
 
-1018，1021，1030，1053，1076，1079，1087
+1021
+
+*1053（30分）*
+
+一个重要的思想与技巧
+
+****DFS算法可遍历出多条路径到叶节点，即一路push即可记录
+
+1079，1087
 
 1131，1134
 
@@ -10148,7 +10493,11 @@ BST的中序遍历为递增序列
 
 *1126（25分）*
 
-读懂题意
+读懂题意，按照题意写。
+
+*1076（30分）*
+
+BFS，六度空间问题
 
 ### 连通分量
 
