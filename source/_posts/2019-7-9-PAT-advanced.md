@@ -670,7 +670,7 @@ long long convert(string n, long long radix) {
 // num为10进制数 
 long long find_radix(string n, long long num) {
     char it = *max_element(n.begin(), n.end()); // 获取n中最大的一位数
-	// 进制范围，下界为n所有数位中最大的加1，上界为low与num十进制的较大值
+	// 进制范围 
     long long low = (isdigit(it) ? it - '0': it - 'a' + 10) + 1;
     long long high = max(num, low);
     // 二分查找，试出进制 
@@ -695,8 +695,9 @@ int main() {
     string n1, n2;
     long long tag = 0, radix = 0, result_radix;
     
-    cin >> n1 >> n2 >> tag >> radix;
+    cin >> n1 >> n2 >> tag >> radix; // 第一个数，第二个数，flag，进制 
     
+   	// tag为1表示radix表示第一个数，tag为2表示radix表示第二个数
     result_radix = tag == 1 ? find_radix(n2, convert(n1, radix)) : find_radix(n1, convert(n2, radix));
     
     if (result_radix != -1) {
@@ -3013,7 +3014,7 @@ int main() {
 
 using namespace std;
 
-// 将学生姓名变为int型 
+// 将学生姓名变为int型  // 考虑到string、cin、cout会超时 
 int getid(char *name) {
     int id = 0;
     for(int i = 0; i < 3; i++)
@@ -3026,10 +3027,13 @@ const int maxn = 26 * 26 * 26 * 10 + 10;
 vector<int> v[maxn];
 
 int main() {
-    int n, k, no, num, id = 0;
+    
+	int n, k, no, num, id = 0;
     char name[5];
-    scanf("%d %d", &n, &k); // 查询课程学生的数量，课程的数量 
-    for(int i = 0; i < k; i++) {
+    
+	scanf("%d %d", &n, &k); // 查询课程学生的数量，课程的数量 
+    
+	for(int i = 0; i < k; i++) {
         scanf("%d %d", &no, &num); // 课程编号，此课程注册的学生数 
         for(int j = 0; j < num; j++) {
             scanf("%s", name); // 学生名字 
@@ -3037,6 +3041,7 @@ int main() {
             v[id].push_back(no); // 学生对应的课程 
         }
     }
+    
     // 打印学生对应的课程 
     for(int i = 0; i < n; i++) {
         scanf("%s", name);
@@ -3110,18 +3115,24 @@ int a[100001], m[100000];
 
 int main() {
     int n;
+ 
     scanf("%d", &n); // n个数字 
+ 
     for(int i = 0; i < n; i++) {
         scanf("%d", &a[i]);
         m[a[i]]++;
     }
+ 	
+ 	// 打印第一个只出现一次的数字 
     for(int i = 0; i < n; i++) {
         if(m[a[i]] == 1) {
             printf("%d", a[i]);
             return 0;
         }
     }
+ 
     printf("None");
+ 
     return 0;
 }
 ```
@@ -3261,7 +3272,7 @@ void Func(int i, int &j, int &tempsum) {
     int left = i, right = n;
     while(left < right) {
         int mid = (left + right) / 2;
-        if(sum[mid] - sum[i-1] >= m)
+        if(sum[mid] - sum[i-1] >= m) // 寻找i到n之间的差大于m的 
             right = mid;
         else
             left = mid + 1;
@@ -3272,28 +3283,43 @@ void Func(int i, int &j, int &tempsum) {
 
 int main() {
     scanf("%d%d", &n, &m); // 钻石的个数，需要付的钻石的数量 
-    sum.resize(n+1);
-    for(int i = 1; i <= n; i++) {
+    
+	sum.resize(n+1);
+    
+    // sum为i之前的和 
+	for(int i = 1; i <= n; i++) {
         scanf("%d", &sum[i]);
         sum[i] += sum[i-1];
     }
-    int minans = sum[n];
-    for(int i = 1; i <= n; i++) {
-        int j, tempsum;
-        Func(i, j, tempsum);
-        if(tempsum > minans) continue;
-        if(tempsum >= m) {
+    
+	int minans = sum[n];
+    
+	for(int i = 1; i <= n; i++) {
+        
+		int j, tempsum;
+        
+		Func(i, j, tempsum);
+        
+        // 若小于最小的和，跳过 
+		if(tempsum > minans) continue;
+        
+        // 足够买东西的量 
+		if(tempsum >= m) {
+			// 更新最少的 
             if(tempsum < minans) {
-                resultArr.clear();
+                resultArr.clear(); // 将原来的清除，只要最少的 
                 minans = tempsum;
             }
             resultArr.push_back(i);
             resultArr.push_back(j);
         }
+        
     }
+    
     for(int i = 0; i < resultArr.size(); i += 2)
         printf("%d-%d\n", resultArr[i], resultArr[i+1]);
-    return 0;
+    
+	return 0;
 }
 ```
 
@@ -3346,27 +3372,39 @@ int main() {
 ```
 #include <iostream>
 #include <vector>
+
 using namespace std;
+
 int main() {
-    int n;
-    scanf("%d", &n);
-    vector<int> dis(n + 1);
-    int sum = 0, left, right, cnt;
-    for(int i = 1; i <= n; i++) {
+    
+	int n;
+    scanf("%d", &n); // 有几个节点 
+    
+	vector<int> dis(n + 1);
+    
+	int sum = 0, left, right, cnt;
+    
+	for(int i = 1; i <= n; i++) {
         int temp;
-        scanf("%d", &temp);
-        sum += temp;
+        scanf("%d", &temp); // 输入距离 
+        sum += temp; // 到1之间的距离 
         dis[i] = sum;
     }
-    scanf("%d", &cnt);
-    for(int i = 0; i < cnt; i++) {
+    
+    // 查询的总数 
+	scanf("%d", &cnt);
+    
+	for(int i = 0; i < cnt; i++) {
+		// 输入序号 
         scanf("%d %d", &left, &right);
         if(left > right)
             swap(left, right);
         int temp = dis[right - 1] - dis[left - 1];
+        // 只有两种可能，一个是正向，一个是反向，选一个小的 
         printf("%d\n", min(temp, sum - temp));
     }
-    return 0;
+    
+	return 0;
 }
 ```
 
@@ -4335,23 +4373,31 @@ int main() {
 using namespace std;
 
 int main() {
+	
     int n;
-    scanf("%d", &n); 
-    for(int i = 0; i < n; i++) {
-        long long a, b, c;
-        scanf("%lld %lld %lld", &a, &b, &c);
-        long long sum = a + b;
-        if(a > 0 && b > 0 && sum < 0) {
-            printf("Case #%d: true\n", i + 1);
-        } else if(a < 0 && b < 0 && sum >= 0){
-            printf("Case #%d: false\n", i + 1);
-        } else if(sum > c) {
-            printf("Case #%d: true\n", i + 1);
-        } else {
-            printf("Case #%d: false\n", i + 1);
-        }
-    }
-    return 0;
+    scanf("%d", &n);
+    
+	for(int i = 0; i < n; i++) {
+    
+	    long long a, b, c;
+    
+	    scanf("%lld %lld %lld", &a, &b, &c);
+    
+	    long long sum = a + b;
+    
+	    if(a > 0 && b > 0 && sum < 0) { // 两正的相加溢出了，c不会溢出，所以相加大于c的最高 
+	        printf("Case #%d: true\n", i + 1);
+	    } else if(a < 0 && b < 0 && sum >= 0){ // 两负的相加溢出了，c不会溢出，所以相加小于c的最低 
+	        printf("Case #%d: false\n", i + 1);
+	    } else if(sum > c) {
+	        printf("Case #%d: true\n", i + 1);
+	    } else {
+	        printf("Case #%d: false\n", i + 1);
+	    }
+	    
+	}
+    
+	return 0;
 }
 ```
 
@@ -6989,26 +7035,40 @@ int main() {
 #include <iostream>
 #include <algorithm>
 #include <vector>
+
 using namespace std;
+
 struct node {
     string name;
     int height;
 };
+
+// 学生排序 
 int cmp(struct node a, struct node b) {
+	// 高的排前面，同样高的名字小的排前面 
     return a.height != b.height ? a.height > b.height : a.name < b.name;
 }
+
 int main() {
+
     int n, k, m;
-    cin >> n >> k;
+    cin >> n >> k; // 人数，排数 
+
     vector<node> stu(n);
+	
+	// 输入学生 
     for(int i = 0; i < n; i++) {
         cin >> stu[i].name;
         cin >> stu[i].height;
     }
+	
+	// 学生排序 
     sort(stu.begin(), stu.end(), cmp);
+
     int t = 0, row = k;
+
     while(row) {
-        if(row == k) {
+        if(row == k) { // 最后一排 
             m = n - n / k * (k - 1);
         } else {
             m = n / k;
@@ -7017,20 +7077,21 @@ int main() {
         ans[m / 2] = stu[t].name;
         // 左边一列
         int j = m / 2 - 1;
-        for(int i = t + 1; i < t + m; i = i + 2)
+        for(int i = t + 1; i < t + m; i = i + 2) // 间隔输出 
             ans[j--] = stu[i].name;
         // 右边一列
         j = m / 2 + 1;
-        for(int i = t + 2; i < t + m; i = i + 2)
+        for(int i = t + 2; i < t + m; i = i + 2) // 间隔输出
             ans[j++] = stu[i].name;
         // 输出当前排
         cout << ans[0];
         for(int i = 1; i < m; i++)
             cout << " " << ans[i];
         cout << endl;
-        t = t + m;
+        t = t + m; // 起始点 
         row--;
     }
+
     return 0;
 }
 ```
@@ -8869,6 +8930,18 @@ int main() {
 
 思路：按照题意那样做。
 
+D, D1, D111, D113, D11231, D112213111, ...
+
+找规律
+
+D1意思是D出现了一次
+
+D111意思是D出现了一次，一出现了一次
+
+D113意思是D出现了一次，一出现了三次
+
+D11231意思是D出现了一次，一出现了两次，三出现了一次
+
 答案：
 
 ```
@@ -9763,7 +9836,7 @@ int main() {
 **编号**：代表理解的不够到位，需要再次理解
 
 ---------------------------------------------------------------------------
-## 数学问题
+## 数学问题（16题）
 
 ### 多项式
 
@@ -9916,9 +9989,9 @@ int gcd (int a, int b) {
 
 --------------------------------------------------------------------------
 
-## 逻辑问题
+## 逻辑问题（75题）
 
-### 暂定逻辑题
+### 暂定逻辑题（32题）
 
 *1006（25分）*
 
@@ -9928,15 +10001,35 @@ int gcd (int a, int b) {
 
 可以理解为two pointer
 
-*1008*，1010，*1011*，1031
+*1008*
+
+*1010（25分）*
+
+将两个数都转化为10进制进行对比。
+
+*1011*
+
+**1031（20分）**
+
+画U，分成三份多余的分给底部，
+
+自己实现一遍
 
 *1036（25分）*
 
 十分简单
 
-*1042*，1044
+*1042*
 
-1046，
+**1044（25分）**
+
+关键点在于sum是一个递增序列，从这一点来理解。
+
+然后用二分查找来查找可能存在的序列。
+
+*1046（20分）*
+
+将正向与反向都算出来，选其中小的
 
 **1049（30分）**
 
@@ -9948,7 +10041,17 @@ int gcd (int a, int b) {
 
 set的使用方式
 
-1065，1082
+**1065（20分）**
+
+溢出之后的范围问题
+
+研究下溢出的行为
+
+PAT上机训练实战指南指出：P22
+
+如果两个正数之和等于负数或是两个负数之和等于正数，那么就是溢出
+
+1082
 
 **1085（25分）**
 
@@ -9978,9 +10081,15 @@ sscanf() 与 sprintf() 的用法，用于清除不合法的数
 // 注意第一个参数，都为字符串，视为屏幕
 ```
 
-1109，1113，1125
+*1109（25分）*
 
+按照规则输出
 
+*1113（25分）*
+
+逻辑题，理解题意后就很简单
+
+1125
 
 *1128*
 
@@ -9992,13 +10101,17 @@ abs应用
 
 1139
 
-1140
+**1140（20分）**
+
+有点难的题，自己思考一遍，再做一遍试试
 
 1142
 
-1148，1154
+1148
 
-### map思想
+1154
+
+### map思想（17题）
 
 输入输出总结：
 
@@ -10034,8 +10147,21 @@ cout << n;
 getline(cin, str) // 当str为string类型的时候
 ```
 
-*1022*，1039，1041，1047
+*1022*
 
+*1041（20分）*
+
+map应用，送分题
+
+*1039（25分）*
+
+典型的map问题，学生与课程的对应
+
+有个技巧，就是把学生的名字对应为hash，减少读取的时间
+
+*1047（25分）*
+
+map应用，1039的兄妹题
 
 *1048（25分）*
 
@@ -10068,7 +10194,7 @@ getline(cin, str) // 当str为string类型的时候
 
 双向标记
 
-### 分类排序题
+### 分类排序题（15题）
 
 1. 结构体的写法
 
@@ -10117,21 +10243,21 @@ return a > b // 可以理解为当 a > b 时把a放在b前面
 
 1153
 
-### two pointers
+### two pointers（1题）
 
 1029
 
-### 贪心算法
+### 贪心算法（3题）
 
 1033，1037，1067
 
-### 动态规划
+### 动态规划（3题）
 
 1040，1045，1068
 
 --------------------------------------------------------------------------
 
-## 排队等待问题
+## 排队等待问题（4题）
 
 *1014（30分）*
 
@@ -10142,9 +10268,9 @@ return a > b // 可以理解为当 a > b 时把a放在b前面
 排队等待问题，与1014对比，同一类型，加入vip，超难
 
 --------------------------------------------------------------------------
-## 字符串处理
+## 字符串处理（10题）
 
-### 数字与字符串相互转化
+### 数字与字符串相互转化（4题）
 
 *1001（20分）*
 
@@ -10174,7 +10300,7 @@ s.substr() // 裁切string
 stoi() // string转化为数字
 ```
 
-### 字符串单纯处理
+### 字符串单纯处理（6题）
 
 *1035*，1061，
 
@@ -10214,14 +10340,14 @@ reverse(s.begin(), s.end());
 
 --------------------------------------------------------------------------
 
-## hash算法
+## hash算法（2题）
 
 1078，1145
 
 --------------------------------------------------------------------------
-## 线性表
+## 线性表（7题）
 
-### 链表
+### 链表（5题）
 
 *1052*：
 
@@ -10259,13 +10385,13 @@ for(int i = s1; i != -1; i = node[i].next) {
 }
 ```
 
-### 栈
+### 栈（2题）
 
 1051，1057
 
 --------------------------------------------------------------------------
 
-## 排序
+## 排序（2题）
 
 排序分类：
 
@@ -10307,7 +10433,7 @@ for(int i = s1; i != -1; i = node[i].next) {
 
 
 --------------------------------------------------------------------------
-## 堆
+## 堆（2题）
 
 堆：完全二叉树存储（数组），最大堆（根大），最小堆（根小）
 
@@ -10326,9 +10452,9 @@ for(int i = s1; i != -1; i = node[i].next) {
 
 
 --------------------------------------------------------------------------
-## 树
+## 树（24题）
 
-### 树的遍历，先序，中序，后序，层序
+### 树的遍历，先序，中序，后序，层序（14题）
 
 图的dfs可类比为树的先序遍历
 
@@ -10394,7 +10520,7 @@ The lowest common ancestor (LCA) 即为U与V最近的共同节点
 
 在中序中LCA即为root的左右的情况
 
-### 两个序列确定一棵树
+### 两个序列确定一棵树（4题）
 
 *1020（25分）*
 
@@ -10416,7 +10542,7 @@ The lowest common ancestor (LCA) 即为U与V最近的共同节点
 2. 层序遍历（bfs）
 3. 每层一个数组，分为奇层与偶层
 
-### BST（二叉搜索树）
+### BST（二叉搜索树）（4题）
 
 BST：二叉搜索树
 
@@ -10438,14 +10564,14 @@ BST的中序遍历为递增序列
 
 如何通过插入构建一个BST
 
-### AVL树
+### AVL树（2题）
 
 1066，1123
 
 --------------------------------------------------------------------------
-## 图
+## 图（18题）
 
-### 最短路径，Dijkstra算法
+### 最短路径，Dijkstra算法（5题）
 
 *1003（25分）*
 
@@ -10475,7 +10601,7 @@ DFS计算最短路径中最优的情况
 
 最主要要理解Dijkstra，接着就是重复两个Dijkstra，但是权值不同而已
 
-### 图的遍历，DFS，BFS
+### 图的遍历，DFS，BFS（10题）
 
 1021
 
@@ -10499,19 +10625,19 @@ DFS计算最短路径中最优的情况
 
 BFS，六度空间问题
 
-### 连通分量
+### 连通分量（3题）
 
 1013，1021，1034
 
 --------------------------------------------------------------------------
 
-## 并查集
+## 并查集（3题）
 
 1107，1114，1118
 
 --------------------------------------------------------------------------
 
-## 拓扑排序
+## 拓扑排序（1题）
 
 1146
 
