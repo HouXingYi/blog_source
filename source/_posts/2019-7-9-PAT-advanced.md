@@ -79,6 +79,8 @@ int main() {
 
 ```
 #include <cstdio>
+#include <string>
+#include <algorithm>
 #include <iostream>
 
 using namespace std;
@@ -89,27 +91,40 @@ int main () {
 	
 	scanf("%d %d", &a, &b);
 	
-	string s = to_string(a + b);
+	int c = a + b;
+	string str = to_string(c);
 	
-	int len = s.length();
+	reverse(str.begin(), str.end());
 	
-	for (int i = 0; i < len; i++) {
+	int count = 0;
+	string t = "";
+	
+	for (int i = 0; i < str.size(); i++) {
 		
-		char t = s[i];
-		
-		cout << t;
-		
-		if (t == '-') {
-			continue;
+		char c = str[i];
+	
+		if (c == '-') {
+			t += c;
+			count++;
+		} else {
+			
+			count++;
+			
+			if (count % 3 == 0){			
+				t += c;
+				if (!(count == str.size() || (count == str.size() - 1 && str[i + 1] == '-'))) {
+					t += ',';	
+				}
+			} else {
+				t += c;
+			}
+			
 		}
-		
-		// 当前位的下标i满足(i + 1) % 3 == len % 3并且i不是最后一位 
-        if ((i + 1) % 3 == len % 3 && i != len - 1) {
-			cout << ",";
-		}	
-		
 	}
 	
+	reverse(t.begin(), t.end());
+	
+	cout << t << endl;
 	
 	return 0;
 } 
@@ -223,6 +238,114 @@ num[i]表示从出发点到i结点最短路径的条数，
 w[i]表示从出发点到i点救援队的数目之和
 
 答案：
+
+
+自己写的答案：
+
+```
+#include <cstdio>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+int const inf = 99999999;
+
+int weight[1000]; // 点权 
+
+int e[1000][1000]; // 邻接表表示图
+
+int dis[1000];
+
+bool visit[1000];
+
+int w[1000];
+
+int num[1000]; 
+
+int main () {
+	
+	int n, m, c1, c2; // 城市数量，道路数量，开始节点，结束节点
+	
+	scanf("%d %d %d %d", &n, &m, &c1, &c2);
+	
+	// 第i个节点的点权
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &weight[i]);
+	} 
+	
+	fill(e[0], e[0] + 1000 * 1000, inf);
+	fill(dis, dis + 1000, inf);
+	fill(visit, visit + 1000, false);
+	
+	// m条边（边权） 
+	for (int i = 0; i < m; i++) {
+		int a, b, c;
+		scanf("%d %d %d", &a, &b, &c);
+		e[a][b] = e[b][a] = c;
+	}
+	
+	// 初始化 
+	dis[c1] = 0;
+	w[c1] = weight[c1]; // 点权 
+	num[c1] = 1; // 最短路径条数 
+	
+	
+	for (int i = 0; i < n; i++) {
+		
+		// 首先寻找未收录中dis最小的，赋给u 
+		int u = -1; int min = inf;
+		for (int j = 0; j < n; j++) {
+			if (visit[j] == false && dis[j] < min) {				
+				u = j;
+				min = dis[j];
+			}	
+		} 
+		
+		if (u == -1) {
+			break;
+		}
+		visit[u] = true;
+		
+		// 遍历与u相邻并未被访问的节点
+		for (int v = 0; v < n; v++) {
+			
+			if (visit[v] == false && e[v][u] != inf) {
+				
+				if (dis[u] + e[u][v] < dis[v]) {
+					
+					dis[v] = dis[u] + e[u][v];
+					
+					num[v] = num[u];
+					
+					w[v] = w[u] + weight[v];
+					
+				} else if (dis[u] + e[u][v] == dis[v]) {
+					
+					num[v] = num[u] + num[v];
+					
+					// 相同长度的路径，选最大点权的那条 
+					if (w[u] + weight[v] > w[v]) {
+						w[v] = w[u] + weight[v];	
+					} 
+					
+				}
+				
+			}
+			
+		} 
+		
+		
+		
+	}
+	
+	printf("%d %d", num[c2], w[c2]);
+	
+	return 0;
+}
+```
+
+柳神写的答案：
 
 ```
 #include <iostream>
@@ -3007,6 +3130,59 @@ int main() {
 
 答案：
 
+自己写的：
+
+一处超时，得到23分。
+
+```
+#include <cstdio>
+#include <iostream>
+#include <string>
+#include <map>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int main () {
+	
+	int n, k;
+	
+	scanf("%d %d", &n, &k);
+	map<string, vector<int> > stu;
+	
+	for (int i = 1; i <= k; i++) {
+		int index, m; // 课程编号，学生人数
+		scanf("%d %d", &index, &m);
+		string name; 
+		for (int j = 0; j < m; j++) {
+			cin >> name;
+			stu[name].push_back(index);
+		}
+	}
+	
+	for (int i = 0; i < n; i++) {
+		
+		string name;
+		cin >> name;
+		
+		int size = stu[name].size();
+		vector<int> p = stu[name];
+		sort(p.begin(), p.end());
+		cout << name;
+		printf(" %d", size);
+		
+		for (int j = 0; j < size; j++) {
+			printf(" %d", p[j]);	
+		}
+		
+		printf("\n");
+	}
+	
+	return 0;
+}
+```
+
 ```
 #include <cstdio>
 #include <vector>
@@ -4577,6 +4753,73 @@ int main() {
 
 答案：
 
+自己写的：
+
+```
+#include <cstdio>
+#include <iostream>
+#include <algorithm> 
+
+using namespace std;
+
+
+// 加零 
+string addZero (string n) {
+	
+	int s = n.size();
+	
+	int d = 4 - s;
+	
+	for (int i = 0; i < d; i++) {
+		n += '0';
+	}
+	
+	return n;
+}
+
+bool cmp (char a, char b) {
+	return a > b;
+}
+
+ 
+int main () {
+	
+	string str;
+	
+	cin >> str;
+	 
+	str = addZero(str);
+	
+	int n = 10;
+	
+	while (n--) {
+		
+		string a = str, b = str;
+		
+		sort(a.begin(), a.end(), cmp);
+		sort(b.begin(), b.end());
+		
+		int c = stoi(a) - stoi(b);
+		
+		string cStr = to_string(c);
+		
+		cStr = addZero(cStr);
+		
+		cout << a << " - " << b << " = " << cStr << endl;
+		
+		if (cStr == "6174" || cStr == "0000") {
+			break;
+		}
+		
+		str = cStr;
+	}
+	
+	return 0;
+}
+```
+
+柳神写的：
+
 ```
 #include <iostream>
 #include <algorithm>
@@ -4664,6 +4907,77 @@ int main() {
 思路：map统计，string作为map的key
 
 答案：
+
+自己写的答案：
+
+```
+#include <cstdio>
+#include <string>
+#include <iostream>
+#include <map>
+
+using namespace std;
+
+// 是否属于允许的字符范围内 
+bool isPass (char c) {
+	if ( (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
+		return true;	
+	}
+	return false;
+}
+
+int main () {
+	
+	string str;
+	getline(cin, str);
+	
+	map<string, int> count; 
+	
+	string temp;
+	
+	for (int i = 0; i < str.size(); i++) {
+		
+		char c = str[i];
+		
+		if (isPass(c)) {
+			
+			if (c >= 'A' && c <= 'Z') {
+				c += 32;
+			}
+			
+			temp += c;
+			
+		} 
+		
+		if (!isPass(c) || i == str.size() - 1) {
+			
+			if(temp.length() != 0) {
+				count[temp]++;	
+			} 
+        	    
+			temp = "";
+		
+		}
+		
+	}
+	
+	int maxn;
+	string maxStr = "";
+	
+	for (auto it = count.begin(); it != count.end(); it++) {
+		
+		if (it -> second > maxn) {
+			maxn = it -> second;
+			maxStr = it -> first;
+		}
+		
+	}
+	
+	cout << maxStr << " " << maxn; 
+	
+	return 0;
+}
+```
 
 ```
 #include <iostream>
@@ -6855,6 +7169,66 @@ int main() {
 
 答案：
 
+自己写的：
+
+```
+#include <cstdio>
+#include <vector>
+#include <cmath>
+#include <iostream> 
+
+using namespace std;
+
+vector<int> tree[100000];
+
+int minLevel = 9999999; int minLevelCount = 0;
+// 求最小的层数 
+void dfs (int root, int level) {
+	
+	if (level > minLevel) {
+		return;
+	}	
+	if (tree[root].size() == 0) {	
+		if (level == minLevel) {
+			minLevelCount++;
+		} else if (level < minLevel) {
+			minLevel = level;
+			minLevelCount = 1;
+		}
+	}
+	
+	for (int i = 0; i < tree[root].size(); i++) {
+		dfs(tree[root][i], level + 1);
+	}
+	
+}
+
+int main () {
+	
+	int n; // 节点数，根节点价格，利润率
+	
+	double p, r; 
+	scanf("%d %lf %lf", &n, &p, &r);
+	for (int i = 0; i < n; i++) {
+		int k;
+		scanf("%d", &k);
+		for (int j = 0; j < k; j++) {
+			int t;	
+			scanf("%d", &t);
+			tree[i].push_back(t);
+		}
+	}
+	
+	dfs(0, 0);
+	double res = p * pow(1 + r/100, minLevel);
+	printf("%.4f %d", res, minLevelCount);
+	
+	return 0;
+}
+```
+
+柳神写的：
+
 ```
 #include <cstdio>
 #include <vector>
@@ -7692,6 +8066,78 @@ int main() {
 思路：并查集
 
 答案：
+
+后面网上又找到一个：这个简洁一点
+
+```
+#include <cstdio>
+#include <algorithm>
+using namespace std;
+ 
+int p[10010]; // 并查集数据结构 
+ 
+int find(int x) {
+	return p[x] == x ? x : p[x] = find(p[x]); // 一直往上找，找到爸爸 
+}
+ 
+void join(int x, int y) {
+	int fx = find(x);
+	int fy = find(y);
+	if(fx != fy) p[fx] = fy; // y当x的儿子 
+}
+ 
+int n, k, a, b, cntBird, cntTree, book[10010];
+ 
+int main() {
+ 
+	fill(book, book+10010, 0);
+	scanf("%d", &n); // 几张图片 
+ 
+	for(int i = 0; i < 10010; i++) {
+		p[i] = i; // 自己是自己的爸爸 
+	}
+ 
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &k);
+		scanf("%d", &a); book[a] = 1;
+ 
+		for (int j = 1; j < k; j++) {
+			scanf("%d", &b); book[b] = 1;
+			join(a, b);
+		}
+	}
+
+	for (int i = 0; i < 10010; i++) {
+
+		if (book[i] == 1) cntBird++; // 找总共有多少只鸟 
+
+		if (book[i] == 1 && p[i] == i) cntTree++; // 自己是自己的爸爸即为一棵树 
+	}
+
+	printf("%d %d\n", cntTree, cntBird);
+ 
+	scanf("%d", &k);
+
+	for (int i = 0; i < k; i++) {
+
+		scanf("%d %d", &a, &b);
+
+		int fa = find(a); // 找到a的爸爸 
+
+		int fb = find(b); // 找到b的爸爸 
+		
+		// 如果有共同的爸爸，即为同一棵树 
+		if(fa == fb) 
+			printf("Yes\n");
+		else
+			printf("No\n");
+	}
+
+	return 0;
+}
+```
+
+柳神的代码：
 
 ```
 #include <iostream>
@@ -9995,19 +10441,13 @@ int gcd (int a, int b) {
 
 *1006（25分）*
 
-*1007（25分）*
-
-最大子列和，在线处理
-
-可以理解为two pointer
-
-*1008*
+*1008（20分）*
 
 *1010（25分）*
 
 将两个数都转化为10进制进行对比。
 
-*1011*
+*1011（20分）*
 
 **1031（20分）**
 
@@ -10019,7 +10459,7 @@ int gcd (int a, int b) {
 
 十分简单
 
-*1042*
+*1042（20分）*
 
 **1044（25分）**
 
@@ -10035,9 +10475,9 @@ int gcd (int a, int b) {
 
 找规律，智力题，没搞懂
 
-1056
+1056（25分）
 
-*1063*
+*1063（25分）*
 
 set的使用方式
 
@@ -10051,7 +10491,7 @@ PAT上机训练实战指南指出：P22
 
 如果两个正数之和等于负数或是两个负数之和等于正数，那么就是溢出
 
-1082
+1082（25分）
 
 **1085（25分）**
 
@@ -10059,19 +10499,21 @@ PAT上机训练实战指南指出：P22
 
 1091
 
-**1096（因式分解）**
+**1096（20分）**
+
+因式分解
 
 一个数，因数的最大上限为sqrt(N) + 1
 
-1101
+1101（25分）
 
-1103
+1103（30分）
 
 *1104（20分）*
 
 找规律，数学问题
 
-1105
+1105（25分）
 
 *1108（20分）*
 
@@ -10089,9 +10531,9 @@ sscanf() 与 sprintf() 的用法，用于清除不合法的数
 
 逻辑题，理解题意后就很简单
 
-1125
+1125（25分）
 
-*1128*
+*1128（20分）*
 
 检测是否符合八皇后
 
@@ -10099,17 +10541,17 @@ sscanf() 与 sprintf() 的用法，用于清除不合法的数
 
 abs应用
 
-1139
+1139（30分）
 
 **1140（20分）**
 
 有点难的题，自己思考一遍，再做一遍试试
 
-1142
+1142（25分）
 
-1148
+1148（20分）
 
-1154
+1154（25分）
 
 ### map思想（17题）
 
@@ -10147,7 +10589,7 @@ cout << n;
 getline(cin, str) // 当str为string类型的时候
 ```
 
-*1022*
+*1022（30分）*
 
 *1041（20分）*
 
@@ -10167,13 +10609,17 @@ map应用，1039的兄妹题
 
 用map标记
 
-1050，1054
+1050（20分）
+
+1054（20分）
 
 *1071（25分）*
 
-1092，1112
+1092（20分）
 
-*1116*
+1112（20分）
+
+*1116（20分）*
 
 1. map应用
 
@@ -10181,10 +10627,13 @@ map应用，1039的兄妹题
 
 3. 素数检测
 
-1117，1120
+1117（25分）
 
+1120（20分）
 
-1124，1144，
+1124（20分）
+
+1144（20分）
 
 *1121（25分）*
 
@@ -10218,50 +10667,75 @@ sort默认从小到大排列
 return a > b // 可以理解为当 a > b 时把a放在b前面
 ```
 
+**1012（25分）**
 
-**1012**，1025，1028，1038，1055，1062
+1025（25分）
 
-*1070*
+1028（25分）
+
+1038（30分）
+
+1055（25分）
+
+1062（25分）
+
+*1070（25分）*
 
 单价高的先买，利润最高化
 
-1075，1080
+1075（25分）
 
+1080（30分）
 
-*1083*
+*1083（25分）*
 
 将区间内外的成绩做标记
 
+1095（30分）
 
-1095，1129
+1129（25分）
 
-1137
-
+1137（25分）
 
 *1141（25分）*
 
-
-1153
+1153（25分）
 
 ### two pointers（1题）
 
-1029
+1029（25分）
 
-### 贪心算法（3题）
+### 贪心算法（3题）（重要性减低）
 
-1033，1037，1067
+1033（25分）
 
-### 动态规划（3题）
+1037（25分）
 
-1040，1045，1068
+1067（25分）
+
+### 动态规划（3题）（不考）（以前的考点了）
+
+1040（25分）
+
+1045（30分）
+
+1068（30分）
+
+*1007（25分）*
+
+最大子列和，在线处理
+
+可以理解为two pointer
 
 --------------------------------------------------------------------------
 
-## 排队等待问题（4题）
+## 排队等待问题（4题）（可以不考虑）（过于难）
 
 *1014（30分）*
 
-1016，1017
+1016（25分）
+
+1017（25分）
 
 **1026（30分）**
 
@@ -10280,7 +10754,7 @@ return a > b // 可以理解为当 a > b 时把a放在b前面
 
 zero, one, two, three, four, five, six, seven, eight, nine
 
-*1069*
+*1069（20分）*
 
 stoi() // string转int
 
@@ -10302,9 +10776,11 @@ stoi() // string转化为数字
 
 ### 字符串单纯处理（6题）
 
-*1035*，1061，
+*1035（20分）*
 
-*1077*
+1061（20分）
+
+*1077（20分）*
 
 翻转字符串
 
@@ -10317,9 +10793,11 @@ string s;
 reverse(s.begin(), s.end()); // 翻转
 ```
 
-1084，1093，
+1084（20分）
 
-*1136*
+1093（25分）
+
+*1136（20分）*
 
 回文数
 
@@ -10342,20 +10820,22 @@ reverse(s.begin(), s.end());
 
 ## hash算法（2题）
 
-1078，1145
+1078（25分）
+
+1145（25分）
 
 --------------------------------------------------------------------------
 ## 线性表（7题）
 
 ### 链表（5题）
 
-*1052*：
+*1052（25分）*：
 
 1. return a.flag > b.flag // 意味着，flag为true的放在前面，注意这个排序技巧，
 
 2. 将链表放在结构数组中排序的技巧，这样就可以使用sort函数了
 
-1074
+1074（25分）
 
 *1097（25分）*
 
@@ -10365,7 +10845,7 @@ reverse(s.begin(), s.end());
 
 分成不同的区间
 
-*1032*: 
+*1032（25分）*: 
 
 1. 链表的表示方式
 
@@ -10387,7 +10867,9 @@ for(int i = s1; i != -1; i = node[i].next) {
 
 ### 栈（2题）
 
-1051，1057
+1051（25分）
+
+1057（30分）
 
 --------------------------------------------------------------------------
 
@@ -10417,13 +10899,13 @@ for(int i = s1; i != -1; i = node[i].next) {
 
 归并排序：分而治之，通过 two pointer的merge函数，将序列分成多份后merge。
 
-**1089**（25分）
+**1089（25分）**（25分）
 
 插入排序
 
 归并排序
 
-**1098**（25分）
+**1098（25分）**（25分）
 
 插入排序
 
@@ -10441,11 +10923,11 @@ for(int i = s1; i != -1; i = node[i].next) {
 
 完全二叉树：父节点为i/2，左子树为2i，右子树为2i+1（起始为0，则index * 2 + 1为左子树，index * 2 + 2为右子树）
 
-*1147*（30分）
+*1147（30分）*（30分）
 
 给一个树的层序遍历，判断它是不是堆，是大顶堆还是小顶堆。输出这个树的后序遍历
 
-*1155*（30分）
+*1155（30分）*（30分）
 
 输出路径
 
@@ -10460,9 +10942,9 @@ for(int i = s1; i != -1; i = node[i].next) {
 
 图的bfs可类比为树的层序遍历
 
-*1004*
+*1004（30分）*
 
-*1094*
+*1094（25分）*
 
 这两个及其相似
 
@@ -10472,7 +10954,7 @@ vector数组，可以用于记录树及其子树
 vector<int> v[100]
 ```
 
-*1090*
+*1090（25分）*
 
 dfs算法，及其这题的树的表示法。
 
@@ -10482,11 +10964,11 @@ dfs算法，及其这题的树的表示法。
 
 寻找供应链中最便宜的零售商
 
-**1102**
+**1102（25分）**
 
 是道很好的题目综合性很强。
 
-*1110*
+*1110（25分）*
 
 若maxn等于n，即为完全二叉树
 
@@ -10532,7 +11014,7 @@ The lowest common ancestor (LCA) 即为U与V最近的共同节点
 
 理解push为先序，pop为中序，从而得到两个序列
 
-1138
+1138（25分）
 
 *1127（30分）*
 
@@ -10564,9 +11046,11 @@ BST的中序遍历为递增序列
 
 如何通过插入构建一个BST
 
-### AVL树（2题）
+### AVL树（2题）（基本不考）
 
-1066，1123
+1066（25分）
+
+1123（30分）
 
 --------------------------------------------------------------------------
 ## 图（18题）
@@ -10593,9 +11077,9 @@ Dijkstra计算最短路径
 
 DFS计算最短路径中最优的情况
 
-1072
+1072（30分）
 
-**1111**
+**1111（30分）**
 
 复杂题：Dijkstra + DFS
 
@@ -10603,7 +11087,7 @@ DFS计算最短路径中最优的情况
 
 ### 图的遍历，DFS，BFS（10题）
 
-1021
+1021（25分）
 
 *1053（30分）*
 
@@ -10611,11 +11095,17 @@ DFS计算最短路径中最优的情况
 
 ****DFS算法可遍历出多条路径到叶节点，即一路push即可记录
 
-1079，1087
+1079（25分）
 
-1131，1134
+1087（30分）
 
-1122，1150
+1131（30分）
+
+1134（25分）
+
+1122（25分）
+
+1150（25分）
 
 *1126（25分）*
 
@@ -10627,18 +11117,278 @@ BFS，六度空间问题
 
 ### 连通分量（3题）
 
-1013，1021，1034
+1013（25分）
+
+1021（25分）
+
+1034（30分）
 
 --------------------------------------------------------------------------
 
 ## 并查集（3题）
 
-1107，1114，1118
+1107（30分）
+
+1114（25分）
+
+1118（25分）
 
 --------------------------------------------------------------------------
 
 ## 拓扑排序（1题）
 
-1146
+1146（25分）
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 考试心态整理
+
+## 考试策略
+
+考试为3小时，共4题，为20 + 25 + 25 + 30，共100分。
+
+策略为，一题平均用45分钟，力保20分题与25分题，30分题看情况。
+
+## 复习知识点冲刺整理
+
+### 一些可以放弃的题目（考的可能性比较少）
+
+1. 动态规划相关
+2. queue排队等待问题
+3. 贪心算法
+4. AVL树
+
+### 高频考点
+
+1. map思想（17题）（复习一次）
+
+大部分为20分与25分题，30分较少
+
+比如
+
+1041（20分）：简单题
+
+1039（25分）：一处运行超时，得到23分
+
+1071（25分）：小写字母比大写字母多32，与map的遍历
+
+2. 逻辑题（32题）
+
+重点在于读懂题目，理解题目
+
+3. 分类排序（15题）（复习一次）
+
+大部分为25分题
+
+1012（25分）：分类排序典型，有点复杂
+
+*1129（25分）：没搞定，推荐系统。。。*
+
+4. 字符串处理（10题）（复习一次）
+
+20分题为多
+
+1001（20分）：字符串插入；
+
+1069（20分）：数字字符串转化；
+
+1084（20分）：字符map结合。只得了5分
+
+5. 树的遍历，先序，中序，后序，层序（14题）（复习一次）
+
+集中在20分与25分题。
+
+关注树的储存结构，树的遍历算法
+
+
+1004（30分）：dfs遍历
+
+1094（25分）：遍历，记录层
+
+1106（25分）：dfs遍历
+
+
+
+6. 图的最短路径，Dijkstra（5题）（复习一次）
+
+Dijkstra算法：求带权的单源最短路径。
+
+模板代码多写几遍
+
+**1003（25分）：重要，直接的Dijkstra算法，有边权，有点权，没能理解相同最短路径数量的情况。应该是加回头的路程的最多的最短路径数量。
+
+
+7. 图的遍历，DFS，BFS（10题）（复习一次）
+
+1127（30分）：有挑战，涉及层序遍历，两个序列确定树等。首先是两个序列确定树的问题，树为二叉树，接下来是变形的层序遍历。***算法中的root表示的是后序遍历中的下标序号。这题没搞定。。。。
+
+### 低频考点
+
+1. 多项式加法，乘法（2题）
+
+过
+
+2. 素数（3题）
+
+模板代码两种
+
+```
+bool isprime(int n) {
+    if(n <= 1) return false;
+    int sqr = int(sqrt(n * 1.0));
+    for(int i = 2; i <= sqr; i++) { // 注意这里有个等于
+        if(n % i == 0) {
+			return false;
+		}
+    }
+    return true;
+}
+```
+
+```
+// 建立素数表，即prime[] = 1的为素数，即不是由相乘得到的即为素数。
+for(int i = 2; i * i < 500000; i++)
+        for(int j = 2; j * i < 500000; j++)
+            prime[j * i] = 0;
+```
+
+
+3. 进制转换（5题）
+
+p进制转化为十进制，`n += res[i] * pow(d, j)`
+
+十进制转化为p进制，除基取余法，`res[len++] = n % d; n = n / d;`
+
+4. 大整数计算（2题）
+
+储存的时候是反的
+
+加减乘除
+
+5. 科学计数法（2题）
+
+过
+
+6. 分数四则运算（2题）
+
+7. hash算法（2题）
+
+
+
+8. 链表（5题）
+
+
+
+9. 栈（2题）
+
+10. 排序算法（2题）
+
+11. 堆（2题）
+
+根节点比子树大，为最大堆
+
+12. 两个序列确定树（前序中序）（中序后序）（4题）
+
+13. BST（4题）
+
+特点：左子树小于根节点，右子树大于根节点。
+
+BST的中序遍历为递增序列。
+
+BST是二叉树，只有左右两个节点
+
+14. 连通分量（3题）
+
+图采用邻接表储存，dfs进行遍历。
+
+另开一个数组记录，一次dfs被访问的节点。若有节点没被访问，则有其他连通分量。
+
+
+*** 关键在于有一个表示已访问的数组，然后用dfs遍历，看一共能开始多少次dfs遍历
+
+
+1013（25分）:连通分量，visit保存访问过的节点，看dfs开始的次数判断连通分量的个数。
+
+1034（30分）：帮派的个数即为连通分量
+
+15. 并查集（3题）（没看完）
+
+并查集本质上是树，有两个操作，并与查。
+
+*** 并的操作就是：后来的叫先来的爸爸
+
+*** 查的操作就是：一直向上找，找到真正的爸爸
+
+1118（25分）：findFather为核心
+
+1114（25分）：
+
+
+16. 拓扑排序（1题）
+
+过
+
+### 算法笔记中有，但遗漏的
+
+1. 二分查找
+2. two pointers
+3. 最大公约数，最小公倍数
+4. AVL树
+
+等等，先把以上掌握就不错啦
+
+## 柳神小技巧
+
+直接看柳神的pdf中的刷题小技巧
+
+
+
+
+
 
 
